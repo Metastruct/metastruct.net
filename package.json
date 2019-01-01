@@ -5,17 +5,25 @@
   "author": "Tenrys",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "dev": "cross-env NODE_ENV=development nodemon src/server/index.js --watch src/server",
     "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production node server/index.js",
+    "start": "cross-env NODE_ENV=production node src/server/index.js",
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/axios": "^5.0.0",
+    "body-parser": "^1.18.3",
     "cross-env": "^5.2.0",
-    "nuxt": "^2.0.0",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "node-sass": "^4.11.0",
+    "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.2.1",
-    "@nuxtjs/axios": "^5.0.0"
+    "pg": "^7.7.1",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
+    "sass-loader": "^7.1.0",
+    "sequelize": "^4.42.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
