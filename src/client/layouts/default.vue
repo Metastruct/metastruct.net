@@ -1,6 +1,6 @@
 <template lang="pug">
 #default
-    nav.navbar.is-dark.is-fixed-top
+    nav.navbar.is-fixed-top
         .navbar-brand
             a(href="https://metastruct.net")
                 img.navbar-item.is-paddingless(src="@/assets/logo.png")
@@ -19,13 +19,16 @@
             a.navbar-item(href="https://github.com/metastruct")
                 b-icon(icon="github-circle")
                 span &nbsp;GitHub
-            a.navbar-item(href="https://gitlab.com/metastruct")
+            // a.navbar-item(href="https://gitlab.com/metastruct") // Show only if logged in, on right
                 b-icon(icon="gitlab")
                 span &nbsp;GitLab
-    .hero
+    .hero.is-dark
         CyclingBackground(:images="backgrounds")
-        .hero-body
-            .container
+            .hero-body
+                .container
+                    h1.title Tinkering games one byte at a time.
+                    h2.subtitle We are a gaming community dedicated to sandbox experiences research and development.
+    nuxt
 
 </template>
 
@@ -42,10 +45,24 @@
         }
 
         a.navbar-item {
+            color: $light;
+
             &:hover {
+                color: $primary;
                 background-color: rgba(darken($dark, 10%), 0.75);
             }
         }
+    }
+}
+
+.hero-body {
+    height: 100%;
+
+    .container {
+        height: 100%;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
     }
 }
 

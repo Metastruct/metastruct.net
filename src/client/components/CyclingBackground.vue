@@ -3,6 +3,7 @@
 .cycling-background
     .background
         img(v-for="(url, i) in images", :src="url", :class="{ 'is-active': active == i }")
+    slot
 
 </template>
 
@@ -11,12 +12,17 @@
 .cycling-background {
     position: relative;
     display: block;
-    height: 22.5rem;
+    height: 17.5rem;
     overflow: hidden;
 
     .background {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         height: 100%;
-        filter: blur(4px);
+        filter: blur(4px) brightness(66%);
 
         img {
             position: absolute;
@@ -24,7 +30,6 @@
             top: 50%;
             transform: translateY(-50%);
             width: 100%;
-            z-index: 1;
 
             opacity: 0;
             transition: opacity 2s ease-in;
