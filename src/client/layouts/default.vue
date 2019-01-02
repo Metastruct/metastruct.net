@@ -1,27 +1,33 @@
 <template lang="pug">
 #default
-    nav.navbar.is-fixed-top
+    nav.navbar.is-fixed-top(aria-label="main navigation")
         .navbar-brand
             nuxt-link(to="/")
                 img.navbar-item.is-paddingless(src="@/static/logo.png")
-            a.navbar-item(href="https://steamcommunity.com/groups/metastruct")
-                b-icon(icon="steam")
-                span &nbsp;Steam
-            a.navbar-item(href="https://metastruct.net/discord")
-                b-icon(icon="discord")
-                span &nbsp;Discord
-            nuxt-link.navbar-item(to="/irc")
-                b-icon(icon="chat", pack="mdi")
-                span &nbsp;IRC
-            a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
-                b-icon(icon="forum")
-                span &nbsp;Forums
-            a.navbar-item(href="https://github.com/metastruct")
-                b-icon(icon="github-circle")
-                span &nbsp;GitHub
-            // a.navbar-item(href="https://gitlab.com/metastruct") // Show only if logged in, on right
-                b-icon(icon="gitlab")
-                span &nbsp;GitLab
+            a.navbar-burger(:class="{ 'is-active': burger }", aria-label="menu", @click="burger = !burger", :aria-expanded="burger")
+                span(aria-hidden="true")
+                span(aria-hidden="true")
+                span(aria-hidden="true")
+        .navbar-menu(:class="{ 'is-active': burger }")
+            .navbar-start
+                a.navbar-item(href="https://steamcommunity.com/groups/metastruct")
+                    b-icon(icon="steam")
+                    span &nbsp;Steam
+                a.navbar-item(href="https://metastruct.net/discord")
+                    b-icon(icon="discord")
+                    span &nbsp;Discord
+                nuxt-link.navbar-item(to="/irc")
+                    b-icon(icon="chat", pack="mdi")
+                    span &nbsp;IRC
+                a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
+                    b-icon(icon="forum")
+                    span &nbsp;Forums
+                a.navbar-item(href="https://github.com/metastruct")
+                    b-icon(icon="github-circle")
+                    span &nbsp;GitHub
+                // a.navbar-item(href="https://gitlab.com/metastruct") // Show only if logged in, on right
+                    b-icon(icon="gitlab")
+                    span &nbsp;GitLab
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body
@@ -37,12 +43,20 @@
 @import "@/assets/overrides.scss";
 
 .navbar {
-    background-color: rgba(darken($dark, 5%), 0.5);
+    background-color: darken($dark, 5%);
 
     .navbar-brand {
         img.navbar-item {
             height: 52px;
         }
+
+        a.navbar-burger {
+            color: $light;
+        }
+    }
+
+    .navbar-menu {
+        background-color: transparent;
 
         a.navbar-item {
             color: $light;
@@ -62,7 +76,7 @@
         height: 100%;
         flex-direction: column;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
     }
 }
 
@@ -78,6 +92,8 @@ export default {
     },
     data() {
         return {
+            burger: false,
+
             backgrounds: [
                 "https://metastruct.net/img/banner/ugly.jpg",
                 "https://metastruct.net/img/banner/1.jpg",

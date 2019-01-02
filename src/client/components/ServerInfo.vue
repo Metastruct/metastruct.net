@@ -1,22 +1,22 @@
 <template lang="pug">
 
-a.notification.server-info(@click="open(`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}`)")
-    .background-container
+a.notification.server-info
+    .background-container(@click="join")
         .background
-    p.title {{ idToName[id] || "???" }}
-    p.subtitle
+    p.title(@click="join") {{ idToName[id] || "???" }}
+    p.subtitle(@click="join")
         | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
         br
         | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
     ul.playerlist
         li(v-if="server.playerinfo.length < 1") Absolutely nobody. Join us?
         li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
-            a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`")
+            a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
                 img.avatar(:src="player.avatarfull")
                 span.nick {{ player.Nick }}
             a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
                 b-icon(icon="arrow-right", type="is-success")
-    .server-info-bottom Join us!
+    .server-info-bottom(@click="join") Join us!
 
 </template>
 
@@ -62,6 +62,7 @@ a.notification.server-info(@click="open(`steam://connect/${server.serverinfo.add
     }
 
     .playerlist {
+        cursor: default;
         margin: 1.5em 0;
         padding: 8px;
         background: rgba(0, 0, 0, 0.36);
@@ -122,9 +123,9 @@ export default {
         }
     },
     methods: {
-        open(url) {
-            window.open(url, "_blank")
-        }
+        join() {
+            window.open(`steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`, "_blank")
+        },
     }
 }
 

@@ -12,7 +12,7 @@
 .cycling-background {
     position: relative;
     display: block;
-    height: 17.5rem;
+    height: 12.5rem;
     overflow: hidden;
 
     .background {
