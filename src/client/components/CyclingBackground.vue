@@ -32,7 +32,7 @@
             width: 100%;
 
             opacity: 0;
-            transition: opacity 2s ease-in;
+            transition: opacity 2s ease-out;
 
             &.is-active {
                 opacity: 1;

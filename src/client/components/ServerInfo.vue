@@ -1,10 +1,10 @@
 <template lang="pug">
 
-a.notification.is-dark.server-info(@click="open(`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}`)")
+a.notification.server-info(@click="open(`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}`)")
     .background-container
         .background
-    p.title.is-marginless {{ idToName[id] || "???" }}
-    p.details
+    p.title {{ idToName[id] || "???" }}
+    p.subtitle
         | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
         br
         | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
@@ -24,12 +24,11 @@ a.notification.is-dark.server-info(@click="open(`steam://connect/${server.server
 
 @import "@/assets/overrides.scss";
 
-.server-info {
+.notification.server-info {
     display: block;
     position: relative;
     z-index: 0;
     padding-right: 1.5rem;
-    transition: filter 0.1s ease-out;
 
     .background-container {
         position: absolute;
@@ -46,20 +45,18 @@ a.notification.is-dark.server-info(@click="open(`steam://connect/${server.server
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("~assets/gm_construct_m.jpg");
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("~static/gm_construct_m.jpg");
             background-size: cover;
             background-position: center center;
-            filter: blur(3px);
+            filter: brightness(100%) blur(3px);
             transform-origin: center;
             transition: margin 0.25s ease-out, filter 0.25s ease-out;
         }
     }
 
     &:hover {
-        filter: brightness(117.5%);
-
         .background {
-            filter: blur(0px);
+            filter: brightness(125%) blur(0px);
             margin: -8px;
         }
     }
@@ -109,7 +106,7 @@ a.notification.is-dark.server-info(@click="open(`steam://connect/${server.server
         display: flex;
         justify-content: space-around;
         font-size: 1.5em;
-        color: $light;
+        color: $primary;
     }
 }
 

@@ -3,7 +3,14 @@
 // https://bulma.io/documentation/customize/variables/
 
 $primary: #0ce3ac;
+$secondary: #8B438E;
+$secondary-invert: findColorInvert($secondary) !default;
+$custom-colors: (
+    "secondary":($secondary, $secondary-invert),
+);
+
 $dark: #212121;
+$link: $primary;
 
 $family-sans-serif: "Open Sans";
 

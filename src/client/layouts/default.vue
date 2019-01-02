@@ -2,8 +2,8 @@
 #default
     nav.navbar.is-fixed-top
         .navbar-brand
-            a(href="https://metastruct.net")
-                img.navbar-item.is-paddingless(src="@/assets/logo.png")
+            nuxt-link(to="/")
+                img.navbar-item.is-paddingless(src="@/static/logo.png")
             a.navbar-item(href="https://steamcommunity.com/groups/metastruct")
                 b-icon(icon="steam")
                 span &nbsp;Steam
