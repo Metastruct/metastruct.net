@@ -19,14 +19,14 @@
                 a.navbar-item(href="https://github.com/metastruct")
                     b-icon(icon="github-circle")
                     span &nbsp;GitHub
-                // a.navbar-item(href="https://gitlab.com/metastruct") // Show only if logged in, on right
+                a.navbar-item(v-if="$store.state.user.isAdmin", href="https://gitlab.com/metastruct")
                     b-icon(icon="gitlab")
                     span &nbsp;GitLab
             .navbar-end
                 a.navbar-item(href="https://metastruct.net/discord/auth")
                     b-icon(icon="discord")
-                    span(v-if="!$store.state.discordUser") &nbsp;Discord Linking
-                    span(v-else) {{ "&nbsp;" + !$store.state.discordUser.username }}
+                    span(v-if="!$store.state.discordUser.id") &nbsp;Discord Linking
+                    span(v-else) {{ "&nbsp;" + $store.state.discordUser.username }}
 
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
@@ -111,7 +111,6 @@ export default {
     mounted() {
         axios.get("http://metastruct.net/discord/auth/info.json", { withCredentials: true })
             .then(res => {
-                console.log(res.data)
                 this.$store.commit("discordUser", res.data)
             })
             .catch(console.error)

@@ -4,16 +4,24 @@ const createStore = () => {
     return new Vuex.Store({
         state() {
             return {
-                discordUser: null,
+                user: {},
+                discordUser: {},
             }
         },
         mutations: {
             discordUser(state, user) {
                 state.discordUser = user
             },
+            user(state, user) {
+                state.user = user
+            },
         },
         actions: {
-            nuxtServerInit(store, ctx) {}
+            nuxtServerInit(store, ctx) {
+                if (ctx.req.user) {
+                    store.commit("user", ctx.req.user)
+                }
+            }
         }
     })
 }

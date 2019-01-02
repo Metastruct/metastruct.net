@@ -19,13 +19,16 @@
     "node-sass": "^4.11.0",
     "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.2.1",
+    "passport": "^0.4.0",
+    "passport-saml": "^1.0.0",
     "pg": "^7.7.1",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "sass-loader": "^7.1.0",
-    "sequelize": "^4.42.0"
+    "sequelize": "^4.42.0",
+    "steamapi": "^2.0.5"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"

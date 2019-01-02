@@ -9,7 +9,7 @@ a.notification.server-info
         br
         | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
     ul.playerlist
-        li(v-if="server.playerinfo.length < 1") Absolutely nobody. Join us?
+        li(v-if="server.playerinfo.length < 1") Nobody is online!
         li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
             a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
                 img.avatar(:src="player.avatarfull")

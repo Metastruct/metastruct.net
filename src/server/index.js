@@ -46,6 +46,7 @@ async function start() {
         .catch(console.error.bind(console, "Connection error:"))
 
     require("./redirects.js")(app)
+    require("./auth.js")(app)
 
     // Load API before Nuxt handles anything
     app.use("/api", require("./routes/api")(app))
