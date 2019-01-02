@@ -22,15 +22,25 @@
                                 b-icon(icon="calendar-multiselect")
                             p.title History
                             p.subtitle Timeline of meaningful events.
-                    .tile.is-parent.is-vertical.is-4
-                        .tile.is-child.notification(style="padding: 1em;")
-                            a.twitter-timeline(data-dnt="true", data-theme="dark", data-link-color="#0ce3ac", data-chrome="nofooter noborders noheader transparent", data-tweet-limit="4", href="https://twitter.com/metastruct?ref_src=twsrc%5Etfw")
-                                script(async, src="https://platform.twitter.com/widgets.js", charset="utf-8")
                         a.tile.is-child.notification(href="https://banni.metastruct.net", target="_blank")
                             .background
                                 b-icon(icon="minus-circle")
                             p.title Bans
                             p.subtitle List of naughty people.
+                    .tile.is-parent.is-vertical.is-4
+                        a.tile.is-child.notification(href="https://steamcommunity.com/groups/metastruct", target="_blank")
+                            .background
+                                b-icon(icon="steam")
+                            p.title Steam
+                            p.subtitle Become a member and participate to various forum discussions!
+                        a.tile.is-child.notification(:href="discordData.instant_invite || '/discord'", target="_blank")
+                            .background
+                                b-icon(icon="discord")
+                            p.title Discord
+                            p.subtitle {{ discordStats }}
+                        .tile.is-child.notification(style="padding: 1em;")
+                            a.twitter-timeline(data-dnt="true", data-theme="dark", data-link-color="#0ce3ac", data-chrome="nofooter noborders noheader transparent", data-tweet-limit="2", href="https://twitter.com/metastruct?ref_src=twsrc%5Etfw")
+                                script(async, src="https://platform.twitter.com/widgets.js", charset="utf-8")
 
 </template>
 
@@ -44,6 +54,7 @@
     box-shadow: 0px 0px 12px darken($dark, 5%);
     background: lighten($dark, 10%);
     padding: 1.5em;
+    padding-right: 25%;
 
     .background {
         position: absolute;
@@ -113,24 +124,61 @@ export default {
     data() {
         return {
             servers: {},
+
+            discordData: {},
         }
     },
     mounted() {
-        this.refreshServerData()
+        this.refreshData()
 
         setInterval(() => {
-            this.refreshServerData()
+            this.refreshData()
         }, 20000)
     },
     methods: {
-        refreshServerData() {
+        refreshData() {
             axios.get("/api/servers")
                 .then(res => {
                     this.servers = res.data
                 })
                 .catch(console.error)
+
+            axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")
+                .then(res => {
+                    this.discordData = res.data
+                })
+                .catch(console.error)
         }
     },
+    computed: {
+        discordStats() {
+            const discord = this.discordData
+
+            if (discord.id) {
+                let online = discord.members.length
+
+                let games = discord.members.filter(val => val.game).map(val => val.game.name)
+                let playingStats = {}
+                games.forEach(val => {
+                    if (!playingStats[val]) playingStats[val] = 0
+                    playingStats[val]++
+                })
+                let mostPlayedCounter = 0,
+                    mostPlayedGame    = ""
+                for (const game in playingStats) {
+                    if (playingStats.hasOwnProperty(game)) {
+                        const playing = playingStats[game]
+                        if (playing > mostPlayedCounter) {
+                            mostPlayedCounter = playing
+                            mostPlayedGame    = game
+                        }
+                    }
+                }
+
+                return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`
+            }
+        }
+    }
 }
 
 </script>

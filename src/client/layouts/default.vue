@@ -10,12 +10,6 @@
                 span(aria-hidden="true")
         .navbar-menu(:class="{ 'is-active': burger }")
             .navbar-start
-                a.navbar-item(href="https://steamcommunity.com/groups/metastruct")
-                    b-icon(icon="steam")
-                    span &nbsp;Steam
-                a.navbar-item(href="https://metastruct.net/discord")
-                    b-icon(icon="discord")
-                    span &nbsp;Discord
                 nuxt-link.navbar-item(to="/irc")
                     b-icon(icon="chat", pack="mdi")
                     span &nbsp;IRC
@@ -28,12 +22,18 @@
                 // a.navbar-item(href="https://gitlab.com/metastruct") // Show only if logged in, on right
                     b-icon(icon="gitlab")
                     span &nbsp;GitLab
+            .navbar-end
+                a.navbar-item(href="https://metastruct.net/discord/auth")
+                    b-icon(icon="discord")
+                    span(v-if="!$store.state.discordUser") &nbsp;Discord Linking
+                    span(v-else) {{ "&nbsp;" + !$store.state.discordUser.username }}
+
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body
                 .container
                     h1.title Tinkering games one byte at a time.
-                    h2.subtitle We are a gaming community dedicated to sandbox experiences research and development.
+                    h2.subtitle We are a gaming community dedicated to research and development of sandbox experiences.
     nuxt
 
 </template>
@@ -85,6 +85,7 @@
 <script>
 
 import CyclingBackground from "@/components/CyclingBackground.vue"
+import axios from "axios"
 
 export default {
     components: {
@@ -95,17 +96,25 @@ export default {
             burger: false,
 
             backgrounds: [
-                "https://metastruct.net/img/banner/ugly.jpg",
-                "https://metastruct.net/img/banner/1.jpg",
-                "https://metastruct.net/img/banner/2.jpg",
-                "https://metastruct.net/img/banner/3.jpg",
-                "https://metastruct.net/img/banner/4.jpg",
-                "https://metastruct.net/img/banner/5.jpg",
-                "https://metastruct.net/img/banner/6.jpg",
-                "https://metastruct.net/img/banner/7.jpg",
-                "https://metastruct.net/img/banner/9.jpg"
+                "/banner/ugly.jpg",
+                "/banner/1.jpg",
+                "/banner/2.jpg",
+                "/banner/3.jpg",
+                "/banner/4.jpg",
+                "/banner/5.jpg",
+                "/banner/6.jpg",
+                "/banner/7.jpg",
+                "/banner/9.jpg"
             ]
         }
+    },
+    mounted() {
+        axios.get("http://metastruct.net/discord/auth/info.json", { withCredentials: true })
+            .then(res => {
+                console.log(res.data)
+                this.$store.commit("discordUser", res.data)
+            })
+            .catch(console.error)
     }
 }
 
