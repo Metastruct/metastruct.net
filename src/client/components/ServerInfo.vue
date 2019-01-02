@@ -1,20 +1,22 @@
 <template lang="pug">
 
 a.notification.is-dark.server-info(@click="open(`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}`)")
+    .background-container
+        .background
     p.title.is-marginless {{ idToName[id] || "???" }}
-        p.details
-            | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
-            br
-            | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
-        ul.playerlist
-            li(v-if="server.playerinfo.length < 1") Absolutely nobody. Join us?
-            li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
-                a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`")
-                    img.avatar(:src="player.avatarfull")
-                    span.nick {{ player.Nick }}
-                a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
-                    b-icon(icon="arrow-right", type="is-success")
-        .server-info-bottom Join us!
+    p.details
+        | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
+        br
+        | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
+    ul.playerlist
+        li(v-if="server.playerinfo.length < 1") Absolutely nobody. Join us?
+        li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
+            a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`")
+                img.avatar(:src="player.avatarfull")
+                span.nick {{ player.Nick }}
+            a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
+                b-icon(icon="arrow-right", type="is-success")
+    .server-info-bottom Join us!
 
 </template>
 
@@ -25,15 +27,41 @@ a.notification.is-dark.server-info(@click="open(`steam://connect/${server.server
 .server-info {
     display: block;
     position: relative;
+    z-index: 0;
     padding-right: 1.5rem;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("~assets/gm_construct_m.jpg");
-    background-size: cover;
-    background-position: center center;
-
     transition: filter 0.1s ease-out;
+
+    .background-container {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        clip-path: inset(0px 0px 0px 0px);
+
+        .background {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("~assets/gm_construct_m.jpg");
+            background-size: cover;
+            background-position: center center;
+            filter: blur(3px);
+            transform-origin: center;
+            transition: margin 0.25s ease-out, filter 0.25s ease-out;
+        }
+    }
 
     &:hover {
         filter: brightness(117.5%);
+
+        .background {
+            filter: blur(0px);
+            margin: -8px;
+        }
     }
 
     .playerlist {
