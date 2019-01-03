@@ -4,7 +4,7 @@ module.exports = app => {
     app.get("/addons.json", async (req, res) => {
         let addons = await addon.findAll({ raw: true })
         addons.sort((a, b) => {
-            return a.id > b.id ? 1 : -1
+            return a.id - b.id
         })
 
         res.json(addons)
