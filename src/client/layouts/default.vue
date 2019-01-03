@@ -30,14 +30,18 @@
                         b-icon(icon="key")
                         span &nbsp;MSDNAA
             .navbar-end
-                a.navbar-item(href="https://metastruct.net/discord/auth")
+                a.navbar-item(v-if="!$store.state.discordUser.id" href="https://metastruct.net/discord/auth")
                     b-icon(icon="discord")
-                    span(v-if="!$store.state.discordUser.id") &nbsp;Discord Linking
-                    span(v-else) {{ "&nbsp;" + $store.state.discordUser.username }}
-                a.navbar-item(href="/auth")
+                    span &nbsp;Discord Linking
+                .navbar-item(v-else)
+                    b-icon(icon="discord")
+                    span {{ "&nbsp;" + $store.state.discordUser.username }}
+                a.navbar-item(v-if="!$store.state.user.steamID", href="/auth")
                     b-icon(icon="steam")
-                    span(v-if="!$store.state.user.steamID") &nbsp;Steam Login
-                    span(v-else) {{ "&nbsp;" + $store.state.user.nickname }}
+                    span &nbsp;Steam Login
+                .navbar-item(v-else)
+                    b-icon(icon="steam")
+                    span {{ "&nbsp;" + $store.state.user.nickname }}
 
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
@@ -69,9 +73,11 @@
     .navbar-menu {
         background-color: transparent;
 
-        a.navbar-item {
+        .navbar-item {
             color: $light;
+        }
 
+        a.navbar-item {
             &:hover {
                 color: $primary;
                 background-color: rgba(darken($dark, 10%), 0.75);
