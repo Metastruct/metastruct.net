@@ -3,17 +3,17 @@
     section.section
         .container
             .editing(v-if="$store.state.user.isAdmin")
-                a.has-text-secondary(v-if="!editing", @click="startEdits")
+                a.has-text-primary(v-if="!editing", @click="startEdits")
                     b-icon(icon="pencil")
                     span &nbsp;Edit
                 template(v-else)
-                    a.has-text-secondary(@click="saveEdits")
+                    a.has-text-primary(@click="saveEdits")
                         b-icon(icon="content-save")
                         span &nbsp;Save
-                    a.has-text-secondary(@click="cancelEdits")
+                    a.has-text-primary(@click="cancelEdits")
                         b-icon(icon="cancel")
                         span &nbsp;Cancel
-            h1.title.has-text-light Here are some of the addons we use.
+            h1.title.has-text-light Add-ons
             template(v-if="!$store.state.user.isAdmin || !editing")
                 .columns.is-multiline
                     .column.is-one-quarter(v-for="addon in receivedAddons")

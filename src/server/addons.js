@@ -22,10 +22,7 @@ module.exports = app => {
                         .spread((obj, created) => {
                             obj.update(val)
                         })
-                })
-
-                res.json({
-                    success: true
+                        .catch(console.error)
                 })
 
                 // Cleanup missing IDs
@@ -37,7 +34,12 @@ module.exports = app => {
                             .then(obj => {
                                 if (obj) obj.destroy()
                             })
+                            .catch(console.error)
                     }
+                })
+
+                res.json({
+                    success: true
                 })
                 return
             }

@@ -10,8 +10,8 @@
                         nuxt-link.tile.is-child.notification(to="/addons")
                             .background
                                 b-icon(icon="puzzle")
-                            p.title Addons
-                            p.subtitle Public addons we use on our server.
+                            p.title Add-ons
+                            p.subtitle Public add-ons we use on our server.
                         a.tile.is-child.notification(href="https://loadingscreen.metastruct.net", target="_blank")
                             .background
                                 b-icon(icon="folder-image")

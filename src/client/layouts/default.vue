@@ -30,7 +30,15 @@
                         b-icon(icon="key")
                         span &nbsp;MSDNAA
             .navbar-end
-                a.navbar-item(v-if="!$store.state.discordUser.id" href="https://metastruct.net/discord/auth")
+                a.navbar-item.has-dropdown.is-hoverable
+                    .navbar-link
+                        b-icon(icon="application")
+                        span &nbsp;API
+                    .navbar-dropdown
+                        a.navbar-item(href="/servers.json") Servers
+                        a.navbar-item(href="/addons.json") Add-ons
+                        a.navbar-item(v-if="$store.state.user.steamID", href="/auth/info.json") Steam Auth Info
+                a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
                     b-icon(icon="discord")
                     span &nbsp;Discord Linking
                 .navbar-item(v-else)
@@ -73,15 +81,24 @@
     .navbar-menu {
         background-color: transparent;
 
-        .navbar-item {
+        .navbar-item, .navbar-link {
             color: $light;
         }
 
-        a.navbar-item {
-            &:hover, &:active, &:focus {
+        a.navbar-item, a.navbar-link {
+            &:hover, &:active, &:focus, &.has-dropdown:hover .navbar-link {
                 color: $primary;
                 background-color: rgba(darken($dark, 10%), 0.75);
             }
+        }
+
+        .navbar-link::after {
+            border-color: $secondary;
+        }
+
+        .navbar-dropdown {
+            border-top: none;
+            background: darken($dark, 5%);
         }
     }
 }
