@@ -4,7 +4,7 @@ module.exports = app => {
     const gameservers = app.config.gameservers
 
     // https://g2cf.metastruct.net/app/playerlist?server=# gives a better result though
-    app.get("/servers", async (req, res) => {
+    app.get("/servers.json", async (req, res) => {
         let info = {}
 
         for (const name in gameservers) {

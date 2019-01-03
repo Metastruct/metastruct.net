@@ -120,7 +120,7 @@ export default {
     },
     methods: {
         refreshData() {
-            axios.get("/servers")
+            axios.get("/servers.json")
                 .then(res => {
                     this.servers = res.data
                 })

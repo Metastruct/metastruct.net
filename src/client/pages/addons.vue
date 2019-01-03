@@ -21,10 +21,10 @@
                             a(:href="addon.url").has-text-primary {{ addon.name }}
                         p.has-text-light {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
-                draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove", @start="sortable.onStart")
+                draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
                     .column.is-one-quarter(v-for="(addon, key) in editingAddons", :key="key")
                         .notification
-                            a.remove.has-text-danger(@click="removeAddon(i)")
+                            a.remove.has-text-danger(@click="removeAddon(key)")
                                 b-icon(icon="delete")
                                 span &nbsp;Delete
                             b-field(label="Addon name")
@@ -53,7 +53,7 @@ export default {
             sortable: {
                 filter: ".add, .input, .textarea, .remove",
                 onMove(evt) {
-                    if (evt.related.firstChild.firstChild.classList.contains("add")) return false
+                    if (evt.related.firstChild.classList.contains("add")) return false
                 },
                 preventOnFilter: false
             },
@@ -161,6 +161,7 @@ export default {
     }
 
     a.notification.add {
+        cursor: pointer;
         height: 100%;
         display: flex;
         justify-content: center;

@@ -30,7 +30,6 @@ module.exports = app => {
 
                 // Cleanup missing IDs
                 let addons = await addon.findAll({ raw: true })
-                console.log(Object.keys(data))
                 addons.forEach(async val => {
                     val.id--
                     if (!data[val.id]) {
