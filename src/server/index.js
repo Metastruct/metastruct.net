@@ -58,6 +58,8 @@ async function start() {
         badge: true
     })
 
+    console.log("\007")
+
     consola.ready({
         message: `REPL started`,
         badge: true

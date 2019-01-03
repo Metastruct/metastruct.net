@@ -78,7 +78,7 @@
         }
 
         a.navbar-item {
-            &:hover {
+            &:hover, &:active, &:focus {
                 color: $primary;
                 background-color: rgba(darken($dark, 10%), 0.75);
             }

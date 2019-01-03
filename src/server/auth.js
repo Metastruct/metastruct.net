@@ -16,7 +16,7 @@ module.exports = app => {
         user.groups = groups
         user.isAdmin = groups.includes("3959879")
 
-        return user
+        return { ...user }
     }
 
     passport.serializeUser((user, done) => {

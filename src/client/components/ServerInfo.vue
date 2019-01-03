@@ -54,7 +54,7 @@ a.notification.server-info
         }
     }
 
-    &:hover {
+    &:hover, &:active, &:focus {
         .background {
             filter: brightness(125%) blur(0px);
             margin: -8px;
@@ -79,7 +79,7 @@ a.notification.server-info
                 display: flex;
                 align-content: center;
 
-                &:hover {
+                &:hover, &:active, &:focus {
                     filter: brightness(75%);
                 }
 

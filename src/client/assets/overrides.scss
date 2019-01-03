@@ -36,7 +36,7 @@ a.notification {
 
     transition: background 0.1s ease-out;
 
-    &:hover {
+    &:hover, &:active, &:focus {
         background: $secondary;
     }
 }

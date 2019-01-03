@@ -5,7 +5,7 @@
             .container
                 .tile.is-ancestor
                     .tile.is-parent.is-vertical.is-4
-                        ServerInfo.tile.is-child(v-for="(server, id) in servers" :server="server" :key="id" :id="id")
+                        ServerInfo.tile.is-child(v-for="(server, id) in servers", :server="server", :key="id", :id="id", tabindex="0")
                     .tile.is-parent.is-vertical.is-4
                         nuxt-link.tile.is-child.notification(to="/addons")
                             .background
@@ -83,7 +83,7 @@
             }
         }
 
-        &:hover {
+        &:hover, &:active, &:focus {
             .background {
                 .icon {
                     transform: scale(1.125, 1.125);

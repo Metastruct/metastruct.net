@@ -10,6 +10,7 @@ module.exports = async app => {
         host: app.config.postgres.host,
         port: app.config.postgres.port,
         dialect: "postgres",
+        logging: false,
 
         // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
         operatorsAliases: false
