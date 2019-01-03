@@ -20,8 +20,6 @@ module.exports = app => {
     }
 
     passport.serializeUser((user, done) => {
-        console.log(user)
-
         let steamId = user.steamID
 
         done(null, steamId);

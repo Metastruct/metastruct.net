@@ -1,10 +1,10 @@
 const request = require("request-promise-native")
 
-module.exports = api => {
-    const gameservers = api.app.config.gameservers
+module.exports = app => {
+    const gameservers = app.config.gameservers
 
     // https://g2cf.metastruct.net/app/playerlist?server=# gives a better result though
-    api.get("/servers", async (req, res) => {
+    app.get("/servers", async (req, res) => {
         let info = {}
 
         for (const name in gameservers) {

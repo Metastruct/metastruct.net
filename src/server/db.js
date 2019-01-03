@@ -2,9 +2,13 @@ const Sequelize = require("sequelize")
 const fs = require("fs")
 const path = require("path")
 
-module.exports = app => {
-    const sequelize = new Sequelize(app.config.database, app.config.username, app.config.password, {
-        host: app.config.host,
+module.exports = async app => {
+    const sequelize = new Sequelize({
+        database: app.config.postgres.database,
+        username: app.config.postgres.username,
+        password: app.config.postgres.password,
+        host: app.config.postgres.host,
+        port: app.config.postgres.port,
         dialect: "postgres",
 
         // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
@@ -19,6 +23,15 @@ module.exports = app => {
             models[model.name] = model
         }
     })
+
+    await sequelize.sync()
+        .then(() => {
+            consola.ready({
+                message: `Connected to database at ${app.config.postgres.username}@${app.config.postgres.host}`,
+                badge: true
+            })
+        })
+        .catch(console.error.bind(console, "Connection error:"))
 
     return { models, sequelize }
 }

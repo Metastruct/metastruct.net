@@ -28,7 +28,7 @@ a.notification.server-info
     display: block;
     position: relative;
     z-index: 0;
-    padding-right: 1.5rem;
+    padding-right: 1.5rem !important;
 
     .background-container {
         position: absolute;
@@ -70,31 +70,34 @@ a.notification.server-info
         overflow-y: auto;
 
         .player {
+            height: 28px;
             display: flex;
-            align-items: center;
+            align-content: center;
 
             a {
                 text-decoration: none;
+                display: flex;
+                align-content: center;
 
                 &:hover {
                     filter: brightness(75%);
                 }
-            }
 
-            .nick {
-                display: inline-block;
-                font-size: 0.9em;
-                color: $info;
-            }
+                .nick {
+                    display: inline-block;
+                    font-size: 0.9em;
+                    color: $info;
+                }
 
-            &.is-admin .nick {
-                color: lighten(adjust-hue($info, 80), 5%) !important;
-            }
+                &.is-admin .nick {
+                    color: lighten(adjust-hue($info, 80), 5%) !important;
+                }
 
-            .avatar {
-                height: 20px;
-                border-radius: 50%;
-                margin-right: 0.33em;
+                .avatar {
+                    height: 20px;
+                    border-radius: 50%;
+                    margin-right: 0.33em;
+                }
             }
 
             .join-goto {

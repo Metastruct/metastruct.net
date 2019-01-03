@@ -48,63 +48,46 @@
 
 @import "@/assets/overrides.scss";
 
-.notification {
-    position: relative;
-    color: $light;
-    box-shadow: 0px 0px 12px darken($dark, 5%);
-    background: lighten($dark, 10%);
-    padding: 1.5em;
-    padding-right: 25%;
+#index {
+    .notification {
+        padding-right: 25%;
 
-    .background {
-        position: absolute;
-        display: flex;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1.5rem;
-        justify-content: flex-end;
-        align-items: flex-end;
+        .background {
+            position: absolute;
+            display: flex;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            justify-content: flex-end;
+            align-items: flex-end;
 
-        .icon {
-            transform-origin: center;
-            height: 4rem;
-            width: 4rem;
-            color: rgba(255, 255, 255, 0.25);
+            .icon {
+                transform-origin: center;
+                height: 4rem;
+                width: 4rem;
+                color: rgba(255, 255, 255, 0.25);
 
-            .mdi::before {
-                font-size: 86px !important;
+                .mdi::before {
+                    font-size: 86px !important;
+                }
             }
         }
     }
-}
 
-a.notification {
-    color: $light;
-
-    p.title {
-        color: $link;
-    }
-
-    p.subtitle {
-        color: $light;
-    }
-
-    transition: background 0.1s ease-out;
-
-    .background {
-        .icon {
-            transition: transform 0.1s linear;
-        }
-    }
-
-    &:hover {
-        background: $secondary;
-
+    a.notification {
         .background {
             .icon {
-                transform: scale(1.125, 1.125);
+                transition: transform 0.1s linear;
+            }
+        }
+
+        &:hover {
+            .background {
+                .icon {
+                    transform: scale(1.125, 1.125);
+                }
             }
         }
     }
@@ -137,7 +120,7 @@ export default {
     },
     methods: {
         refreshData() {
-            axios.get("/api/servers")
+            axios.get("/servers")
                 .then(res => {
                     this.servers = res.data
                 })

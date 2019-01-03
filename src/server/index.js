@@ -33,23 +33,11 @@ let nuxtConfig = require("../../nuxt.config.js")
 nuxtConfig.dev = !(process.env.NODE_ENV === "production")
 
 async function start() {
-    // Load and connect to DB
-    app.db = require("./db.js")(app)
-
-    await app.db.sequelize.sync()
-        .then(() => {
-            consola.ready({
-                message: `Connected to database at ${app.config.postgres.username}@${app.config.postgres.host}`,
-                badge: true
-            })
-        })
-        .catch(console.error.bind(console, "Connection error:"))
-
+    app.db = await require("./db.js")(app)
     require("./redirects.js")(app)
+    require("./servers.js")(app)
     require("./auth.js")(app)
-
-    // Load API before Nuxt handles anything
-    app.use("/api", require("./routes/api")(app))
+    require("./addons.js")(app)
 
     // Init Nuxt.js
     const nuxt = new Nuxt(nuxtConfig)

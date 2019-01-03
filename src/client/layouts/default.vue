@@ -19,14 +19,25 @@
                 a.navbar-item(href="https://github.com/metastruct")
                     b-icon(icon="github-circle")
                     span &nbsp;GitHub
-                a.navbar-item(v-if="$store.state.user.isAdmin", href="https://gitlab.com/metastruct")
-                    b-icon(icon="gitlab")
-                    span &nbsp;GitLab
+                template(v-if="$store.state.user.isAdmin")
+                    a.navbar-item(href="https://gitlab.com/metastruct")
+                        b-icon(icon="gitlab")
+                        span &nbsp;GitLab
+                    a.navbar-item(href="/rocket2")
+                        b-icon(icon="rocket")
+                        span &nbsp;Rocket
+                    a.navbar-item(href="/msdnaa")
+                        b-icon(icon="key")
+                        span &nbsp;MSDNAA
             .navbar-end
                 a.navbar-item(href="https://metastruct.net/discord/auth")
                     b-icon(icon="discord")
                     span(v-if="!$store.state.discordUser.id") &nbsp;Discord Linking
                     span(v-else) {{ "&nbsp;" + $store.state.discordUser.username }}
+                a.navbar-item(href="/auth")
+                    b-icon(icon="steam")
+                    span(v-if="!$store.state.user.steamID") &nbsp;Steam Login
+                    span(v-else) {{ "&nbsp;" + $store.state.user.nickname }}
 
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
