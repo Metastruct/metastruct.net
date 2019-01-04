@@ -10,44 +10,36 @@ module.exports = (api, app) => {
         res.json(addons)
     })
     api.post("/addons", async (req, res) => {
-        if (req.user && req.user.isAdmin) {
-            let data = req.body
+        let data = req.body
 
-            // I am pretty sure this isn't the way to do this shit, but it works.
-            if (Array.isArray(data)) {
-                // Add or update entries
-                data.forEach(async (val, key) => {
-                    val.id = key + 1
-                    await Addon.findOrCreate({ where: { id: val.id } })
-                        .spread((obj, created) => {
-                            obj.update(val)
+        // I am pretty sure this isn't the way to do this shit, but it works.
+        if (Array.isArray(data)) {
+            // Add or update entries
+            for (let [val, key] of data.entries()) {
+                val.id = key + 1
+                await Addon.findOrCreate({ where: { id: val.id } })
+                .spread((obj, created) => {
+                    obj.update(val)
+                })
+                .catch(console.error)
+            }
+
+            // Cleanup missing IDs
+            let addons = await Addon.findAll({ raw: true })
+            for (let [val, key] of addons.entries()) {
+                val.id--
+                if (!data[val.id]) {
+                    await Addon.findOne({ where: { id: val.id } })
+                        .then(obj => {
+                            if (obj) obj.destroy()
                         })
                         .catch(console.error)
-                })
-
-                // Cleanup missing IDs
-                let addons = await Addon.findAll({ raw: true })
-                addons.forEach(async val => {
-                    val.id--
-                    if (!data[val.id]) {
-                        await Addon.findOne({ where: { id: val.id } })
-                            .then(obj => {
-                                if (obj) obj.destroy()
-                            })
-                            .catch(console.error)
-                    }
-                })
-
-                res.json({
-                    success: true
-                })
-                return
+                }
             }
-        }
 
-        res.status(401)
-        res.json({
-            success: false,
-        })
+            res.json({
+                success: true
+            })
+        }
     })
 }

@@ -1,0 +1,105 @@
+$body-size: 14px;
+$family-sans-serif: "Open Sans";
+
+$grey-accent:  #020202;
+$grey-darker:  #0D0D0D;
+$grey-dark:    #171717;
+$grey:         #212121;
+$grey-light:   #353535;
+$grey-lighter: #4A4A4A;
+
+$dark: $grey;
+
+$primary-light: #0ce3ac;
+$primary: darken($primary-light, 10);
+
+$secondary-dark: #7d3b80;
+$secondary: lighten($secondary-dark, 10);
+
+$primary-light-invert: findColorInvert($primary-light) !default;
+
+$secondary-dark-invert: findColorInvert($secondary-dark) !default;
+$secondary-invert: findColorInvert($secondary) !default;
+
+$custom-colors: (
+    "primary-light": ($primary-light, $primary-light-invert),
+    "secondary": ($secondary, $secondary-invert),
+    "secondary-dark": ($secondary-dark, $secondary-dark-invert),
+);
+
+$white: #fefefe;
+$white-ter: #eeeeee;
+
+$body-background-color: $grey;
+$background: $grey-dark;
+$footer-background-color: $background;
+
+$border: $grey-dark;
+
+$title-color: $white !default;
+$subtitle-color: $white-ter;
+$subtitle-strong-color: $white-ter;
+
+$text: $white;
+$text-light: lighten($text, 10);
+$text-strong: darken($text, 5);
+
+$box-color: $text;
+$box-background-color: $grey-accent;
+$box-shadow: none;
+
+$link: $primary;
+$link-hover: $primary-light;
+$link-focus: $primary-light;
+$link-active: $primary-light;
+$link-hover-border: $grey-dark;
+$link-active-border: $grey;
+
+$button-color: $text;
+$button-background-color: #111;
+$button-border-color: $grey-darker;
+$button-hover-color: $grey-lighter;
+$button-focus: $grey-light;
+$button-active-color: $grey-light;
+
+$table-color: $text;
+$table-head: $grey-lighter;
+$table-background-color: $grey-darker;
+$table-cell-border: 1px solid $grey-dark;
+
+$table-row-hover-background-color: $grey-dark;
+$table-striped-row-even-background-color: $grey-dark;
+$table-striped-row-even-hover-background-color: lighten($grey-dark, 4);
+
+$pagination-border-color: $grey-darker;
+$pagination-disabled: $grey-light;
+$pagination-disabled-background-color: $grey-dark;
+
+$dropdown-content-background-color: $background;
+$dropdown-item-color: $text;
+
+$navbar-background-color: $background;
+$navbar-item-color: $white;
+$navbar-item-hover-color: $white;
+$navbar-item-hover-background-color: rgba($white, 0.12);
+$navbar-item-active-color: $link;
+$navbar-item-active-background-color: $navbar-item-hover-background-color;
+
+$navbar-dropdown-background-color: $body-background-color;
+$navbar-dropdown-item-hover-color: $white;
+$navbar-dropdown-item-hover-background-color: $navbar-item-hover-background-color;
+$navbar-dropdown-item-active-background-color: $navbar-item-hover-background-color;
+$navbar-dropdown-arrow: $secondary;
+
+$tabs-boxed-link-active-background-color: $body-background-color;
+
+$notification-background-color: $grey-light;
+$notification-padding: 1.5em;
+
+$card-shadow: 0px 0px 12px $grey-darker !default;
+$card-border-color: $grey-dark;
+
+$modal-card-head-background-color: $grey-light;
+$modal-card-body-background-color: $grey-lighter;
+
+@import "~bulma/sass/utilities/_all";

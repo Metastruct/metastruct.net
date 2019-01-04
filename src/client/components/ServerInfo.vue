@@ -1,42 +1,43 @@
 <template lang="pug">
 
-a.notification.server-info
+.card.server-info
     .background-container(@click="join")
         .background
-    p.title(@click="join") {{ idToName[id] || "???" }}
-    p.subtitle(@click="join")
-        | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
-        br
-        | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
-    ul.playerlist
-        li(v-if="server.playerinfo.length < 1") Nobody is online!
-        li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
-            a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
-                img.avatar(:src="player.avatarfull")
-                span.nick {{ player.Nick }}
-            a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
-                b-icon(icon="arrow-right", type="is-success")
-    .server-info-bottom(@click="join") Join us!
+    .card-content
+        p.title.has-text-primary-light(@click="join") {{ idToName[id] || "???" }}
+        p.subtitle(@click="join")
+            | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
+            br
+            | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
+        ul.playerlist
+            li(v-if="server.playerinfo.length < 1") Nobody is online!
+            li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
+                a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
+                    img.avatar(:src="player.avatarfull")
+                    span.nick {{ player.Nick }}
+                a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
+                    b-icon(icon="arrow-right", type="is-success")
+        a.server-info-bottom(@click="join") Join us!
 
 </template>
 
 <style lang="scss">
 
-@import "@/assets/overrides.scss";
+@import "@/assets/_variables.scss";
 
-.notification.server-info {
+.card.server-info {
+    cursor: pointer;
     display: block;
     position: relative;
     z-index: 0;
-    padding-right: 1.5rem !important;
 
     .background-container {
         position: absolute;
         z-index: -1;
-        top: 0;
-        bottom: 0;
         left: 0;
         right: 0;
+        top: 0;
+        height: calc(100% + 1px);
         clip-path: inset(0px 0px 0px 0px);
 
         .background {
@@ -65,9 +66,10 @@ a.notification.server-info
         cursor: default;
         margin: 1.5em 0;
         padding: 8px;
-        background: rgba(0, 0, 0, 0.36);
+        background: rgba($grey-darker, 0.36);
         max-height: 184px;
         overflow-y: auto;
+        color: $light;
 
         .player {
             height: 28px;
@@ -110,7 +112,7 @@ a.notification.server-info
         display: flex;
         justify-content: space-around;
         font-size: 1.5em;
-        color: $primary;
+        color: $primary-light;
     }
 }
 

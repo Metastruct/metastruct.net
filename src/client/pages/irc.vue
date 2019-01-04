@@ -5,14 +5,14 @@
             .content
                 h1 IRC
                 h3 Want to chat with us on IRC? Need help with it? Not sure what it is?
-                h5 What is IRC?
+                h5.has-text-secondary What is IRC?
                 p
                     | Internet Relay Chat is (primarily) a text chat protocol. You can use it to chat to people who are playing on our game servers without being in-game yourself. A more detailed description is available
                     |
                     a(href="http://en.wikipedia.org/wiki/Internet_Relay_Chat") here
                     | .
 
-                h5 What do I need to connect?
+                h5.has-text-secondary What do I need to connect?
                 p
                     | To join us, you will need an IRC client. There are many clients available across a wide range of platforms such as
                     |
@@ -38,7 +38,7 @@
                     a(href="http://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients") here
                     | .
 
-                h5 Where do I join?
+                h5.has-text-secondary Where do I join?
                 p
                     | You can join
                     |
@@ -51,7 +51,7 @@
                     a(href="http://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
                     | ).
 
-                h5 Registration, or: Why do I see ticks/crosses next to people's names in-game?
+                h5.has-text-secondary Registration, or: Why do I see ticks/crosses next to people's names in-game?
                 p
                     | Anyone can use a nickname in IRC, so this means that someone may not be who they say they are. We have an automated service, NickServ, which allows people to
                     |
@@ -84,10 +84,10 @@
                     |
                     | indicates the status of the nickname's registration is unknown (for example if NickServ is offline).
 
-                h5 How do I register my nickname?
+                h5.has-text-secondary How do I register my nickname?
                 p You can send a private message to NickServ ("help") for a list of commands, including how to register.
 
-                h5 I need help!
+                h5.has-text-secondary I need help!
                 p
                     | If you need help with IRC, join the
                     |
@@ -96,29 +96,3 @@
                     | channel!
 
 </template>
-
-<style lang="scss">
-
-@import "@/assets/overrides.scss";
-
-#irc {
-    .content {
-        h1, p {
-            color: $light;
-        }
-
-        h3 {
-            color: $light;
-        }
-
-        h5 {
-            color: $secondary;
-        }
-
-        a {
-            color: $primary;
-        }
-    }
-}
-
-</style>

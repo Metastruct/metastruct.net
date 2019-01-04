@@ -2,7 +2,7 @@
 
 .cycling-background
     .background
-        img(v-for="(url, i) in images", :src="url", :class="{ 'is-active': active == i }")
+        img(v-for="(url, i) in images", :src="active == i ? url : ''", :class="{ 'is-active': active == i }")
     slot
 
 </template>

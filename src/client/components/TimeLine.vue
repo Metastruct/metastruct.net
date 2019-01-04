@@ -4,7 +4,7 @@
         .timeline
             template(v-for="(timeline, year) in historyYears")
                 nuxt-link.timeline-year.has-text-light.has-text-centered(:to="`#${year}`", :id="year") {{ year }}
-                TimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`")
+                TimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`", @deleted="$emit('refresh')")
             .is-clearfix
     .column.is-2
         .year-picker
@@ -14,7 +14,7 @@
 
 <style lang="scss">
 
-@import "@/assets/overrides.scss";
+@import "@/assets/_variables.scss";
 
 .timeline {
     position: relative;

@@ -39,7 +39,8 @@ module.exports = {
     */
     plugins: [
         "@/plugins/buefy.js",
-        "@/plugins/vue-observe-visibility.js"
+        "@/plugins/vue-observe-visibility.js",
+        "@/plugins/prototype-extensions.js"
     ],
 
     /*
@@ -56,12 +57,18 @@ module.exports = {
     */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
+        baseURL: null
+    },
+
+    loading: {
+        color: '#0ce3ac'
     },
 
     router: {
         scrollBehavior(to) {
             if (to.hash && to.hash != "#") {
-                return window.scrollTo({ top: document.getElementById(to.hash.substr(1)).offsetTop, behavior: "smooth" })
+                let elem = document.getElementById(to.hash.substr(1))
+                if (elem) return window.scrollTo({ top: elem.offsetTop, behavior: "smooth" })
             }
             return window.scrollTo({ top: 0, behavior: "smooth" })
         }

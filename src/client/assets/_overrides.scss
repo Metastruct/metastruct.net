@@ -1,0 +1,212 @@
+.__nuxt-error-page {
+    position: fixed;
+    z-index: 9999;
+}
+
+.hero {
+    background-color: $black-ter;
+}
+
+.delete {
+    background-color: rgba(255, 255, 255, 0.2);
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.field {
+    .label {
+        color: $light;
+    }
+
+    .control {
+        .input, .textarea {
+            background: rgba($black-bis, 0.33);
+            padding: 0.5em;
+            border-color: $grey-dark;
+            color: $light;
+
+            &:active, &:focus {
+                border-color: $secondary-dark;
+                box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
+            }
+
+            &::placeholder {
+                color: rgba($white, 0.5);
+            }
+        }
+
+        .textarea {
+            min-height: 76px;
+        }
+    }
+}
+
+.notification {
+    background: $notification-background-color;
+
+    @each $name, $pair in $colors {
+        $color: nth($pair, 1);
+        $color-invert: nth($pair, 2);
+
+        &.is-#{$name} {
+            a:not(.button) {
+                color: $color-invert;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+a.notification, a.card {
+    transition: background 0.1s ease-out;
+
+    &:hover, &:active, &:focus {
+        background: $secondary-dark;
+    }
+}
+
+.card {
+    $card-border-color: $grey-light;
+    background-color: $grey-lighter;
+    border-radius: 4px;
+
+    .card-image {
+        border-radius: 4px 4px 0px 0px;
+    }
+
+    .card-content {
+        padding: 1.5em;
+    }
+
+    .card-header {
+        box-shadow: none;
+        background-color: rgba($black-bis, 0.33);
+    }
+
+    .card-footer {
+        background-color: rgba($black-bis, 0.33);
+    }
+
+    .card-footer,
+    .card-footer-item {
+        border-color: $card-border-color;
+    }
+}
+
+.message-header {
+    background-color: $black-ter;
+    color: $white;
+}
+
+.message-body {
+    border-color: $black-ter;
+}
+
+.modal-card-body {
+    background-color: $black-ter;
+}
+
+.modal-card-foot,
+.modal-card-head {
+    border-color: $black-ter;
+}
+
+.navbar {
+    .navbar-brand {
+        img.navbar-item {
+            height: 52px;
+        }
+    }
+
+    border: none;
+    .navbar-dropdown {
+        border: none;
+    }
+
+    .navbar-menu {
+        background-color: $navbar-background-color;
+    }
+
+    a.navbar-item, .navbar-item.has-dropdown, .navbar-link {
+        &:hover, &:active, &:focus, &:hover .navbar-link {
+            color: $primary;
+            background-color: $grey-dark;
+        }
+    }
+}
+
+.hero {
+    background-color: $grey;
+
+    .navbar {
+        &,
+        .navbar-menu,
+        .navbar-dropdown {
+            border: none;
+        }
+    }
+}
+
+.datepicker {
+    margin-bottom: 1.5em;
+
+    .dropdown-header {
+        // box-shadow: none;
+        border: 1px solid $grey-dark;
+    }
+
+    .dropdown-content, .pagination-previous, .pagination-next, .select select {
+        background: rgba($black-bis, 0.33);
+        border-color: $grey-dark;
+
+        .has-text-primary {
+            color: $secondary !important;
+        }
+    }
+
+    .select::after, .select:hover::after {
+        border-color: $secondary !important;
+    }
+
+    .datepicker-header {
+        border-color: $grey-dark;
+    }
+
+    .select select {
+        color: $light;
+
+        option {
+            background: $dark;
+            color: $light;
+        }
+    }
+
+    .datepicker-cell {
+
+        &:active, &:focus {
+            box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
+        }
+    }
+
+    .datepicker-table .datepicker-header .datepicker-cell {
+        color: $white-ter;
+    }
+
+    .datepicker-table .datepicker-body .datepicker-row .datepicker-cell {
+        &.is-selectable {
+            color: $white !important;
+        }
+
+        &.is-unselectable {
+            color: rgba($white, 0.5);
+        }
+
+        &.is-selected {
+            background: $secondary;
+            border-color: rgba($secondary-dark, 0.5);
+            color: $light;
+        }
+    }
+}

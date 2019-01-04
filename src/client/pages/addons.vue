@@ -2,87 +2,78 @@
 #addons
     section.section
         .container
-            .editing(v-if="$store.state.user.isAdmin")
-                a.has-text-primary(v-if="!editing", @click="startEdits")
-                    b-icon(icon="pencil")
-                    span &nbsp;Edit
-                template(v-else)
-                    a.has-text-primary(@click="saveEdits")
-                        b-icon(icon="content-save")
-                        span &nbsp;Save
-                    a.has-text-primary(@click="cancelEdits")
-                        b-icon(icon="cancel")
-                        span &nbsp;Cancel
             h1.title.has-text-light Add-ons
+            EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits")
             template(v-if="!$store.state.user.isAdmin || !editing")
                 .columns.is-multiline
-                    .column.is-one-quarter(v-for="addon in receivedAddons")
+                    .column.is-one-quarter(v-for="addon in addons")
                         a.subtitle.has-text-primary(:href="addon.url").has-text-primary {{ addon.name }}
                         p.has-text-light {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
                 draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
                     .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
-                        .notification
-                            a.remove.has-text-danger(@click="removeAddon(id)")
-                                b-icon(icon="delete")
-                                span &nbsp;Delete
-                            b-field(label="Addon name")
-                                b-input.name(placeholder="Addon name", v-model="addon.name" size="is-medium")
-                            b-field(label="Addon URL")
-                                b-input.url(placeholder="Addon URL", v-model="addon.url")
-                            b-field(label="Addon description")
-                                b-input.description(placeholder="Addon description", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
+                        .card
+                            .card-content
+                                a.remove-button.has-text-danger(@click="removeAddon(id)", style="font-size: 0.75rem;") Delete
+                                b-field(label="Name", custom-class="is-small")
+                                    b-input.name(placeholder="My cool add-on", v-model="addon.name" size="is-medium")
+                                b-field(label="URL", custom-class="is-small")
+                                    b-input.url(placeholder="https://google.com", v-model="addon.url")
+                                b-field(label="Description", custom-class="is-small")
+                                    b-input.description(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
                     .column.is-one-quarter
-                        a.notification.add(@click="addAddon", tabindex="0")
+                        a.card.add-button(@click="addAddon", tabindex="0")
                             b-icon(icon="plus")
 
 </template>
 
 <script>
 
+import EditButton from "@/components/EditButton.vue"
 import draggable from "vuedraggable"
 import axios from "axios"
 
 export default {
     components: {
-        draggable
+        draggable,
+        EditButton
     },
     data() {
         return {
             sortable: {
-                filter: ".add, .input, .textarea, .remove",
+                filter: ".add-button, .input, .textarea, .remove",
                 onMove(evt) {
                     if (evt.related.firstChild.classList.contains("add")) return false
                 },
                 preventOnFilter: false
             },
 
-            receivedAddons: [],
+            addons: [],
             editingAddons: [],
 
             editing: false
         }
     },
     async asyncData(ctx) {
-        let receivedAddons = (await axios.get("http://new.metastruct.net:3000/api/v1/addons")).data
+        let addons = (await axios.get("/api/v1/addons")).data
 
-        return { receivedAddons }
+        return { addons }
     },
     methods: {
         startEdits() {
-            this.editingAddons = this.receivedAddons.slice()
+            this.editingAddons = this.addons.slice()
             this.editing = true
         },
         saveEdits() {
-            axios.post("http://new.metastruct.net:3000/api/v1/addons", this.editingAddons)
+            this.$axios.post("/api/v1/addons", this.editingAddons)
                 .then(() => {
-                    this.receivedAddons = this.editingAddons
+                    this.addons = this.editingAddons
                     this.editing = false
                 })
                 .catch(console.error)
         },
         cancelEdits() {
-            this.editingAddons = this.receivedAddons
+            this.editingAddons = this.addons
             this.editing = false
         },
         addAddon() {
@@ -102,64 +93,47 @@ export default {
 
 <style lang="scss">
 
-@import "@/assets/overrides.scss";
+@import "@/assets/_variables.scss";
 
 #addons {
-    .editing {
-        display: flex;
-        align-content: center;
-        position: absolute;
-        top: -1.5em;
-        right: 1.5em;
-
-        a {
-            margin-left: 1em;
-            display: flex;
-            align-content: center;
-        }
+    .title {
+        display: inline-block;
+        margin-right: 0.25em;
     }
 
-    .notification {
+    .card {
+        .card-content {
+            padding: 0.75em;
+        }
+
         cursor: grab;
 
-        .remove {
+        .remove-button {
+            padding: inherit;
             text-decoration: none;
             position: absolute;
-            top: 1.5em;
-            right: 1.5em;
+            top: 0;
+            right: 0;
             display: flex;
             align-content: center;
         }
+    }
 
-        .field {
-            .label {
-                cursor: grab;
-                color: $light;
-            }
+    .field {
+        .label {
+            cursor: grab;
+        }
 
-            .control {
-                input, textarea {
-                    background: $dark;
-                    padding: 0.5em;
-                    border: lighten($dark, 5%);
-                    color: $light;
-
-                    &:active, &:focus {
-                        border-color: $secondary;
-                        box-shadow: 0 0 0 0.125em darken($secondary, 15%);
-                    }
-                }
-
-                &.name, &.url {
-                    input {
-                        color: $primary;
-                    }
+        .control {
+            &.name, &.url {
+                .input {
+                    color: $primary;
                 }
             }
         }
     }
 
-    a.notification.add {
+    a.card.add-button {
         cursor: pointer;
         height: 100%;
         display: flex;

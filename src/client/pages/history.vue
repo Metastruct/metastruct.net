@@ -2,68 +2,60 @@
 #history
     section.section
         .container
-            TimeLine(:history="history")
+            h1.title.has-text-light History of Meta Construct
+            AddHistoryModal(v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
+            TimeLine(:history.sync="history", @refresh="refreshHistory")
 </template>
 
 <style lang="scss">
+
+#history {
+    .title {
+        display: inline-block;
+        margin-right: 0.25em;
+    }
+}
 
 </style>
 
 <script>
 
 import TimeLine from "@/components/TimeLine.vue"
+import AddHistoryModal from "@/components/AddHistoryModal.vue"
+import axios from "axios"
 
 export default {
     components: {
-        TimeLine
+        TimeLine,
+        AddHistoryModal
     },
     data() {
         return {
-            history: [
-
-                {
-                    name: "Test 1",
-                    date: new Date("2018/01/01"),
-                },
-                {
-                    name: "Test 2",
-                    date: new Date("2018/01/01"),
-                },
-                {
-                    name: "Test 3",
-                    date: new Date("2018/01/01"),
-                },
-                {
-                    name: "Test 4",
-                    date: new Date("2018/01/02"),
-                },
-                {
-                    name: "Test 5",
-                    date: new Date("2019/01/03"),
-                },
-                {
-                    name: "Test 6",
-                    date: new Date("2019/01/04"),
-                },
-                {
-                    name: "Test 7",
-                    date: new Date("2019/01/05"),
-                },
-                {
-                    name: "Test 8",
-                    date: new Date("2019/01/06"),
-                }
-
-            ]
+            history: []
         }
     },
     async asyncData(ctx) {
-        return {}
+        let history = (await axios.get("/api/v1/history")).data
 
-        let history = (await axios.get("http://new.metastruct.net:3000/api/v1/history")).data
+        history.forEach(val => {
+            val.date = new Date(val.date)
+        })
 
         return { history }
     },
+    methods: {
+        async refreshHistory(year) {
+            let history = (await this.$axios.get("/api/v1/history")).data
+
+            history.forEach(val => {
+                val.date = new Date(val.date)
+            })
+
+            this.history = history
+
+            if (year) this.$router.push({ hash: `#${year}` })
+        }
+    }
 }
 
 </script>

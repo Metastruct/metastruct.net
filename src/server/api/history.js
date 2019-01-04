@@ -9,21 +9,86 @@ module.exports = (api, app) => {
 
         res.json(events)
     })
-    api.post("/history", async (req, res) => {
-        if (req.user && req.user.isAdmin) {
+
+    let methods = [
+        {
+            method: "post",
+            async callback(data) {
+                let hasCreated = false
+                let entries = []
+                for (let val of data) {
+                    await HistoryEvent.findOrCreate({ where: val })
+                        .spread((entry, created) => {
+                            entry = entry.get({ plain: true })
+                            if (created) {
+                                hasCreated = true
+                                entry.justCreated = true
+                            }
+                            console.log(entry, entries)
+                            entries.push(entry)
+                        })
+                        .catch(console.error)
+                }
+
+                return { success: hasCreated, entries }
+            }
+        },
+        {
+            method: "patch",
+            async callback(data) {
+                let found = false
+                let entries = []
+                for (let val of data) {
+                    await HistoryEvent.findOne({ where: { id: val.id } })
+                        .then(entry => {
+                            found = true
+                            entry.update(val)
+                            entry = entry.get({ plain: true })
+                            entries.push(entry)
+                        })
+                        .catch(console.error)
+                }
+
+                return { success: found, entries }
+            }
+        },
+        {
+            method: "delete",
+            async callback(data) {
+                let found = false
+                for (let val of data) {
+                    await HistoryEvent.findOne({ where: { id: val.id } })
+                        .then(entry => {
+                            found = true
+                            entry.destroy()
+                        })
+                        .catch(console.error)
+                }
+
+                return { success: found }
+            }
+        }
+    ]
+
+    for (let method of methods) {
+        api[method.method]("/history", async (req, res) => {
             let data = req.body
 
             console.log(data)
 
-            res.json({
-                success: true
-            })
-            return
-        }
+            if (Array.isArray(data)) {
+                let { success, entries } = await method.callback(data)
 
-        res.status(401)
-        res.json({
-            success: false,
+                res.json({
+                    success,
+                    entries
+                })
+                return
+            }
+
+            res.json({
+                success: false
+            })
         })
-    })
+    }
 }

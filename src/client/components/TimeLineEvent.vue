@@ -1,15 +1,30 @@
 <template lang="pug">
-.timeline-event(:id="id", :key="id", :class="{ 'is-left': index % 2 == 1, 'is-right': index % 2 == 0 }")
+.timeline-event(:id="id", :key="id", :class="{ 'is-left': index % 2 == 0, 'is-right': index % 2 == 1 }")
     .card(v-observe-visibility="{ callback: observeVisibility, once: true }")
-        template(v-if="isVisible")
-            .card-image(v-if="event.imageUrl")
+        template(v-if="isVisible && (!$store.state.user.isAdmin || !editing)")
+            header.card-image(v-if="event.imageUrl")
                 figure.image
                     img(:src="event.imageUrl")
-            .card-content
+            section.card-content
                 p.title {{ event.name }}
                 p {{ event.description }}
-            .card-footer(v-if="event.url")
+                p.is-size-7.has-text-white-ter {{ event.date.toLocaleDateString() }}
+                EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits", @delete="confirmDelete", showDelete="true")
+            footer.card-footer(v-if="event.url")
                 a.card-footer-item.has-text-primary(:href="event.url") Read more
+        template(v-if="$store.state.user.isAdmin && editing")
+            .card-content
+                b-field(label="Image URL", custom-class="is-small")
+                    b-input.imageUrl(placeholder="https://google.com", v-model="editingEvent.imageUrl")
+                b-field(label="Title", custom-class="is-small")
+                    b-input.title(placeholder="Big bang", v-model="editingEvent.name" size="is-medium")
+                b-field(label="Description", custom-class="is-small")
+                    b-input.description(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="editingEvent.description")
+                b-field(label="URL (Details)", custom-class="is-small")
+                    b-input.url(placeholder="https://google.com", v-model="editingEvent.url")
+                b-field(label="Date")
+                    b-datepicker.date(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date", inline)
+                EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits", @delete="confirmDelete", showDelete="true")
     a.timeline-link(:href="`#${id}`")
         b-icon(icon="radiobox-marked")
 
@@ -17,11 +32,15 @@
 
 <style lang="scss">
 
-@import "@/assets/overrides.scss";
+@import "@/assets/_variables.scss";
 
 .timeline-event {
     position: relative;
     width: calc(50% - 1.5em);
+
+    .edit-button {
+        margin-top: 1.5em;
+    }
 
     .timeline-link {
         display: block;
@@ -117,10 +136,19 @@
 
 <script>
 
+import EditButton from "@/components/EditButton.vue"
+
 export default {
     props: [ "event", "timeline", "index" ],
+    components: {
+        EditButton
+    },
     data() {
         return {
+            editingHistory: {},
+
+            editing: false,
+
             isVisible: false,
         }
     },
@@ -128,6 +156,34 @@ export default {
     methods: {
         observeVisibility(visible) {
             this.isVisible = visible
+        },
+        startEdits() {
+            this.editingEvent = Object.assign({}, this.event)
+            this.editing = true
+        },
+        saveEdits() {
+            this.$axios.patch("/api/v1/history", [ this.editingEvent ])
+                .then(() => {
+                    this.event = this.editingEvent
+                    this.editing = false
+                })
+                .catch(console.error)
+        },
+        cancelEdits() {
+            this.editingEvent = this.event
+            this.editing = false
+        },
+        confirmDelete() {
+            this.$dialog.confirm({
+                message: "Are you sure you want to delete this event?",
+                onConfirm: () => {
+                    this.editing = false
+                    this.$axios.delete("/api/v1/history", { data: [ this.editingEvent ] })
+                        .then(() => {
+                            this.$emit("deleted")
+                        })
+                }
+            })
         }
     },
     computed: {
