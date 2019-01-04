@@ -44,6 +44,77 @@
 
 </template>
 
+<script>
+
+import ServerInfo from "@/components/ServerInfo.vue"
+import axios from "axios"
+
+export default {
+    components: {
+        ServerInfo
+    },
+    data() {
+        return {
+            servers: {},
+
+            discordData: {},
+        }
+    },
+    mounted() {
+        this.refreshData()
+
+        setInterval(() => {
+            this.refreshData()
+        }, 20000)
+    },
+    methods: {
+        refreshData() {
+            axios.get("/api/v1/servers")
+                .then(res => {
+                    this.servers = res.data
+                })
+                .catch(console.error)
+
+            axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")
+                .then(res => {
+                    this.discordData = res.data
+                })
+                .catch(console.error)
+        }
+    },
+    computed: {
+        discordStats() {
+            const discord = this.discordData
+
+            if (discord.id) {
+                let online = discord.members.length
+
+                let games = discord.members.filter(val => val.game).map(val => val.game.name)
+                let playingStats = {}
+                games.forEach(val => {
+                    if (!playingStats[val]) playingStats[val] = 0
+                    playingStats[val]++
+                })
+                let mostPlayedCounter = 0,
+                    mostPlayedGame    = ""
+                for (const game in playingStats) {
+                    if (playingStats.hasOwnProperty(game)) {
+                        const playing = playingStats[game]
+                        if (playing > mostPlayedCounter) {
+                            mostPlayedCounter = playing
+                            mostPlayedGame    = game
+                        }
+                    }
+                }
+
+                return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`
+            }
+        }
+    }
+}
+
+</script>
+
 <style lang="scss">
 
 @import "@/assets/overrides.scss";
@@ -95,73 +166,3 @@
 
 </style>
 
-<script>
-
-import ServerInfo from "@/components/ServerInfo.vue"
-import axios from "axios"
-
-export default {
-    components: {
-        ServerInfo
-    },
-    data() {
-        return {
-            servers: {},
-
-            discordData: {},
-        }
-    },
-    mounted() {
-        this.refreshData()
-
-        setInterval(() => {
-            this.refreshData()
-        }, 20000)
-    },
-    methods: {
-        refreshData() {
-            axios.get("/servers.json")
-                .then(res => {
-                    this.servers = res.data
-                })
-                .catch(console.error)
-
-            axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")
-                .then(res => {
-                    this.discordData = res.data
-                })
-                .catch(console.error)
-        }
-    },
-    computed: {
-        discordStats() {
-            const discord = this.discordData
-
-            if (discord.id) {
-                let online = discord.members.length
-
-                let games = discord.members.filter(val => val.game).map(val => val.game.name)
-                let playingStats = {}
-                games.forEach(val => {
-                    if (!playingStats[val]) playingStats[val] = 0
-                    playingStats[val]++
-                })
-                let mostPlayedCounter = 0,
-                    mostPlayedGame    = ""
-                for (const game in playingStats) {
-                    if (playingStats.hasOwnProperty(game)) {
-                        const playing = playingStats[game]
-                        if (playing > mostPlayedCounter) {
-                            mostPlayedCounter = playing
-                            mostPlayedGame    = game
-                        }
-                    }
-                }
-
-                return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`
-            }
-        }
-    }
-}
-
-</script>

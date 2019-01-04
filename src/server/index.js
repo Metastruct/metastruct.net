@@ -33,11 +33,11 @@ let nuxtConfig = require("../../nuxt.config.js")
 nuxtConfig.dev = !(process.env.NODE_ENV === "production")
 
 async function start() {
+    // Init our stuff
     app.db = await require("./db.js")(app)
-    require("./redirects.js")(app)
-    require("./servers.js")(app)
     require("./auth.js")(app)
-    require("./addons.js")(app)
+    app.use("/api/v1", require("./api")(app))
+    require("./redirects.js")(app)
 
     // Init Nuxt.js
     const nuxt = new Nuxt(nuxtConfig)

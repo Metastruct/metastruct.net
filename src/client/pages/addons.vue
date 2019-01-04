@@ -17,14 +17,13 @@
             template(v-if="!$store.state.user.isAdmin || !editing")
                 .columns.is-multiline
                     .column.is-one-quarter(v-for="addon in receivedAddons")
-                        p.subtitle.has-text-primary.is-marginless
-                            a(:href="addon.url").has-text-primary {{ addon.name }}
+                        a.subtitle.has-text-primary(:href="addon.url").has-text-primary {{ addon.name }}
                         p.has-text-light {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
                 draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
-                    .column.is-one-quarter(v-for="(addon, key) in editingAddons", :key="key")
+                    .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
                         .notification
-                            a.remove.has-text-danger(@click="removeAddon(key)")
+                            a.remove.has-text-danger(@click="removeAddon(id)")
                                 b-icon(icon="delete")
                                 span &nbsp;Delete
                             b-field(label="Addon name")
@@ -65,7 +64,7 @@ export default {
         }
     },
     async asyncData(ctx) {
-        let receivedAddons = (await axios.get("http://new.metastruct.net:3000/addons.json")).data
+        let receivedAddons = (await axios.get("http://new.metastruct.net:3000/api/v1/addons")).data
 
         return { receivedAddons }
     },
@@ -75,7 +74,7 @@ export default {
             this.editing = true
         },
         saveEdits() {
-            axios.post("http://new.metastruct.net:3000/addons.json", this.editingAddons)
+            axios.post("http://new.metastruct.net:3000/api/v1/addons", this.editingAddons)
                 .then(() => {
                     this.receivedAddons = this.editingAddons
                     this.editing = false

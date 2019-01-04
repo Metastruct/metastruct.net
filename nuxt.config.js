@@ -18,7 +18,7 @@ module.exports = {
             { rel: "stylesheet", href: "//cdn.materialdesignicons.com/3.2.89/css/materialdesignicons.min.css" }
         ],
         htmlAttrs: {
-            class: "has-background-dark has-text-light has-fixed-navbar-top"
+            class: "has-background-dark"
         }
     },
 
@@ -38,7 +38,8 @@ module.exports = {
     ** Plugins to load before mounting the App
     */
     plugins: [
-        "@/plugins/buefy.js"
+        "@/plugins/buefy.js",
+        "@/plugins/vue-observe-visibility.js"
     ],
 
     /*
@@ -55,6 +56,15 @@ module.exports = {
     */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
+    },
+
+    router: {
+        scrollBehavior(to) {
+            if (to.hash) {
+                return window.scrollTo({ top: document.getElementById(to.hash.substr(1)).offsetTop, behavior: "smooth" })
+            }
+            return window.scrollTo({ top: 0, behavior: "smooth" })
+        }
     },
 
     /*

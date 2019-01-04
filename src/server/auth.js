@@ -47,7 +47,7 @@ module.exports = app => {
         res.redirect("/")
     })
 
-    app.get("/auth/info.json", (req, res) => {
+    app.get("/auth/info", (req, res) => {
         if (req.user) {
             res.json(user)
         } else {
