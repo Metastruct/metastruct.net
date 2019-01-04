@@ -8,8 +8,8 @@
             .is-clearfix
     .column.is-2
         .year-picker
-            nuxt-link.year(v-for="(_, year) in historyYears", :to="`#${year}`", :class="{ 'is-active': $route.hash == `#${year}` }") {{ year }}
-            a.year.has-text-primary(href="#") Back to top
+            nuxt-link.year(v-for="(_, year) in historyYears", :to="`#${year}`", :key="year", :class="{ 'is-active': $route.hash == `#${year}` }") {{ year }}
+            nuxt-link.year.has-text-primary(to="#") Back to top
 </template>
 
 <style lang="scss">

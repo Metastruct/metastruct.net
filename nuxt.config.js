@@ -60,7 +60,7 @@ module.exports = {
 
     router: {
         scrollBehavior(to) {
-            if (to.hash) {
+            if (to.hash && to.hash != "#") {
                 return window.scrollTo({ top: document.getElementById(to.hash.substr(1)).offsetTop, behavior: "smooth" })
             }
             return window.scrollTo({ top: 0, behavior: "smooth" })
