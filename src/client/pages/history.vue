@@ -25,6 +25,11 @@ import AddHistoryModal from "@/components/AddHistoryModal.vue"
 import axios from "axios"
 
 export default {
+    head() {
+        return {
+            title: "History - Meta Construct"
+        }
+    },
     components: {
         TimeLine,
         AddHistoryModal

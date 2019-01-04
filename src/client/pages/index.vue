@@ -23,6 +23,11 @@ import CardTile from "@/components/CardTile.vue"
 import axios from "axios"
 
 export default {
+    head() {
+        return {
+            title: "Home - Meta Construct"
+        }
+    },
     components: {
         ServerInfo,
         CardTile

@@ -38,7 +38,10 @@
                         .navbar-dropdown
                             a.navbar-item(href="/api/v1/servers") Servers
                             a.navbar-item(href="/api/v1/addons") Add-ons
+                            a.navbar-item(href="/api/v1/history") History
                             a.navbar-item(v-if="$store.state.user.steamID", href="/auth/info") Steam Auth Info
+                            .navbar-divider
+                            a.navbar-item Docs (TBD)
                     a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
                         b-icon(icon="discord")
                         span &nbsp;Discord Linking
@@ -51,7 +54,6 @@
                     .navbar-item(v-else)
                         b-icon(icon="steam")
                         span {{ "&nbsp;" + $store.state.user.nickname }}
-
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body
@@ -62,10 +64,10 @@
     footer.footer
         .container
             .columns.is-centered
-                .column.is-one-third
+                .column.is-one-quarter
                     nuxt-link(to="/")
                         img.logo(src="@/static/logo.png")
-                .column.is-one-third
+                .column.is-one-quarter
                     p.subtitle.has-text-light
                         b-icon(icon="map", size="is-small")
                         span &nbsp;Sitemap
@@ -82,7 +84,7 @@
                         li: nuxt-link.has-text-primary(to="/irc")
                             b-icon(icon="chat", size="is-small")
                             span &nbsp;IRC
-                .column.is-one-third
+                .column.is-one-quarter
                     p.subtitle.has-text-light
                         b-icon(icon="arrow-right", size="is-small")
                         span &nbsp;External
@@ -93,6 +95,23 @@
                         li: a.has-text-primary(href="https://banni.metastruct.net", target="_blank")
                             b-icon(icon="minus-circle", size="is-small")
                             span &nbsp;Bans
+                .column.is-one-quarter
+                    p Copyright Metastruct © 2018-2019
+                    p
+                        | by
+                        |
+                        a(href="https://tenrys.pw") Tenrys
+                        |
+                        | with
+                        |
+                        a(href="http://nuxtjs.org") Nuxt
+                        | ,
+                        |
+                        a(href="http://expressjs.com") Express
+                        |
+                        | and
+                        |
+                        span(style="color: crimson;") ❤
 
 </template>
 

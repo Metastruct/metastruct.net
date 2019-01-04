@@ -96,3 +96,16 @@
                     | channel!
 
 </template>
+
+<script>
+
+export default {
+    head() {
+        return {
+            title: "IRC - Meta Construct"
+        }
+    },
+}
+
+</script>
+

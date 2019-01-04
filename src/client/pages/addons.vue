@@ -34,6 +34,11 @@ import draggable from "vuedraggable"
 import axios from "axios"
 
 export default {
+    head() {
+        return {
+            title: "Add-ons - Meta Construct"
+        }
+    },
     components: {
         draggable,
         EditButton
