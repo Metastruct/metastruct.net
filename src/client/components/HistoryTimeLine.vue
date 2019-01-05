@@ -19,22 +19,6 @@
 
 @import "@/assets/_variables.scss";
 
-.timeline {
-    position: relative;
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        left: 50%;
-        margin-left: -1.5px;
-        z-index: -1;
-        background: lighten($dark, 20%);
-    }
-}
-
 .timeline-year {
     display: block;
     clear: both;

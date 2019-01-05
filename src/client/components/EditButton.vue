@@ -1,13 +1,13 @@
 <template lang="pug">
 .edit-button
-    a.has-text-primary(v-if="!editing", @click="$emit('start')")
+    a(v-if="!editing", @click="$emit('start')")
         b-icon(icon="pencil")
         span &nbsp;Edit
     template(v-else)
-        a.has-text-primary(@click="$emit('save')", role="button")
+        a(@click="$emit('save')", role="button")
             b-icon(icon="content-save")
             span &nbsp;Save
-        a.has-text-primary(@click="$emit('cancel')")
+        a(@click="$emit('cancel')")
             b-icon(icon="cancel")
             span &nbsp;Cancel
         a.has-text-danger(v-if="showDelete", @click="$emit('delete')")

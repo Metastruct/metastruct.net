@@ -6,9 +6,9 @@
     .card-content
         p.title.has-text-primary-light(@click="join") {{ idToName[id] || "???" }}
         p.subtitle(@click="join")
-            | {{ 'Online since ' + ((server.time - server.started) / 60 / 60).toFixed(1) + " hours" }}
+            | Online since {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours
             br
-            | {{ `${server.playerinfo.length > 0 ? server.playerinfo.length + " players": "Empty,"} on ${server.serverinfo.map}` }}
+            | {{ server.playerinfo.length > 0 ? server.playerinfo.length + " players" : "Empty," }} on {{ server.serverinfo.map }}
         ul.playerlist
             li(v-if="server.playerinfo.length < 1") Nobody is online!
             li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")

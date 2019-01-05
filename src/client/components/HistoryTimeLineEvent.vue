@@ -7,10 +7,11 @@
                 figure.image
                     img(:src="event.imageUrl")
             section.card-content
-                p.title {{ event.name }}
-                p {{ event.description }}
+                h1.title
+                    nuxt-link.has-text-primary-light(:to="`#${id}`") {{ event.name }}
+                p(v-if="event.description", style="white-space: pre-wrap;") {{ event.description }}
                 br
-                p.is-size-7.has-text-white-ter(:title="event.date.toLocaleDateString('en-US')") {{ event.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }}
+                p.is-size-7.has-text-white-ter(:title="event.date.toLocaleDateString('en-US')") {{ event.date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) }}
             footer.card-footer(v-if="event.url")
                 a.card-footer-item.has-text-primary(:href="event.url") Read more
         template(v-if="$store.state.user.isAdmin && editing")
@@ -27,8 +28,6 @@
                     b-field(label="Date", custom-class="is-small")
                         b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date", inline)
                 button.button.is-hidden(type="submit", form="edit-history")
-    nuxt-link.timeline-link(:to="`#${id}`")
-        b-icon(icon="radiobox-marked")
 
 </template>
 
@@ -38,24 +37,8 @@
 
 .timeline-event {
     position: relative;
-    width: calc(50% - 5em - 1.5em);
-
-    .edit-button {
-        position: absolute;
-        top: -0.75em;
-        left: 0.75em;
-        transform: translateY(-100%);
-        z-index: 1;
-        transition: opacity 0.25s ease-out 1.5s;
-        opacity: 0;
-    }
-
-    &:hover {
-        .edit-button {
-            opacity: 1;
-            transition-delay: 0s;
-        }
-    }
+    width: calc(50% - 1.5em);
+    margin-bottom: 3em;
 
     .timeline-link {
         display: block;
@@ -66,60 +49,14 @@
         color: $primary;
     }
 
-    &::before {
-        box-shadow: 0px 0px 12px darken($dark, 5%);
-        position: absolute;
-        content: "";
-        top: 3em;
-        height: 3px;
-        width: 1.5em;
-        background: lighten($dark, 20%);
-    }
-
     &.is-left {
         float: left;
         clear: left;
-        margin-bottom: 3em;
-        margin-left: 5em;
-
-        .timeline-link {
-            left: auto;
-            right: calc(-1.5em * 1.5);
-        }
-
-        &::before {
-            right: -1.5em;
-            left: auto;
-        }
     }
 
     &.is-right {
         float: right;
         clear: right;
-        margin: 3em 0;
-        margin-right: 5em;
-
-        .timeline-link {
-            right: auto;
-            left: calc(-1.5em * 1.5);
-        }
-
-        &::before {
-            right: auto;
-            left: -1.5em;
-        }
-    }
-
-    @include until($desktop) {
-        width: calc(50% - 1.5em);
-
-        &.is-left {
-            margin-left: 0;
-        }
-
-        &.is-right {
-            margin-right: 0;
-        }
     }
 
     .card {
@@ -161,6 +98,23 @@
 
         100% {
             opacity: 1;
+        }
+    }
+
+    .edit-button {
+        position: absolute;
+        top: -0.75em;
+        left: 0.75em;
+        transform: translateY(-100%);
+        z-index: 1;
+        transition: opacity 0.25s ease-out 1.5s;
+        opacity: 0;
+    }
+
+    &:hover {
+        .edit-button {
+            opacity: 1;
+            transition-delay: 0s;
         }
     }
 }

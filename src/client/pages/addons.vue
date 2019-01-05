@@ -2,13 +2,13 @@
 #addons
     section.section
         .container
-            h1.title.has-text-light Add-ons
+            h1.title Add-ons
             EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits")
             template(v-if="!$store.state.user.isAdmin || !editing")
                 .columns.is-multiline
                     .column.is-one-quarter(v-for="addon in addons")
                         a.subtitle.has-text-primary(:href="addon.url").has-text-primary {{ addon.name }}
-                        p.has-text-light {{ addon.description }}
+                        p {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
                 draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
                     .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")

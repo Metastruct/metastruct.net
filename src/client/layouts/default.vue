@@ -41,19 +41,19 @@
                             a.navbar-item(href="/api/v1/history") History
                             a.navbar-item(v-if="$store.state.user.steamID", href="/auth/info") Steam Auth Info
                             .navbar-divider
-                            a.navbar-item Docs (TBD)
+                            nuxt-link.navbar-item(to="/api/v1/docs") Documentation
                     a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
                         b-icon(icon="discord")
                         span &nbsp;Discord Linking
                     .navbar-item(v-else)
                         b-icon(icon="discord")
-                        span {{ "&nbsp;" + $store.state.discordUser.username }}
+                        span &nbsp;{{ $store.state.discordUser.username }}
                     a.navbar-item(v-if="!$store.state.user.steamID", href="/auth")
                         b-icon(icon="steam")
                         span &nbsp;Steam Login
                     .navbar-item(v-else)
                         b-icon(icon="steam")
-                        span {{ "&nbsp;" + $store.state.user.nickname }}
+                        span &nbsp;{{ $store.state.user.nickname }}
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body
@@ -68,31 +68,31 @@
                     nuxt-link(to="/")
                         img.logo(src="@/static/logo.png")
                 .column.is-one-quarter
-                    p.subtitle.has-text-light
+                    p.subtitle
                         b-icon(icon="map", size="is-small")
                         span &nbsp;Sitemap
                     ul
-                        li: nuxt-link.has-text-primary(to="/")
+                        li: nuxt-link(to="/")
                             b-icon(icon="home", size="is-small")
                             span &nbsp;Home
-                        li: nuxt-link.has-text-primary(to="/addons")
+                        li: nuxt-link(to="/addons")
                             b-icon(icon="puzzle", size="is-small")
                             span &nbsp;Add-ons
-                        li: nuxt-link.has-text-primary(to="/history")
+                        li: nuxt-link(to="/history")
                             b-icon(icon="calendar-multiselect", size="is-small")
                             span &nbsp;History
-                        li: nuxt-link.has-text-primary(to="/irc")
+                        li: nuxt-link(to="/irc")
                             b-icon(icon="chat", size="is-small")
                             span &nbsp;IRC
                 .column.is-one-quarter
-                    p.subtitle.has-text-light
+                    p.subtitle
                         b-icon(icon="arrow-right", size="is-small")
                         span &nbsp;External
                     ul
-                        li: a.has-text-primary(href="https://loadingscreen.metastruct.net", target="_blank")
+                        li: a(href="https://loadingscreen.metastruct.net", target="_blank")
                             b-icon(icon="folder-image", size="is-small")
                             span &nbsp;Gallery
-                        li: a.has-text-primary(href="https://banni.metastruct.net", target="_blank")
+                        li: a(href="https://banni.metastruct.net", target="_blank")
                             b-icon(icon="minus-circle", size="is-small")
                             span &nbsp;Bans
                 .column.is-one-quarter

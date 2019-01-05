@@ -12,7 +12,7 @@
                 .columns
                     .column
                         b-field(label="Date")
-                            b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="newHistory.date", inline)
+                            b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="date", inline)
                     .column
                         b-field(label="Image URL")
                             b-input(placeholder="(optional) https://i.imgur.com", v-model="newHistory.imageUrl")
@@ -33,10 +33,8 @@ export default {
     data() {
         return {
             show: false,
-
-            newHistory: {
-                date: new Date()
-            }
+            date: new Date(),
+            newHistory: {}
         }
     },
     methods: {
@@ -45,17 +43,15 @@ export default {
         },
         discard() {
             this.show = false
-            this.newHistory = {
-                date: new Date()
-            }
+            this.date = new Date()
+            this.newHistory = {}
         },
         confirm() {
+            this.newHistory.date = this.date
             this.$axios.post("/api/v1/history", [ this.newHistory ])
                 .then(res => {
                     this.show = false
-                    this.newHistory = {
-                        date: new Date()
-                    }
+                    this.newHistory = {}
                     let year = new Date(res.data.entries[0].date).getFullYear()
                     this.$emit("refresh", year)
                 })

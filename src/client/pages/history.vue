@@ -2,10 +2,10 @@
 #history
     section.section
         .container
-            h1.title.has-text-light History of Meta Construct
+            h1.title History of Meta Construct
             template(v-if="$store.state.user.isAdmin")
                 .add-button(ref="addButton")
-                    a.has-text-primary(@click="$emit('click')")
+                    a(@click="$emit('click')")
                         b-icon(icon="plus")
                         span &nbsp;Add
                 HistoryAddModal(ref="modal", v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
