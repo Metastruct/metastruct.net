@@ -57,11 +57,12 @@ module.exports = {
     */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
-        baseURL: null
+        baseURL: `http://localhost:${process.env.PORT || (process.env.NODE_ENV === "production" ? 3000 : 80)}/`,
+        browserBaseURL: "//metastruct.net/"
     },
 
     loading: {
-        color: '#0ce3ac'
+        color: "#0ce3ac"
     },
 
     router: {
@@ -77,13 +78,16 @@ module.exports = {
     /*
     ** Build configuration
     */
+
+    buildDir: "_nuxt",
     build: {
         /*
         ** You can extend webpack config here
         */
         extend(config, ctx) {
 
-        }
+        },
+        publicPath: "/_nuxt/dist/client"
     },
 
     srcDir: "src/client",

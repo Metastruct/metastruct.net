@@ -4,7 +4,7 @@
         .container
             .navbar-brand
                 nuxt-link(to="/")
-                    img.navbar-item.is-paddingless(src="@/static/logo.png")
+                    img.navbar-item.is-paddingless(src="/img/logo.png")
                 .navbar-burger(:class="{ 'is-active': burger }", aria-label="menu", @click="burger = !burger", :aria-expanded="burger")
                     span(aria-hidden="true")
                     span(aria-hidden="true")
@@ -66,7 +66,7 @@
             .columns.is-centered
                 .column.is-one-quarter
                     nuxt-link(to="/")
-                        img.logo(src="@/static/logo.png")
+                        img.logo(src="/img/logo.png")
                 .column.is-one-quarter
                     p.subtitle
                         b-icon(icon="map", size="is-small")
@@ -130,20 +130,20 @@ export default {
             burger: false,
 
             backgrounds: [
-                "/banner/ugly.jpg",
-                "/banner/1.jpg",
-                "/banner/2.jpg",
-                "/banner/3.jpg",
-                "/banner/4.jpg",
-                "/banner/5.jpg",
-                "/banner/6.jpg",
-                "/banner/7.jpg",
-                "/banner/9.jpg"
+                "/img/banner/ugly.jpg",
+                "/img/banner/1.jpg",
+                "/img/banner/2.jpg",
+                "/img/banner/3.jpg",
+                "/img/banner/4.jpg",
+                "/img/banner/5.jpg",
+                "/img/banner/6.jpg",
+                "/img/banner/7.jpg",
+                "/img/banner/9.jpg",
             ]
         }
     },
     mounted() {
-        this.$axios.get("http://metastruct.net/discord/auth/info.json", { withCredentials: true })
+        this.$axios.get("https://metastruct.net/discord/auth/info.json")
             .then(res => {
                 this.$store.commit("discordUser", res.data)
             })

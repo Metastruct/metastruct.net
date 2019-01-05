@@ -31,7 +31,6 @@
 
 import EditButton from "@/components/EditButton.vue"
 import draggable from "vuedraggable"
-import axios from "axios"
 
 export default {
     head() {
@@ -59,8 +58,8 @@ export default {
             editing: false
         }
     },
-    async asyncData(ctx) {
-        let addons = (await axios.get("/api/v1/addons")).data
+    async asyncData({ app }) {
+        let addons = (await app.$axios.get("/api/v1/addons")).data
 
         return { addons }
     },

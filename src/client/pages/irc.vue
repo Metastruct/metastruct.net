@@ -9,7 +9,7 @@
                 p
                     | Internet Relay Chat is (primarily) a text chat protocol. You can use it to chat to people who are playing on our game servers without being in-game yourself. A more detailed description is available
                     |
-                    a(href="http://en.wikipedia.org/wiki/Internet_Relay_Chat") here
+                    a(href="https://en.wikipedia.org/wiki/Internet_Relay_Chat") here
                     | .
 
                 h5.has-text-secondary What do I need to connect?
@@ -23,19 +23,19 @@
                     |
                     | and
                     |
-                    a(href="http://www.mirc.co.uk/") mIRC
+                    a(href="https://www.mirc.co.uk/") mIRC
                     | . There are also web-based clients available such as
                     |
                     a(href="https://kiwiirc.com/nextclient/#irc://irc.threekelv.in/#metastruct") Kiwi IRC
                     |
                     | and
                     |
-                    a(href="http://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
+                    a(href="https://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
                     | .
                 p
                     | You can view a more comprehensive list of clients
                     |
-                    a(href="http://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients") here
+                    a(href="https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients") here
                     | .
 
                 h5.has-text-secondary Where do I join?
@@ -48,7 +48,7 @@
                     a(href="https://kiwiirc.com/nextclient/#irc://irc.threekelv.in/#metastruct") Kiwi IRC
                     | ,
                     |
-                    a(href="http://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
+                    a(href="https://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
                     | ).
 
                 h5.has-text-secondary Registration, or: Why do I see ticks/crosses next to people's names in-game?

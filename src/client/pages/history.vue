@@ -43,7 +43,6 @@
 
 import HistoryTimeLine from "@/components/HistoryTimeLine.vue"
 import HistoryAddModal from "@/components/HistoryAddModal.vue"
-import axios from "axios"
 
 export default {
     head() {
@@ -66,8 +65,8 @@ export default {
             this.$refs.timeline.$on("showAddModal", () => this.$refs.modal.start())
         }
     },
-    async asyncData(ctx) {
-        let history = (await axios.get("/api/v1/history")).data
+    async asyncData({ app }) {
+        let history = (await app.$axios.get("/api/v1/history")).data
 
         history.forEach(val => {
             val.date = new Date(val.date)

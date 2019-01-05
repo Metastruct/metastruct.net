@@ -20,7 +20,32 @@
 
 import ServerInfo from "@/components/ServerInfo.vue"
 import CardTile from "@/components/CardTile.vue"
-import axios from "axios"
+
+function getDiscordStats(discord) {
+    if (discord.id) {
+        let online = discord.members.length
+
+        let games = discord.members.filter(val => val.game).map(val => val.game.name)
+        let playingStats = {}
+        games.forEach(val => {
+            if (!playingStats[val]) playingStats[val] = 0
+            playingStats[val]++
+        })
+        let mostPlayedCounter = 0,
+            mostPlayedGame    = ""
+        for (const game in playingStats) {
+            if (playingStats.hasOwnProperty(game)) {
+                const playing = playingStats[game]
+                if (playing > mostPlayedCounter) {
+                    mostPlayedCounter = playing
+                    mostPlayedGame    = game
+                }
+            }
+        }
+
+        return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`
+    }
+}
 
 export default {
     head() {
@@ -32,14 +57,16 @@ export default {
         ServerInfo,
         CardTile
     },
-    data() {
-        let data = {
-            servers: {},
+    mounted() {
+        setInterval(() => {
+            this.refreshData()
+        }, 20000)
+    },
+    async asyncData({ app }) {
+        let servers = (await app.$axios.get("/api/v1/servers")).data
+        let discordData = (await app.$axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")).data
 
-            discordData: {},
-        }
-
-        return { ...data,
+        return { servers, discordData,
             middle: [
                 { path: "/addons", title: "Add-ons", subtitle: "Public add-ons we use on the server.", icon: "puzzle" },
                 { path: "https://loadingscreen.metastruct.net", title: "Gallery", subtitle: "Upload, view and rate your favorite screenshots of the server!", icon: "folder-image" },
@@ -48,21 +75,9 @@ export default {
             ],
             right: [
                 { path: "https://steamcommunity.com/groups/metastruct", title: "Steam", subtitle: "Become a member and participate to various forum discussions!", icon: "steam" },
+                { path: discordData.instant_invite || '/discord', title: "Discord", subtitle: getDiscordStats(discordData), icon: "discord" }
             ]
         }
-    },
-    mounted() {
-        this.right.push({ path: this.discordData.instant_invite || '/discord', title: "Discord", subtitle: this.discordStats, icon: "discord" })
-
-        setInterval(() => {
-            this.refreshData()
-        }, 20000)
-    },
-    async asyncData(ctx) {
-        let servers = (await axios.get("/api/v1/servers")).data
-        let discordData = (await axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")).data
-
-        return { servers, discordData }
     },
     methods: {
         async refreshData() {
@@ -72,31 +87,7 @@ export default {
     },
     computed: {
         discordStats() {
-            const discord = this.discordData
-
-            if (discord.id) {
-                let online = discord.members.length
-
-                let games = discord.members.filter(val => val.game).map(val => val.game.name)
-                let playingStats = {}
-                games.forEach(val => {
-                    if (!playingStats[val]) playingStats[val] = 0
-                    playingStats[val]++
-                })
-                let mostPlayedCounter = 0,
-                    mostPlayedGame    = ""
-                for (const game in playingStats) {
-                    if (playingStats.hasOwnProperty(game)) {
-                        const playing = playingStats[game]
-                        if (playing > mostPlayedCounter) {
-                            mostPlayedCounter = playing
-                            mostPlayedGame    = game
-                        }
-                    }
-                }
-
-                return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`
-            }
+            return getDiscordStats(this.discordData)
         }
     }
 }

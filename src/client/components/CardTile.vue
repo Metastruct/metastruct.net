@@ -66,14 +66,12 @@ export default {
             return "a"
         },
         to() {
-            if (this.is == "nuxt-link") {
+            if (this.is == "nuxt-link" || (this.$el && this.$el.tagName.toLowerCase() != "a")) {
                 return this.data.path
             }
         },
         href() {
-            if (this.is == "a") {
                 return this.data.path
-            }
         }
     }
 }
