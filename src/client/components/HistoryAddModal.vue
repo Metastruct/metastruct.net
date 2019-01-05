@@ -5,7 +5,7 @@
             header.modal-card-head
                 p.modal-card-title Add Event
             form.modal-card-body(id="add-history", @submit.prevent="confirm")
-                b-field(label="Title")
+                b-field.title-focus(label="Title")
                     b-input(placeholder="Big bang", v-model="newHistory.name" size="is-medium")
                 b-field(label="Description")
                     b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="newHistory.description")
@@ -40,6 +40,9 @@ export default {
     methods: {
         start() {
             this.show = true
+            this.$nextTick(() => {
+                document.querySelector(".title-focus input").focus()
+            })
         },
         discard() {
             this.show = false
