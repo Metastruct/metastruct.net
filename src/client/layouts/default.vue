@@ -98,20 +98,21 @@
                 .column.is-one-quarter
                     p Copyright Metastruct © 2018-2019
                     p
-                        | by
+                        | website:
                         |
                         a(href="https://tenrys.pw") Tenrys
+                    p
+                        | history layout:
                         |
-                        | with
+                        a(href="https://zombie.computer/") ukgamer
+                    p
+                        | discord linking:
                         |
-                        a(href="http://nuxtjs.org") Nuxt
-                        | ,
+                        a(href="http://potcfdk.bplaced.net/") PotcFdk
+                    p
+                        | logo:
                         |
-                        a(href="http://expressjs.com") Express
-                        |
-                        | and
-                        |
-                        span(style="color: crimson;") ❤
+                        a(href="http://keylimepie.me/") KeyLimePie
 
 </template>
 

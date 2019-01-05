@@ -4,12 +4,15 @@
         .timeline
             template(v-for="(timeline, year) in historyYears")
                 nuxt-link.timeline-year.has-text-light.has-text-centered(:to="`#${year}`", :id="year") {{ year }}
-                TimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`", @deleted="$emit('refresh')")
+                HistoryTimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`", @refresh="$emit('refresh')")
             .is-clearfix
     .column.is-2
         .year-picker
             nuxt-link.year(v-for="(_, year) in historyYears", :to="`#${year}`", :key="year", :class="{ 'is-active': $route.hash == `#${year}` }") {{ year }}
             nuxt-link.year.has-text-primary(to="#") Back to top
+            template(v-if="$store.state.user.isAdmin")
+                hr.divider
+                a.has-text-primary.year(@click="$emit('showAddModal')") Add new event
 </template>
 
 <style lang="scss">
@@ -68,11 +71,11 @@
 
 <script>
 
-import TimeLineEvent from "@/components/TimeLineEvent.vue"
+import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue"
 
 export default {
     components: {
-        TimeLineEvent
+        HistoryTimeLineEvent,
     },
     props: [ "history" ],
     computed: {

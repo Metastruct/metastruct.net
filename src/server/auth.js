@@ -9,6 +9,18 @@ module.exports = app => {
     app.use(passport.initialize())
     app.use(passport.session())
 
+    if (process.env.NODE_ENV !== "production") {
+        app.use((req, res, next) => {
+            req.user = {
+                steamID: "123456",
+                nickname: "Tenrys - debug",
+                isAdmin: true
+            }
+
+            return next()
+        })
+    }
+
     async function getUserInfo(steamId) {
         let user = await steam.getUserSummary(steamId)
         let groups = await steam.getUserGroups(steamId)

@@ -4,7 +4,7 @@
         b-icon(icon="pencil")
         span &nbsp;Edit
     template(v-else)
-        a.has-text-primary(@click="$emit('save')")
+        a.has-text-primary(@click="$emit('save')", role="button")
             b-icon(icon="content-save")
             span &nbsp;Save
         a.has-text-primary(@click="$emit('cancel')")

@@ -20,6 +20,7 @@ module.exports = (api, app) => {
                 await Addon.findOrCreate({ where: { id: val.id } })
                 .spread((obj, created) => {
                     obj.update(val)
+                    return null
                 })
                 .catch(console.error)
             }
@@ -32,6 +33,7 @@ module.exports = (api, app) => {
                     await Addon.findOne({ where: { id: val.id } })
                         .then(obj => {
                             if (obj) obj.destroy()
+                            return null
                         })
                         .catch(console.error)
                 }

@@ -20,7 +20,7 @@
                                 b-field(label="URL", custom-class="is-small")
                                     b-input.url(placeholder="https://google.com", v-model="addon.url")
                                 b-field(label="Description", custom-class="is-small")
-                                    b-input.description(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
+                                    b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
                     .column.is-one-quarter
                         a.card.add-button(@click="addAddon", tabindex="0")
                             b-icon(icon="plus")

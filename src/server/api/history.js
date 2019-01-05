@@ -24,8 +24,8 @@ module.exports = (api, app) => {
                                 hasCreated = true
                                 entry.justCreated = true
                             }
-                            console.log(entry, entries)
                             entries.push(entry)
+                            return null
                         })
                         .catch(console.error)
                 }
@@ -39,14 +39,13 @@ module.exports = (api, app) => {
                 let found = false
                 let entries = []
                 for (let val of data) {
-                    await HistoryEvent.findOne({ where: { id: val.id } })
-                        .then(entry => {
-                            found = true
-                            entry.update(val)
-                            entry = entry.get({ plain: true })
-                            entries.push(entry)
-                        })
-                        .catch(console.error)
+                    let entry = await HistoryEvent.findOne({ where: { id: val.id } })
+                    if (entry) {
+                        found = true
+                        await entry.update(val)
+                        entry = entry.get({ plain: true })
+                        entries.push(entry)
+                    }
                 }
 
                 return { success: found, entries }
@@ -57,12 +56,11 @@ module.exports = (api, app) => {
             async callback(data) {
                 let found = false
                 for (let val of data) {
-                    await HistoryEvent.findOne({ where: { id: val.id } })
-                        .then(entry => {
-                            found = true
-                            entry.destroy()
-                        })
-                        .catch(console.error)
+                    let entry = await HistoryEvent.findOne({ where: { id: val.id } })
+                    if (entry) {
+                        found = true
+                        await entry.destroy()
+                    }
                 }
 
                 return { success: found }
@@ -74,16 +72,13 @@ module.exports = (api, app) => {
         api[method.method]("/history", async (req, res) => {
             let data = req.body
 
-            console.log(data)
-
             if (Array.isArray(data)) {
                 let { success, entries } = await method.callback(data)
 
-                res.json({
+                return res.json({
                     success,
                     entries
                 })
-                return
             }
 
             res.json({

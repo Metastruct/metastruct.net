@@ -3,8 +3,13 @@
     section.section
         .container
             h1.title.has-text-light History of Meta Construct
-            AddHistoryModal(v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
-            TimeLine(:history.sync="history", @refresh="refreshHistory")
+            template(v-if="$store.state.user.isAdmin")
+                .add-button(ref="addButton")
+                    a.has-text-primary(@click="$emit('click')")
+                        b-icon(icon="plus")
+                        span &nbsp;Add
+                HistoryAddModal(ref="modal", v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
+            HistoryTimeLine(ref="timeline", :history.sync="history", @refresh="refreshHistory")
 </template>
 
 <style lang="scss">
@@ -14,14 +19,30 @@
         display: inline-block;
         margin-right: 0.25em;
     }
+
+    .add-button {
+        display: inline-flex;
+        align-content: center;
+
+        a {
+            display: flex;
+            align-content: center;
+
+            margin-left: 0;
+
+            &:not(:first-child) {
+                margin-left: 0.5em;
+            }
+        }
+    }
 }
 
 </style>
 
 <script>
 
-import TimeLine from "@/components/TimeLine.vue"
-import AddHistoryModal from "@/components/AddHistoryModal.vue"
+import HistoryTimeLine from "@/components/HistoryTimeLine.vue"
+import HistoryAddModal from "@/components/HistoryAddModal.vue"
 import axios from "axios"
 
 export default {
@@ -31,12 +52,18 @@ export default {
         }
     },
     components: {
-        TimeLine,
-        AddHistoryModal
+        HistoryTimeLine,
+        HistoryAddModal,
     },
     data() {
         return {
             history: []
+        }
+    },
+    mounted() {
+        if (this.$refs.modal) {
+            this.$refs.addButton.addEventListener("click", () => this.$refs.modal.start())
+            this.$refs.timeline.$on("showAddModal", () => this.$refs.modal.start())
         }
     },
     async asyncData(ctx) {
@@ -57,6 +84,8 @@ export default {
             })
 
             this.history = history
+
+            console.log(year)
 
             if (year) this.$router.push({ hash: `#${year}` })
         }

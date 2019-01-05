@@ -73,8 +73,32 @@ a.notification, a.card {
     border-radius: 4px;
 
     .card-image {
-        border-radius: 4px 4px 0px 0px;
+        position: relative;
+
+        figure.image {
+            float: left;
+            position: absolute !important;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            overflow: hidden; // scroll;
+
+            img {
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: auto;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+
+        img, figure.image {
+            border-radius: 4px 4px 0px 0px;
+        }
     }
+
 
     .card-content {
         padding: 1.5em;
@@ -152,12 +176,25 @@ a.notification, a.card {
 .datepicker {
     margin-bottom: 1.5em;
 
-    .dropdown-header {
-        // box-shadow: none;
+    .dropdown {
+        &.is-inline {
+            .dropdown-menu {
+                width: 100%;
+            }
+        }
+    }
+
+    .dropdown-content {
+        background: rgba($black-bis, 0.33);
         border: 1px solid $grey-dark;
     }
 
-    .dropdown-content, .pagination-previous, .pagination-next, .select select {
+    .dropdown-header {
+        border: 1px solid $grey-dark;
+    }
+
+
+    .pagination-previous, .pagination-next, .select select {
         background: rgba($black-bis, 0.33);
         border-color: $grey-dark;
 
@@ -183,8 +220,7 @@ a.notification, a.card {
         }
     }
 
-    .datepicker-cell {
-
+    .datepicker-cell, .select select     {
         &:active, &:focus {
             box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
         }
