@@ -91,15 +91,15 @@
                     color: $info;
                 }
 
-                &.is-admin .nick {
-                    color: lighten(adjust-hue($info, 80), 5%) !important;
-                }
-
                 .avatar {
                     height: 20px;
                     border-radius: 50%;
                     margin-right: 0.33em;
                 }
+            }
+
+            &.is-admin a .nick {
+                color: lighten(adjust-hue($info, 80), 5%) !important;
             }
 
             .join-goto {
