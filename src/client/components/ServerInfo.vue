@@ -118,7 +118,7 @@
             display: flex;
             justify-content: space-around;
             font-size: 1.5em;
-            margin-top: auto;
+            margin-top: 1.5rem;
         }
     }
 }
