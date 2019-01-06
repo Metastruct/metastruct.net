@@ -11,6 +11,8 @@ module.exports = app => {
     }
 
     api.use((req, res, next) => {
+        res.set("Cache-Control", "public, max-age=5")
+
         if (blacklistedMethods[req.method] && (!req.user || !req.user.isAdmin)) {
             res.status(401)
             res.json({

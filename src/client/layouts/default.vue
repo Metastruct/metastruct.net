@@ -4,7 +4,7 @@
         .container
             .navbar-brand
                 nuxt-link(to="/")
-                    img.navbar-item.is-paddingless(src="/img/logo.png")
+                    img.logo.navbar-item(src="/img/logo.svg")
                 .navbar-burger(:class="{ 'is-active': burger }", aria-label="menu", @click="burger = !burger", :aria-expanded="burger")
                     span(aria-hidden="true")
                     span(aria-hidden="true")
@@ -31,17 +31,9 @@
                             b-icon(icon="key")
                             span &nbsp;MSDNAA
                 .navbar-end
-                    .navbar-item.has-dropdown.is-hoverable
-                        a.navbar-link
-                            b-icon(icon="application")
-                            span &nbsp;API
-                        .navbar-dropdown
-                            a.navbar-item(href="/api/v1/servers") Servers
-                            a.navbar-item(href="/api/v1/addons") Add-ons
-                            a.navbar-item(href="/api/v1/history") History
-                            a.navbar-item(v-if="$store.state.user.steamID", href="/auth/info") Steam Auth Info
-                            .navbar-divider
-                            nuxt-link.navbar-item(to="/api/v1/docs") Documentation
+                    nuxt-link.navbar-item(to="/api/v1/docs")
+                        b-icon(icon="application")
+                        span &nbsp;API
                     a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
                         b-icon(icon="discord")
                         span &nbsp;Discord Linking
@@ -66,7 +58,7 @@
             .columns.is-centered
                 .column.is-one-quarter
                     nuxt-link(to="/")
-                        img.logo(src="/img/logo.png")
+                        img.logo(src="/img/logo.svg")
                 .column.is-one-quarter
                     p.subtitle
                         b-icon(icon="map", size="is-small")
@@ -153,9 +145,18 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 @import "@/assets/_variables.scss";
+
+.navbar {
+    .navbar-brand {
+        .logo {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    }
+}
 
 .hero-body {
     height: 100%;

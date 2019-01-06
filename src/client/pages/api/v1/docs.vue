@@ -14,9 +14,9 @@
                     code {{ location }}
                     | .
                 p
-                    code.has-background-warning.has-text-dark ADMIN
+                    code.has-text-white-ter ADMIN
                     |
-                    | endpoints are reserved for logged-in users only.
+                    | endpoints are reserved for logged-in developers only.
                 p
                     | All data is represented in
                     |
@@ -25,7 +25,7 @@
                 p
                     | You should probably look at the format of our data via
                     |
-                    code.has-background-info.has-text-light GET
+                    code.has-text-info GET
                     |
                     | requests before touching anything.
                 hr.divider
@@ -33,12 +33,12 @@
                     .column(v-for="endpoint in endpoints")
                         h3(:id="`${getEndpointId(endpoint)}`")
                             nuxt-link(:to="`#${getEndpointId(endpoint)}`")
-                                code.has-background-warning.has-text-dark(v-if="endpoint.adminOnly") ADMIN
-                                code.has-background-info.has-text-light(v-if="endpoint.method == 'GET'") {{ endpoint.method }}
-                                code.has-background-primary.has-text-light(v-if="endpoint.method == 'POST'") {{ endpoint.method }}
-                                code.has-background-secondary.has-text-light(v-if="endpoint.method == 'PATCH'") {{ endpoint.method }}
-                                code.has-background-danger.has-text-light(v-if="endpoint.method == 'DELETE'") {{ endpoint.method }}
                                 code {{ endpoint.path }}
+                                code.has-text-info(v-if="endpoint.method == 'GET'") {{ endpoint.method }}
+                                code.has-text-success(v-if="endpoint.method == 'POST'") {{ endpoint.method }}
+                                code.has-text-secondary(v-if="endpoint.method == 'PATCH'") {{ endpoint.method }}
+                                code.has-text-danger(v-if="endpoint.method == 'DELETE'") {{ endpoint.method }}
+                                code.has-text-white-ter(v-if="endpoint.adminOnly") ADMIN
                         p {{ endpoint.description }}
                         template(v-if="endpoint.parameters")
                             h5 Parameters
