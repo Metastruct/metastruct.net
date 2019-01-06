@@ -17,7 +17,8 @@
                     span.nick {{ player.Nick }}
                 a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
                     b-icon(icon="arrow-right", type="is-success")
-        a.server-info-bottom(@click="join") Join us!
+        .server-info-bottom(@click="join")
+            a.has-text-primary-light Join us!
 
 </template>
 
@@ -27,7 +28,6 @@
 
 .card.server-info {
     cursor: pointer;
-    display: block;
     position: relative;
     z-index: 0;
 
@@ -62,57 +62,64 @@
         }
     }
 
-    .playerlist {
-        cursor: default;
-        margin: 1.5em 0;
-        padding: 8px;
-        background: rgba($grey-darker, 0.36);
-        max-height: 184px;
-        overflow-y: auto;
-        color: $light;
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
 
-        .player {
-            height: 28px;
-            display: flex;
-            align-content: center;
+        .playerlist {
+            cursor: default;
+            margin: auto 0;
+            padding: 8px;
+            background: rgba($grey-darker, 0.36);
+            max-height: 184px;
+            // height: 156px;
+            overflow-y: auto;
+            color: $light;
 
-            a {
-                text-decoration: none;
+            .player {
+                height: 28px;
                 display: flex;
                 align-content: center;
 
-                &:hover, &:active, &:focus {
-                    filter: brightness(75%);
+                a {
+                    text-decoration: none;
+                    display: flex;
+                    align-content: center;
+
+                    &:hover, &:active, &:focus {
+                        filter: brightness(75%);
+                    }
+
+                    .nick {
+                        display: inline-block;
+                        font-size: 0.9em;
+                        color: $info;
+                    }
+
+                    .avatar {
+                        height: 20px;
+                        border-radius: 50%;
+                        margin-right: 0.33em;
+                    }
                 }
 
-                .nick {
-                    display: inline-block;
-                    font-size: 0.9em;
-                    color: $info;
+                &.is-admin a .nick {
+                    color: lighten(adjust-hue($info, 80), 5%) !important;
                 }
 
-                .avatar {
-                    height: 20px;
-                    border-radius: 50%;
-                    margin-right: 0.33em;
+                .join-goto {
+                    margin-left: auto;
                 }
-            }
-
-            &.is-admin a .nick {
-                color: lighten(adjust-hue($info, 80), 5%) !important;
-            }
-
-            .join-goto {
-                margin-left: auto;
             }
         }
-    }
 
-    .server-info-bottom {
-        display: flex;
-        justify-content: space-around;
-        font-size: 1.5em;
-        color: $primary-light;
+        .server-info-bottom {
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.5em;
+            margin-top: auto;
+        }
     }
 }
 
