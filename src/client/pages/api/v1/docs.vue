@@ -85,7 +85,7 @@ export default {
                 {
                     path: "/addons",
                     method: "POST",
-                    description: "Manages creation, updating and deletion of add-ons.",
+                    description: "Manages creation, modification and deletion of add-ons.",
                     parameters: [
                         {
                             type: "Array",

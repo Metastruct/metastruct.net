@@ -40,7 +40,8 @@ module.exports = {
     plugins: [
         "@/plugins/buefy.js",
         "@/plugins/vue-observe-visibility.js",
-        "@/plugins/prototype-extensions.js"
+        "@/plugins/prototype-extensions.js",
+        { src: "@/plugins/axios-baseurl-location.js", ssr: false }
     ],
 
     /*
@@ -58,7 +59,7 @@ module.exports = {
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
         baseURL: `http://localhost:${process.env.PORT || (process.env.NODE_ENV === "production" ? 3000 : 80)}/`,
-        browserBaseURL: "//metastruct.net/"
+        // browserBaseURL: "//metastruct.net/"
     },
 
     loading: {

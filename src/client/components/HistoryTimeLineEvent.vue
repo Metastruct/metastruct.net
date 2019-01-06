@@ -1,7 +1,8 @@
 <template lang="pug">
 .timeline-event(:id="id", :key="id", :class="{ 'is-left': index % 2 == 0, 'is-right': index % 2 == 1 }")
     EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits", @delete="confirmDelete", showDelete="true")
-    .card(v-observe-visibility="{ callback: observeVisibility, once: true }")
+    //.card(v-observe-visibility="{ callback: observeVisibility, once: true }")
+    .card
         template(v-if="isVisible && (!$store.state.user.isAdmin || !editing)")
             header.card-image.image.is-16by9(v-if="event.imageUrl")
                 figure.image
@@ -136,14 +137,16 @@ export default {
 
             editing: false,
 
-            isVisible: false,
+            isVisible: true,
         }
     },
     mounted() { },
     methods: {
+        /*
         observeVisibility(visible) {
             this.isVisible = visible
         },
+        */
         startEdits() {
             this.editingEvent = Object.assign({}, this.event)
             this.editing = true
