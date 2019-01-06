@@ -81,8 +81,8 @@ export default {
     },
     methods: {
         async refreshData() {
-            this.servers = (await this.$axios.get("/api/v1/servers")).data
-            this.discordData = (await this.$axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json")).data
+            this.servers = (await this.$axios.get("/api/v1/servers", { progress: false })).data
+            this.discordData = (await this.$axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json", { progress: false })).data
         }
     },
     computed: {
