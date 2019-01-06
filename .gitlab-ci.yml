@@ -15,13 +15,13 @@ services:
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
   paths:
-   - node_modules/
+    - node_modules/
 
 test_simple:
   stage: test
   script:
-   - npm install
-   - npm run build
+    - npm install
+    - npm run build
    
 deploying:
   stage: deploy
