@@ -71,7 +71,7 @@ export default {
                 { path: "/addons", title: "Add-ons", subtitle: "Public add-ons we use on the server.", icon: "puzzle" },
                 { path: "https://loadingscreen.metastruct.net", title: "Gallery", subtitle: "Upload, view and rate your favorite screenshots of the server!", icon: "folder-image" },
                 { path: "/history", title: "History", subtitle: "Timeline of our past events.", icon: "calendar-multiselect" },
-                { path: "http://banni.metastruct.net", title: "Bans", subtitle: "Our records of naughty people.", icon: "minus-circle" },
+                { path: "https://banni.metastruct.net", title: "Bans", subtitle: "Our records of naughty people.", icon: "minus-circle" },
             ],
             right: [
                 { path: "https://steamcommunity.com/groups/metastruct", title: "Steam", subtitle: "Become a member and participate to various forum discussions!", icon: "steam" },
