@@ -34,4 +34,6 @@ deploying:
     - ssh-add <(echo "$PRIVATE_KEY")
     - ssh -p22 metastruct@threekelv.in metastruct
   when: on_success
+  except:
+    - merge_requests
 
