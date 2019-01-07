@@ -30,35 +30,41 @@
                     | requests before touching anything.
                 hr.divider
                 .columns.is-multiline
-                    .column(v-for="endpoint in endpoints")
-                        h3(:id="`${getEndpointId(endpoint)}`")
-                            nuxt-link(:to="`#${getEndpointId(endpoint)}`")
-                                code {{ endpoint.path }}
-                                code.has-text-info(v-if="endpoint.method == 'GET'") {{ endpoint.method }}
-                                code.has-text-success(v-if="endpoint.method == 'POST'") {{ endpoint.method }}
-                                code.has-text-secondary(v-if="endpoint.method == 'PATCH'") {{ endpoint.method }}
-                                code.has-text-danger(v-if="endpoint.method == 'DELETE'") {{ endpoint.method }}
-                                code.has-text-white-ter(v-if="endpoint.adminOnly") ADMIN
-                        p {{ endpoint.description }}
-                        template(v-if="endpoint.parameters")
-                            h5 Parameters
-                            ul
-                                li(v-for="param in endpoint.parameters")
-                                    code {{ param.type }}
-                                    |
-                                    |
-                                    span {{ param.name }}
-                                    p {{ param.description }}
+                    .column.is-one-quarter(v-for="endpoint in endpoints")
+                        .card
+                            h3(:id="`${getEndpointId(endpoint)}`")
+                                nuxt-link(:to="`#${getEndpointId(endpoint)}`")
+                                    code {{ endpoint.path }}
+                                    code.has-text-info(v-if="endpoint.method == 'GET'") {{ endpoint.method }}
+                                    code.has-text-success(v-if="endpoint.method == 'POST'") {{ endpoint.method }}
+                                    code.has-text-secondary(v-if="endpoint.method == 'PATCH'") {{ endpoint.method }}
+                                    code.has-text-danger(v-if="endpoint.method == 'DELETE'") {{ endpoint.method }}
+                                    code.has-text-white-ter(v-if="endpoint.adminOnly") ADMIN
+                            p {{ endpoint.description }}
+                            template(v-if="endpoint.parameters")
+                                h5 Parameters
+                                ul
+                                    li(v-for="param in endpoint.parameters")
+                                        code {{ param.type }}
+                                        |
+                                        |
+                                        span {{ param.name }}
+                                        p {{ param.description }}
 
 </template>
 
 <style lang="scss">
+
+@import "@/assets/_variables.scss";
+
 #docs {
-    .columns {
-        flex-direction: column;
-        height: 640px;
+    .card {
+        padding: 1.5em;
+        height: 100%;
     }
+
 }
+
 </style>
 
 <script>
@@ -98,7 +104,7 @@ export default {
                 {
                     path: "/history",
                     method: "GET",
-                    description: "Retrives the history of Meta Construct, in data form.",
+                    description: "Retrieves the history of Meta Construct, in data form.",
                 },
                 {
                     path: "/history",
