@@ -3,12 +3,7 @@
     section.section
         .container
             h1.title History of Meta Construct
-            template(v-if="$store.state.user.isAdmin")
-                .add-button(ref="addButton")
-                    a(@click="$emit('click')")
-                        b-icon(icon="plus")
-                        span &nbsp;Add
-                HistoryAddModal(ref="modal", v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
+            HistoryEventEditModal(ref="modal", v-if="$store.state.user.isAdmin", :history.sync="history", @refresh="refreshHistory($event)")
             HistoryTimeLine(ref="timeline", :history.sync="history", @refresh="refreshHistory")
 </template>
 
@@ -42,7 +37,7 @@
 <script>
 
 import HistoryTimeLine from "@/components/HistoryTimeLine.vue"
-import HistoryAddModal from "@/components/HistoryAddModal.vue"
+import HistoryEventEditModal from "@/components/HistoryEventEditModal.vue"
 
 export default {
     head() {
@@ -52,7 +47,7 @@ export default {
     },
     components: {
         HistoryTimeLine,
-        HistoryAddModal,
+        HistoryEventEditModal,
     },
     data() {
         return {
@@ -61,8 +56,8 @@ export default {
     },
     mounted() {
         if (this.$refs.modal) {
-            this.$refs.addButton.addEventListener("click", () => this.$refs.modal.start())
-            this.$refs.timeline.$on("showAddModal", () => this.$refs.modal.start())
+            this.$refs.timeline.$on("wantAdd", () => this.$refs.modal.start())
+            this.$refs.timeline.$on("wantEdit", (evt) => this.$refs.modal.start(evt))
         }
     },
     async asyncData({ app }) {
@@ -83,8 +78,6 @@ export default {
             })
 
             this.history = history
-
-            console.log(year)
 
             if (year) this.$router.push({ hash: `#${year}` })
         }

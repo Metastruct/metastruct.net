@@ -59,9 +59,19 @@ module.exports = app => {
         return done(null, user)
     }))
 
-    app.get("/auth", passport.authenticate("saml"))
+    app.get("/auth", (req, res, next) => {
+        req.session = req.session || {}
+        req.session.authRedirect = req.query.redirect
+
+        return next()
+    }, passport.authenticate("saml"))
     app.post("/auth/callback", passport.authenticate("saml"), (req, res) => {
-        res.redirect("/")
+        if (req.session && req.session.authRedirect) {
+            res.redirect("/" + req.session.authRedirect)
+            delete req.session.authRedirect
+        } else {
+            res.redirect("/")
+        }
     })
 
     app.get("/auth/info", (req, res) => {

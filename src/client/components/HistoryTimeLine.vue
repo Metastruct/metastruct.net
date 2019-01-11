@@ -4,30 +4,34 @@
         .timeline
             template(v-for="(timeline, year) in historyYears")
                 nuxt-link.timeline-year.has-text-light.has-text-centered(:to="`#${year}`", :id="year") {{ year }}
-                HistoryTimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`", @refresh="$emit('refresh')")
-            .is-clearfix
+                HistoryTimeLineEvent(v-for="(event, index) in timeline", :event="event", :index="index", :timeline="timeline", :key="`${year}-${index}`", @wantEdit="$emit('wantEdit', $event)")
+            // .is-clearfix
     .column.is-2
         .year-picker
+            template(v-if="$store.state.user.isAdmin")
+                a.has-text-primary.year(@click="$emit('wantAdd')")
+                    b-icon(icon="plus")
+                    span &nbsp;Add new event
+                hr.divider
             nuxt-link.year(v-for="(_, year) in historyYears", :to="`#${year}`", :key="year", :class="{ 'is-active': $route.hash == `#${year}` }") {{ year }}
             nuxt-link.year.has-text-primary(to="#") Back to top
-            template(v-if="$store.state.user.isAdmin")
-                hr.divider
-                a.has-text-primary.year(@click="$emit('showAddModal')") Add new event
 </template>
 
 <style lang="scss">
 
 @import "@/assets/_variables.scss";
 
-.timeline-year {
-    display: block;
-    clear: both;
-    padding: 0.25em;
-    border-radius: 4px;
-    font-size: 2em;
-    font-weight: 550;
-    background: darken($secondary, 10%);
-    margin-bottom: 1.5em;
+.timeline {
+    .timeline-year {
+        display: block;
+        clear: both;
+        padding: 0.25em;
+        border-radius: 4px;
+        font-size: 2em;
+        font-weight: 550;
+        background: darken($secondary, 10%);
+        margin-bottom: 1.5em;
+    }
 }
 
 .year-picker {
@@ -35,7 +39,8 @@
     top: 1.5em;
 
     .year {
-        display: block;
+        display: flex;
+        align-content: center;
         padding: 0.5em 0.75em;
         width: 100%;
         color: $light;

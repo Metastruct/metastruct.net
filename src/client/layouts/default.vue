@@ -11,41 +11,48 @@
                     span(aria-hidden="true")
             .navbar-menu(:class="{ 'is-active': burger }")
                 .navbar-start
-                    nuxt-link.navbar-item(to="/irc")
-                        b-icon(icon="chat", pack="mdi")
-                        span &nbsp;IRC
+                    .navbar-item.has-dropdown.is-hoverable
+                        a.navbar-link
+                            b-icon(icon="chat")
+                            span &nbsp;Chat
+                        .navbar-dropdown
+                            nuxt-link.navbar-item(to="/irc") IRC
+                            a.navbar-item(href="https://www3.metastruct.net/webchat") Webchat
                     a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
                         b-icon(icon="forum")
                         span &nbsp;Forums
                     a.navbar-item(href="https://github.com/metastruct")
                         b-icon(icon="github-circle")
                         span &nbsp;GitHub
-                    template(v-if="$store.state.user.isAdmin")
-                        a.navbar-item(href="https://gitlab.com/metastruct")
-                            b-icon(icon="gitlab")
-                            span &nbsp;GitLab
-                        a.navbar-item(href="/rocket2")
-                            b-icon(icon="rocket")
-                            span &nbsp;Rocket
-                        a.navbar-item(href="/msdnaa")
-                            b-icon(icon="key")
-                            span &nbsp;MSDNAA
                 .navbar-end
+                    .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
+                        a.navbar-link
+                            b-icon(icon="key")
+                            span &nbsp;Admin
+                        .navbar-dropdown
+                            a.navbar-item(href="https://gitlab.com/metastruct")
+                                b-icon(icon="gitlab")
+                                span &nbsp;GitLab
+                            a.navbar-item(href="/rocket2")
+                                b-icon(icon="rocket")
+                                span &nbsp;Rocket
+                            a.navbar-item(href="/msdnaa")
+                                b-icon(icon="key")
+                                span &nbsp;MSDNAA
                     nuxt-link.navbar-item(to="/api/v1/docs")
                         b-icon(icon="application")
                         span &nbsp;API
-                    a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
-                        b-icon(icon="discord")
-                        span &nbsp;Discord Linking
-                    .navbar-item(v-else)
-                        b-icon(icon="discord")
-                        span &nbsp;{{ $store.state.discordUser.username }}
-                    a.navbar-item(v-if="!$store.state.user.steamID", href="/auth")
-                        b-icon(icon="steam")
-                        span &nbsp;Steam Login
-                    .navbar-item(v-else)
-                        b-icon(icon="steam")
-                        span &nbsp;{{ $store.state.user.nickname }}
+                    .navbar-item.has-dropdown.is-hoverable
+                        a.navbar-link
+                            b-icon(icon="account")
+                            span &nbsp;{{ $store.state.user.steamID ? $store.state.user.nickname : "Log in" }}
+                        .navbar-dropdown
+                            a.navbar-item(v-if="!$store.state.user.steamID", :href="`/auth?redirect=${\$route.name}`")
+                                b-icon(icon="steam")
+                                span &nbsp;Steam
+                            a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
+                                b-icon(icon="discord")
+                                span &nbsp;Discord
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body

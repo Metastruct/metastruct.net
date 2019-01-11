@@ -1,34 +1,18 @@
 <template lang="pug">
 .timeline-event(:id="id", :key="id", :class="{ 'is-left': index % 2 == 0, 'is-right': index % 2 == 1 }")
-    EditButton(v-if="$store.state.user.isAdmin", :editing="editing", @start="startEdits", @save="saveEdits", @cancel="cancelEdits", @delete="confirmDelete", showDelete="true")
-    //.card(v-observe-visibility="{ callback: observeVisibility, once: true }")
+    EditButton(v-if="$store.state.user.isAdmin", @start="$emit('wantEdit', _self)")
     .card
-        template(v-if="isVisible && (!$store.state.user.isAdmin || !editing)")
-            header.card-image.image.is-16by9(v-if="event.imageUrl")
-                figure.image
-                    img(:src="event.imageUrl")
-            section.card-content
-                h1.title
-                    nuxt-link.has-text-primary-light(:to="`#${id}`") {{ event.name }}
-                p(v-if="event.description", style="white-space: pre-wrap;") {{ event.description }}
-                br
-                p.is-size-7.has-text-white-ter(:title="event.date.toLocaleDateString('en-US')") {{ event.date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) }}
-            footer.card-footer(v-if="event.url")
-                a.card-footer-item.has-text-primary(:href="event.url") Read more
-        template(v-if="$store.state.user.isAdmin && editing")
-            .card-content.editing
-                form(id="edit-history", @submit.prevent="saveEdits")
-                    b-field(label="Title", custom-class="is-small")
-                        b-input(placeholder="Big bang", v-model="editingEvent.name" size="is-medium")
-                    b-field(label="Description", custom-class="is-small")
-                        b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="editingEvent.description")
-                    b-field(label="Image URL", custom-class="is-small")
-                        b-input(placeholder="(optional) https://i.imgur.com", v-model="editingEvent.imageUrl")
-                    b-field(label="URL (Read more)", custom-class="is-small")
-                        b-input(placeholder="(optional) https://google.com", v-model="editingEvent.url")
-                    b-field(label="Date", custom-class="is-small")
-                        b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date", inline)
-                button.button.is-hidden(type="submit", form="edit-history")
+        header.card-image.image.is-16by9(v-if="event.imageUrl")
+            figure.image
+                img(:src="event.imageUrl")
+        section.card-content
+            h1.title
+                nuxt-link.has-text-primary-light(:to="`#${id}`") {{ event.name }}
+            p(v-if="event.description", style="white-space: pre-wrap;") {{ event.description }}
+            br
+            p.is-size-7.has-text-white-ter(:title="event.date.toLocaleDateString('en-US')") {{ event.date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) }}
+        footer.card-footer(v-if="event.url")
+            a.card-footer-item.has-text-primary(:href="event.url") Read more
 
 </template>
 
@@ -130,51 +114,6 @@ export default {
     props: [ "event", "timeline", "index" ],
     components: {
         EditButton
-    },
-    data() {
-        return {
-            editingHistory: {},
-
-            editing: false,
-
-            isVisible: true,
-        }
-    },
-    mounted() { },
-    methods: {
-        /*
-        observeVisibility(visible) {
-            this.isVisible = visible
-        },
-        */
-        startEdits() {
-            this.editingEvent = Object.assign({}, this.event)
-            this.editing = true
-        },
-        saveEdits() {
-            this.editing = false
-            this.$axios.patch("/api/v1/history", [ this.editingEvent ])
-                .then(() => {
-                    this.$emit("refresh")
-                })
-                .catch(console.error)
-        },
-        cancelEdits() {
-            this.editingEvent = this.event
-            this.editing = false
-        },
-        confirmDelete() {
-            this.$dialog.confirm({
-                message: "Are you sure you want to delete this event?",
-                onConfirm: () => {
-                    this.editing = false
-                    this.$axios.delete("/api/v1/history", { data: [ this.editingEvent ] })
-                        .then(() => {
-                            this.$emit("refresh")
-                        })
-                }
-            })
-        }
     },
     computed: {
         id() {
