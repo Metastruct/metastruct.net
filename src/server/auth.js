@@ -1,6 +1,8 @@
 const passport = require("passport")
 const SamlStrategy = require("passport-saml").Strategy
 const SteamAPI = require("steamapi")
+const request = require("request-promise-native")
+const xml2js = require("xml-js").xml2js
 
 module.exports = app => {
     app.passport = passport
@@ -21,12 +23,13 @@ module.exports = app => {
         })
     }
 
+    const adminsList = "https://steamcommunity.com/gid/103582791433481287/memberslistxml?xml=1"
+
     async function getUserInfo(steamId) {
         let user = await steam.getUserSummary(steamId)
-        let groups = await steam.getUserGroups(steamId)
 
-        user.groups = groups
-        user.isAdmin = groups.includes("3959879")
+        let admins = (await request(adminsList)).match(user.steamID)
+        user.isAdmin = admins ? true : false
 
         return { ...user }
     }
@@ -50,6 +53,8 @@ module.exports = app => {
         let steamId = profile.openid.match(/\/(\d+)$/)[1]
 
         let user = await getUserInfo(steamId)
+
+        console.log(`'${user.nickname}' logged in ${user.isAdmin ? 'as admin' : ''}.`)
 
         return done(null, user)
     }))

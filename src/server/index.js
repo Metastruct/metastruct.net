@@ -1,3 +1,4 @@
+process.on("unhandledRejection", r => console.log(r))
 
 const express = require("express")
 const session = require("express-session")

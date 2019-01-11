@@ -9,8 +9,7 @@
             | Online since {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours
             br
             | {{ server.playerinfo.length > 0 ? server.playerinfo.length + " players" : "Empty," }} on {{ server.serverinfo.map }}
-        ul.playerlist
-            li(v-if="server.playerinfo.length < 1") Nobody is online!
+        ul.playerlist(v-if="server.playerinfo.length > 0")
             li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
                 a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
                     img.avatar(:src="player.avatarfull")
@@ -70,15 +69,18 @@
         .playerlist {
             cursor: default;
             margin: auto 0;
-            padding: 8px;
+            padding: 0.75em;
             background: rgba($grey-darker, 0.36);
             max-height: 184px;
             // height: 156px;
             overflow-y: auto;
             color: $light;
+            display: flex;
+            flex-direction: column;
+            align-content: center;
 
             .player {
-                height: 28px;
+                width: 100%;
                 display: flex;
                 align-content: center;
 
@@ -111,6 +113,10 @@
                 .join-goto {
                     margin-left: auto;
                 }
+
+                &:not(:last-child) {
+                    margin-bottom: 0.25em;
+                }
             }
         }
 
@@ -119,6 +125,10 @@
             justify-content: space-around;
             font-size: 1.5em;
             margin-top: 1.5rem;
+        }
+
+        .subtitle ~ .server-info-bottom { // In case playerlist does not show up
+            margin-top: auto !important;
         }
     }
 }
