@@ -81,13 +81,4 @@ module.exports = app => {
             res.redirect("/")
         }
     })
-
-    app.get("/auth/info", (req, res) => {
-        if (req.user) {
-            res.json(req.user)
-        } else {
-            res.status(401)
-            res.json({})
-        }
-    })
 }

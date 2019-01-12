@@ -27,6 +27,7 @@ module.exports = app => {
     require("./addons.js")(api, app)
     require("./servers.js")(api, app)
     require("./history.js")(api, app)
+    require("./auth.js")(api, app)
 
     return api
 }

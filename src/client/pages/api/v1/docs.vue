@@ -147,7 +147,7 @@ export default {
                     adminOnly: true,
                 },
                 {
-                    path: "/auth/info",
+                    path: "/auth",
                     method: "GET",
                     description: "Retrieves info about the logged-in Steam user."
                 },
