@@ -75,8 +75,6 @@
             // height: 156px;
             overflow-y: auto;
             color: $light;
-            display: flex;
-            flex-direction: column;
             align-content: center;
 
             .player {
@@ -127,7 +125,7 @@
             margin-top: 1.5rem;
         }
 
-        .subtitle ~ .server-info-bottom { // In case playerlist does not show up
+        .subtitle + .server-info-bottom { // In case playerlist does not show up
             margin-top: auto !important;
         }
     }
