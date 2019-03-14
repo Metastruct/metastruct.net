@@ -42,10 +42,13 @@
                     nuxt-link.navbar-item(to="/api/v1/docs")
                         b-icon(icon="application")
                         span &nbsp;API
-                    .navbar-item.has-dropdown.is-hoverable
+                    .navbar-item(v-if="$store.state.user.steamID")
+                        b-icon(icon="account")
+                        span &nbsp;{{ $store.state.user.nickname }}
+                    .navbar-item.has-dropdown.is-hoverable(v-if="!$store.state.user.steamID || !$store.state.discordUser.id")
                         a.navbar-link
-                            b-icon(icon="account")
-                            span &nbsp;{{ $store.state.user.steamID ? $store.state.user.nickname : "Log in" }}
+                            b-icon(icon="login")
+                            span &nbsp;Log in
                         .navbar-dropdown
                             a.navbar-item(v-if="!$store.state.user.steamID", :href="`/auth?redirect=${\$route.name}`")
                                 b-icon(icon="steam")
