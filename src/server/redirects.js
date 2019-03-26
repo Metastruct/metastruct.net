@@ -4,6 +4,7 @@ let redirects = {
     rocket: "https://www3.metastruct.net/rocket",
     rocket2: "https://www3.metastruct.net/rocket2",
     discord: "https://discord.gg/CHuxFSd",
+    webchat: "https://www3.metastruct.net/webchat",
 }
 
 module.exports = app => {
