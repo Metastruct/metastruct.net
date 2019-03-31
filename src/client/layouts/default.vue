@@ -24,6 +24,9 @@
                     a.navbar-item(href="https://github.com/metastruct")
                         b-icon(icon="github-circle")
                         span &nbsp;GitHub
+                    a.navbar-item(href="https://merch.metastruct.net")
+                        b-icon(icon="shopping")
+                        span &nbsp;Merchandise
                 .navbar-end
                     .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
                         a.navbar-link
