@@ -18,4 +18,21 @@ module.exports = app => {
             })
         }
     }
+    app.get(`/join/eu1/:pwd`, (req, res) => {
+        let pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g,"")
+        res.redirect("steam://connect/g1.metastruct.net:27015/"+pwd)
+    })
+    app.get(`/join/eu2/:pwd`, (req, res) => {
+        let pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g,"")
+        res.redirect("steam://connect/g2.metastruct.net:27018/"+pwd)
+    })
+    app.get(`/join/hl2coop/:pwd`, (req, res) => {
+        let pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g,"")
+        res.redirect("steam://connect/g2.metastruct.net:27016/"+pwd)
+    })
+    app.get(`/join/hl2dm/:pwd`, (req, res) => {
+        let pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g,"")
+        res.redirect("steam://connect/g2.metastruct.net:27015/"+pwd)
+    })
+
 }
