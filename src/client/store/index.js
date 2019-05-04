@@ -1,4 +1,4 @@
-import Vuex from "vuex"
+import Vuex from "vuex";
 
 const createStore = () => {
     return new Vuex.Store({
@@ -6,24 +6,24 @@ const createStore = () => {
             return {
                 user: {},
                 discordUser: {},
-            }
+            };
         },
         mutations: {
             discordUser(state, user) {
-                state.discordUser = user
+                state.discordUser = user;
             },
             user(state, user) {
-                state.user = user
+                state.user = user;
             },
         },
         actions: {
             nuxtServerInit(store, ctx) {
                 if (ctx.req.user) {
-                    store.commit("user", ctx.req.user)
+                    store.commit("user", ctx.req.user);
                 }
-            }
-        }
-    })
-}
+            },
+        },
+    });
+};
 
-export default createStore
+export default createStore;

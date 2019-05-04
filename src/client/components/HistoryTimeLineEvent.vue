@@ -17,7 +17,6 @@
 </template>
 
 <style lang="scss">
-
 @import "@/assets/_variables.scss";
 
 .timeline-event {
@@ -103,26 +102,23 @@
         }
     }
 }
-
 </style>
 
 <script>
-
-import EditButton from "@/components/EditButton.vue"
+import EditButton from "@/components/EditButton.vue";
 
 export default {
-    props: [ "event", "timeline", "index" ],
+    props: ["event", "timeline", "index"],
     components: {
-        EditButton
+        EditButton,
     },
     computed: {
         id() {
             if (this.event && this.event.date) {
-                return this.event.date.toISOString().slice(0, 10)
+                return this.event.date.toISOString().slice(0, 10);
             }
-        }
-    }
-}
-
+        },
+    },
+};
 </script>
 

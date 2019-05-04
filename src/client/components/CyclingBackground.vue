@@ -8,7 +8,6 @@
 </template>
 
 <style lang="scss">
-
 .cycling-background {
     position: relative;
     display: block;
@@ -40,29 +39,26 @@
         }
     }
 }
-
 </style>
 
 <script>
-
 export default {
-    props: [ "images" ],
+    props: ["images"],
     data() {
         return {
             active: 0,
 
-            cycling: null
-        }
+            cycling: null,
+        };
     },
     mounted() {
         this.cycling = setInterval(() => {
-            if (!this) return
+            if (!this) return;
             if (this.images) {
-                if (++this.active > this.images.length - 1) this.active = 0
+                if (++this.active > this.images.length - 1) this.active = 0;
             }
-        }, 10000)
-    }
-}
-
+        }, 10000);
+    },
+};
 </script>
 

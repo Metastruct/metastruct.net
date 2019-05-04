@@ -1,6 +1,6 @@
-const Sequelize = require("sequelize")
-const fs = require("fs")
-const path = require("path")
+const Sequelize = require("sequelize");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = async app => {
     const sequelize = new Sequelize({
@@ -13,26 +13,27 @@ module.exports = async app => {
         logging: false,
 
         // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-        operatorsAliases: false
-    })
+        operatorsAliases: false,
+    });
 
-    let models = {}
+    let models = {};
     fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
-        let filePath = path.join(__dirname, "models", file)
+        let filePath = path.join(__dirname, "models", file);
         if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
-            let model = sequelize.import(filePath)
-            models[model.name] = model
+            let model = sequelize.import(filePath);
+            models[model.name] = model;
         }
-    })
+    });
 
-    await sequelize.sync()
+    await sequelize
+        .sync()
         .then(() => {
             consola.ready({
                 message: `Connected to database at ${app.config.postgres.username}@${app.config.postgres.host}`,
-                badge: true
-            })
+                badge: true,
+            });
         })
-        .catch(console.error.bind(console, "Connection error:"))
+        .catch(console.error.bind(console, "Connection error:"));
 
-    return { models, sequelize }
-}
+    return { models, sequelize };
+};

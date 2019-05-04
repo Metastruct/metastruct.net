@@ -122,13 +122,12 @@
 </template>
 
 <script>
-
-import CyclingBackground from "@/components/CyclingBackground.vue"
-import axios from "axios"
+import CyclingBackground from "@/components/CyclingBackground.vue";
+import axios from "axios";
 
 export default {
     components: {
-        CyclingBackground
+        CyclingBackground,
     },
     data() {
         return {
@@ -144,22 +143,21 @@ export default {
                 "/img/banner/6.jpg",
                 "/img/banner/7.jpg",
                 "/img/banner/9.jpg",
-            ]
-        }
+            ],
+        };
     },
     mounted() {
-        this.$axios.get("https://metastruct.net/discord/auth/info.json")
+        this.$axios
+            .get("https://metastruct.net/discord/auth/info.json")
             .then(res => {
-                this.$store.commit("discordUser", res.data)
+                this.$store.commit("discordUser", res.data);
             })
-            .catch(console.error)
-    }
-}
-
+            .catch(console.error);
+    },
+};
 </script>
 
 <style lang="scss">
-
 @import "@/assets/_variables.scss";
 
 .navbar {
@@ -181,5 +179,4 @@ export default {
         justify-content: center;
     }
 }
-
 </style>

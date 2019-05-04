@@ -98,14 +98,12 @@
 </template>
 
 <script>
-
 export default {
     head() {
         return {
-            title: "IRC - Meta Construct"
-        }
+            title: "IRC - Meta Construct",
+        };
     },
-}
-
+};
 </script>
 

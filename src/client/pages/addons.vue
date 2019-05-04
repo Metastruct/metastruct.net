@@ -28,75 +28,73 @@
 </template>
 
 <script>
-
-import EditButton from "@/components/EditButton.vue"
-import draggable from "vuedraggable"
+import EditButton from "@/components/EditButton.vue";
+import draggable from "vuedraggable";
 
 export default {
     head() {
         return {
-            title: "Add-ons - Meta Construct"
-        }
+            title: "Add-ons - Meta Construct",
+        };
     },
     components: {
         draggable,
-        EditButton
+        EditButton,
     },
     data() {
         return {
             sortable: {
                 filter: ".add-button, .input, .textarea, .remove",
                 onMove(evt) {
-                    if (evt.related.firstChild.classList.contains("add")) return false
+                    if (evt.related.firstChild.classList.contains("add")) return false;
                 },
-                preventOnFilter: false
+                preventOnFilter: false,
             },
 
             addons: [],
             editingAddons: [],
 
-            editing: false
-        }
+            editing: false,
+        };
     },
     async asyncData({ app }) {
-        let addons = (await app.$axios.get("/api/v1/addons")).data
+        let addons = (await app.$axios.get("/api/v1/addons")).data;
 
-        return { addons }
+        return { addons };
     },
     methods: {
         startEdits() {
-            this.editingAddons = this.addons.slice()
-            this.editing = true
+            this.editingAddons = this.addons.slice();
+            this.editing = true;
         },
         saveEdits() {
-            this.$axios.post("/api/v1/addons", this.editingAddons)
+            this.$axios
+                .post("/api/v1/addons", this.editingAddons)
                 .then(() => {
-                    this.addons = this.editingAddons
-                    this.editing = false
+                    this.addons = this.editingAddons;
+                    this.editing = false;
                 })
-                .catch(console.error)
+                .catch(console.error);
         },
         cancelEdits() {
-            this.editingAddons = this.addons
-            this.editing = false
+            this.editingAddons = this.addons;
+            this.editing = false;
         },
         addAddon() {
             this.editingAddons.push({
                 name: "Unnamed",
                 description: "Empty description",
                 url: "https://google.com",
-            })
+            });
         },
         removeAddon(id) {
-            this.editingAddons.splice(id, 1)
+            this.editingAddons.splice(id, 1);
         },
     },
-}
-
+};
 </script>
 
 <style lang="scss">
-
 @import "@/assets/_variables.scss";
 
 #addons {
@@ -129,7 +127,8 @@ export default {
         }
 
         .control {
-            &.name, &.url {
+            &.name,
+            &.url {
                 .input {
                     color: $primary;
                 }
@@ -156,12 +155,13 @@ export default {
             }
         }
 
-        &:hover, &:active, &:focus {
+        &:hover,
+        &:active,
+        &:focus {
             .icon {
                 transform: scale(1.125, 1.125);
             }
         }
     }
 }
-
 </style>

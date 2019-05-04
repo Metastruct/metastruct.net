@@ -18,7 +18,6 @@
 </template>
 
 <style lang="scss">
-
 @import "@/assets/_variables.scss";
 
 .timeline {
@@ -50,45 +49,44 @@
             background: darken($dark, 5%);
         }
 
-        &:active, &.is-active {
+        &:active,
+        &.is-active {
             background: darken($secondary, 10%);
         }
     }
 }
-
 </style>
 
 <script>
-
-import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue"
+import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
 
 export default {
     components: {
         HistoryTimeLineEvent,
     },
-    props: [ "history" ],
+    props: ["history"],
     computed: {
         historyYears() {
             let historyYears = {},
-                history      = this.history
+                history = this.history;
 
             this.history.forEach(val => {
-                let year = val.date.getFullYear()
-                if (!historyYears[year]) historyYears[year] = []
-                historyYears[year].push(val)
-            })
+                let year = val.date.getFullYear();
+                if (!historyYears[year]) historyYears[year] = [];
+                historyYears[year].push(val);
+            });
 
             for (const year in historyYears) {
                 if (historyYears.hasOwnProperty(year)) {
-                    const val = historyYears[year]
+                    const val = historyYears[year];
                     val.sort((a, b) => {
-                        return a.date > b.date ? 1 : -1
-                    })
+                        return a.date > b.date ? 1 : -1;
+                    });
                 }
             }
 
-            return historyYears
+            return historyYears;
         },
     },
-}
+};
 </script>

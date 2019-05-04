@@ -16,15 +16,12 @@
 </template>
 
 <script>
-
 export default {
-    props: [ "editing", "showDelete" ]
-}
-
+    props: ["editing", "showDelete"],
+};
 </script>
 
 <style lang="scss">
-
 .edit-button {
     display: inline-flex;
     align-content: center;
@@ -40,6 +37,5 @@ export default {
         align-content: center;
     }
 }
-
 </style>
 

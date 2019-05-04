@@ -8,7 +8,6 @@
 </template>
 
 <style lang="scss">
-
 a.card.tile.card-tile {
     .icon-background {
         .icon {
@@ -16,7 +15,9 @@ a.card.tile.card-tile {
         }
     }
 
-    &:hover, &:active, &:focus {
+    &:hover,
+    &:active,
+    &:focus {
         .icon-background {
             .icon {
                 transform: scale(1.125, 1.125);
@@ -51,30 +52,26 @@ a.card.tile.card-tile {
         }
     }
 }
-
 </style>
 
 <script>
-
 export default {
-    props: [ "data" ],
+    props: ["data"],
     computed: {
         is() {
             if (this.data.path.substr(0, 1) == "/") {
-                return "nuxt-link"
+                return "nuxt-link";
             }
-            return "a"
+            return "a";
         },
         to() {
             if (this.is == "nuxt-link" || (this.$el && this.$el.tagName.toLowerCase() != "a")) {
-                return this.data.path
+                return this.data.path;
             }
         },
         href() {
-                return this.data.path
-        }
-    }
-}
-
+            return this.data.path;
+        },
+    },
+};
 </script>
-

@@ -22,7 +22,6 @@
 </template>
 
 <style lang="scss">
-
 @import "@/assets/_variables.scss";
 
 .card.server-info {
@@ -54,7 +53,9 @@
         }
     }
 
-    &:hover, &:active, &:focus {
+    &:hover,
+    &:active,
+    &:focus {
         .background {
             filter: brightness(125%) blur(0px);
             margin: -8px;
@@ -87,7 +88,9 @@
                     display: flex;
                     align-content: center;
 
-                    &:hover, &:active, &:focus {
+                    &:hover,
+                    &:active,
+                    &:focus {
                         filter: brightness(75%);
                     }
 
@@ -125,30 +128,28 @@
             margin-top: 1.5rem;
         }
 
-        .subtitle + .server-info-bottom { // In case playerlist does not show up
+        .subtitle + .server-info-bottom {
+            // In case playerlist does not show up
             margin-top: auto !important;
         }
     }
 }
-
 </style>
 
 <script>
-
 export default {
-    props: [ "server", "id" ],
+    props: ["server", "id"],
     data() {
         return {
-            idToName: { eu1: "Europe #1", eu2: "Europe #2" }
-        }
+            idToName: { eu1: "Europe #1", eu2: "Europe #2" },
+        };
     },
     methods: {
         join() {
-            window.open(`steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`, "_blank")
+            window.open(`steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`, "_blank");
         },
-    }
-}
-
+    },
+};
 </script>
 
 
