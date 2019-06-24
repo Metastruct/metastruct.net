@@ -14,13 +14,16 @@ const port = process.env.PORT || (process.env.NODE_ENV === "production" ? 3000 :
 
 app.set("port", port);
 
+// Import app options
+app.config = require("../../config.json");
+
 app.use(
     session({
         // Look into options
         name: "metastruct.net",
         resave: true,
         saveUninitialized: true,
-        secret: "to_configure",
+        secret: app.config.secret,
         proxy: true,
         cookie: { secure: "auto" },
     })
@@ -28,9 +31,6 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// Import app options
-app.config = require("../../config.json");
 
 // Import and set Nuxt.js options
 let nuxtConfig = require("../../nuxt.config.js");
@@ -64,11 +64,13 @@ async function start() {
 
     console.log("\007");
 
+    /* Probably not right
     consola.ready({
         message: `REPL started`,
         badge: true,
     });
     let repl = require("repl").start("> ");
     repl.context.app = app;
+    */
 }
 start();

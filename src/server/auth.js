@@ -14,8 +14,8 @@ module.exports = app => {
     if (process.env.NODE_ENV !== "production") {
         app.use((req, res, next) => {
             req.user = {
-                steamID: "123456",
-                nickname: "Tenrys - debug",
+                steamId: "123",
+                nickname: "debug",
                 isAdmin: true,
             };
 
@@ -28,14 +28,14 @@ module.exports = app => {
     async function getUserInfo(steamId) {
         let user = await steam.getUserSummary(steamId);
 
-        let admins = (await request(adminsList)).match(user.steamID);
+        let admins = (await request(adminsList)).match(user.steamId);
         user.isAdmin = admins ? true : false;
 
         return { ...user };
     }
 
     passport.serializeUser((user, done) => {
-        let steamId = user.steamID;
+        let steamId = user.steamId;
 
         done(null, steamId);
     });

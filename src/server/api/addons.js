@@ -12,7 +12,7 @@ module.exports = (api, app) => {
     api.post("/addons", async (req, res) => {
         let data = req.body;
 
-        // I am pretty sure this isn't the way to do this shit, but it works.
+        // I am pretty sure this isn't the way to do this stuff, but it works.
         if (Array.isArray(data)) {
             // Add or update entries
             for (let [val, key] of data.entries()) {
