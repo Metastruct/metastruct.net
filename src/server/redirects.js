@@ -5,6 +5,7 @@ const redirects = {
     rocket2: "https://www3.metastruct.net/rocket2",
     discord: "https://discord.gg/CHuxFSd",
     webchat: "https://www3.metastruct.net/webchat",
+    re: "https://g2cf.metastruct.net/reauth"
 };
 const joinURLs = {
     // This is separate from config.gameservers, apparently
