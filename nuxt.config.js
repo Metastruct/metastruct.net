@@ -56,7 +56,7 @@ module.exports = {
      */
     axios: {
         // See https://github.com/nuxt-community/axios-module#options
-        baseURL: `http://localhost:${process.env.PORT || (process.env.NODE_ENV === "production" ? 3000 : 80)}/`,
+        baseURL: `http://localhost:${process.env.PORT || (process.env.NODE_ENV === "production" ? 20080 : 80)}/`,
         // browserBaseURL: "//metastruct.net/"
     },
 
