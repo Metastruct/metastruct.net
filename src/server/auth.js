@@ -27,6 +27,8 @@ module.exports = app => {
 
     async function getUserInfo(steamId) {
         let user = await steam.getUserSummary(steamId);
+        user.steamId = user.steamID;
+        delete user.steamID;
 
         let admins = (await request(adminsList)).match(user.steamId);
         user.isAdmin = admins ? true : false;
