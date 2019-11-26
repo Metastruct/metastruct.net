@@ -10,6 +10,6 @@ jobs:
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.1.1
         with:
-          ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Deploy
         run: ssh -p22 metastruct@threekelv.in test-github
