@@ -12,4 +12,4 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Deploy
-        run: ssh -o StrictHostKeyChecking=no -p22 metastruct@threekelv.in test-github
+        run: ssh -o StrictHostKeyChecking=no -p22 metastruct@threekelv.in metastruct
