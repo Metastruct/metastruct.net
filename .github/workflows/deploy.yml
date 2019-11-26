@@ -1,4 +1,4 @@
-name: CI
+name: Deploy
 
 on: [push]
 
@@ -7,11 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: webfactory/ssh-agent
+        uses: webfactory/ssh-agent@v0.1.1
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_KEY }}
       - name: Deploy
-        run: |
-          'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-          mkdir -p ~/.ssh
-          eval $(ssh-agent -s)
-          '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-          ssh-add <(echo "${{ secrets.PRIVATE_KEY }}")
-          ssh -p22 metastruct@threekelv.in metastruct
+        run: ssh -p22 metastruct@threekelv.in test-github
