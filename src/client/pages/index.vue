@@ -11,14 +11,26 @@
                     .tile.is-parent.is-vertical
                         CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
                         .tile.is-child.card
-                            Timeline(id="metastruct", sourceType="profile", :options="{ tweetLimit: 2, linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }")
+                            Timeline(id="metastruct", sourceType="profile", :options="{ tweetLimit: 2, theme: 'dark', linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }", widget-class="vue-twitter-embed")
 
 </template>
+
+<style lang="scss">
+.vue-twitter-embed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.twitter-timeline {
+    margin: calc(1.5rem - 10px) !important;
+    width: calc(100% - 1.5em) !important;
+}
+</style>
 
 <script>
 import ServerInfo from "@/components/ServerInfo.vue";
 import CardTile from "@/components/CardTile.vue";
-import Timeline from "vue-tweet-embed/src/timeline";
+import { Timeline } from "vue-tweet-embed";
 
 function getDiscordStats(discord) {
     if (discord.id) {
@@ -55,6 +67,7 @@ export default {
     components: {
         ServerInfo,
         CardTile,
+        Timeline,
     },
     mounted() {
         setInterval(() => {
