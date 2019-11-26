@@ -11,14 +11,14 @@
                     .tile.is-parent.is-vertical
                         CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
                         .tile.is-child.card
-                            a.twitter-timeline(data-dnt="true", data-theme="dark", data-link-color="#0ce3ac", data-chrome="nofooter noborders noheader transparent", data-tweet-limit="2", href="https://twitter.com/metastruct?ref_src=twsrc%5Etfw")
-                                script(async, src="https://platform.twitter.com/widgets.js", charset="utf-8")
+                            Timeline(id="metastruct", sourceType="profile", :options="{ tweetLimit: 2, linkColor: "#0ce3ac", chrome: "nofooter noborders noheader transparent" }")
 
 </template>
 
 <script>
 import ServerInfo from "@/components/ServerInfo.vue";
 import CardTile from "@/components/CardTile.vue";
+import Timeline from "vue-tweet-embed/timeline";
 
 function getDiscordStats(discord) {
     if (discord.id) {
@@ -112,9 +112,11 @@ export default {
     },
     methods: {
         async refreshData() {
-            this.servers = (await this.$axios.get("/api/v1/servers", {
-                progress: false,
-            })).data;
+            this.servers = (
+                await this.$axios.get("/api/v1/servers", {
+                    progress: false,
+                })
+            ).data;
             this.discordData = (await this.$axios.get("https://discordapp.com/api/servers/164734812668559360/widget.json", { progress: false })).data;
         },
     },
