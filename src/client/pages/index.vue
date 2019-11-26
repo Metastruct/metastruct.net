@@ -11,14 +11,14 @@
                     .tile.is-parent.is-vertical
                         CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
                         .tile.is-child.card
-                            Timeline(id="metastruct", sourceType="profile", :options="{ tweetLimit: 2, linkColor: "#0ce3ac", chrome: "nofooter noborders noheader transparent" }")
+                            Timeline(id="metastruct", sourceType="profile", :options="{ tweetLimit: 2, linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }")
 
 </template>
 
 <script>
 import ServerInfo from "@/components/ServerInfo.vue";
 import CardTile from "@/components/CardTile.vue";
-import Timeline from "vue-tweet-embed/timeline";
+import Timeline from "vue-tweet-embed/src/timeline";
 
 function getDiscordStats(discord) {
     if (discord.id) {
