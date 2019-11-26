@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy
+        run: |
+          'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+          mkdir -p ~/.ssh
+          eval $(ssh-agent -s)
+          '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+          ssh-add <(echo "${{ secrets.PRIVATE_KEY }}")
+          ssh -p22 metastruct@threekelv.in metastruct
