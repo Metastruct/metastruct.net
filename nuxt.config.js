@@ -64,16 +64,6 @@ module.exports = {
         color: "#0ce3ac",
     },
 
-    router: {
-        scrollBehavior(to) {
-            if (to.hash && to.hash != "#") {
-                let elem = document.getElementById(to.hash.substr(1));
-                if (elem) return window.scrollTo({ top: elem.offsetTop, behavior: "smooth" });
-            }
-            return window.scrollTo({ top: 0, behavior: "smooth" });
-        },
-    },
-
     /*
      ** Build configuration
      */

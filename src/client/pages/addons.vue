@@ -11,20 +11,19 @@
                         p {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
                 draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
-                    transition-group(name="addons")
-                        .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
-                            .card
-                                .card-content
-                                    a.remove-button.has-text-danger(@click="removeAddon(id)", style="font-size: 0.75rem;") Delete
-                                    b-field(label="Name", custom-class="is-small")
-                                        b-input.name(placeholder="My cool add-on", v-model="addon.name" size="is-medium")
-                                    b-field(label="URL", custom-class="is-small")
-                                        b-input.url(placeholder="https://google.com", v-model="addon.url")
-                                    b-field(label="Description", custom-class="is-small")
-                                        b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
-                        .column.is-one-quarter
-                            a.card.add-button(@click="addAddon", tabindex="0")
-                                b-icon(icon="plus")
+                    .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
+                        .card
+                            .card-content
+                                a.remove-button.has-text-danger(@click="removeAddon(id)", style="font-size: 0.75rem;") Delete
+                                b-field(label="Name", custom-class="is-small")
+                                    b-input.name(placeholder="My cool add-on", v-model="addon.name" size="is-medium")
+                                b-field(label="URL", custom-class="is-small")
+                                    b-input.url(placeholder="https://google.com", v-model="addon.url")
+                                b-field(label="Description", custom-class="is-small")
+                                    b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="addon.description")
+                    .column.is-one-quarter
+                        a.card.add-button(@click="addAddon", tabindex="0")
+                            b-icon(icon="plus")
 
 </template>
 
@@ -45,6 +44,7 @@ export default {
     data() {
         return {
             sortable: {
+                animation: 250,
                 filter: ".add-button, .input, .textarea, .remove",
                 onMove(evt) {
                     if (evt.related.firstChild.classList.contains("add")) return false;
@@ -137,8 +137,8 @@ export default {
         }
     }
 
-    .addons-move {
-        transition: transform 0.5s ease-in;
+    .sortable-ghost {
+        opacity: 0.5;
     }
 
     a.card.add-button {
