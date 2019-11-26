@@ -18,8 +18,8 @@
 <style lang="scss">
 .vue-twitter-embed {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    max-height: 384px;
+    overflow-y: scroll;
 }
 .twitter-timeline {
     margin: calc(1.5rem - 10px) !important;
