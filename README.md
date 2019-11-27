@@ -1,5 +1,7 @@
 # metastruct.net
 
+![](https://tenrys.pw/ShareX/2019/Jan/3AkJ.png)
+
 > New website for the Meta Construct community
 
 ## Build Setup
