@@ -10,7 +10,7 @@
                         a.subtitle.has-text-primary(:href="addon.url").has-text-primary {{ addon.name }}
                         p {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
-                draggable.columns.is-multiline(v-model="editingAddons", :options="sortable", :move="sortable.onMove")
+                draggable.columns.is-multiline(v-model="editingAddons", v-bind="sortable")
                     .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
                         .card
                             .card-content
@@ -46,7 +46,7 @@ export default {
             sortable: {
                 animation: 250,
                 filter: ".add-button, .input, .textarea, .remove",
-                onMove(evt) {
+                move(evt) {
                     if (evt.related.firstChild.classList.contains("add")) return false;
                 },
                 preventOnFilter: false,
