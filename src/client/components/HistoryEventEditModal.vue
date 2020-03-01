@@ -8,7 +8,7 @@
                 b-field(label="Description")
                     b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="editingEvent.description")
                 b-field(label="Date")
-                    b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date || date")
+                    b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date")
                 b-field(label="Image URL")
                     b-input(placeholder="(optional) https://i.imgur.com", v-model="editingEvent.imageUrl")
                 b-field(label="URL (\"Read more\")")
@@ -40,8 +40,9 @@ export default {
             show: false,
             editing: false,
             adding: false,
-            editingEvent: {},
-            date: new Date(),
+            editingEvent: {
+                date: new Date(),
+            },
         };
     },
     methods: {
@@ -62,7 +63,6 @@ export default {
             this.show = false;
             this.editing = false;
             this.adding = false;
-            this.date = new Date();
             this.editingEvent = {};
         },
         askDelete() {
@@ -76,8 +76,6 @@ export default {
             });
         },
         async confirm() {
-            this.editingEvent.date = this.date;
-
             let res;
             if (this.adding) {
                 res = await this.$axios.post("/api/v1/history", [this.editingEvent]).catch(console.error);
