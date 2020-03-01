@@ -8,7 +8,7 @@
                 b-field(label="Description")
                     b-input(placeholder="Some descriptive text", type="textarea", minlength="0", maxlength="2000", v-model="editingEvent.description")
                 b-field(label="Date")
-                    b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="date")
+                    b-datepicker(placeholder="Click to select...", icon="calendar-today", v-model="editingEvent.date || date")
                 b-field(label="Image URL")
                     b-input(placeholder="(optional) https://i.imgur.com", v-model="editingEvent.imageUrl")
                 b-field(label="URL (\"Read more\")")
