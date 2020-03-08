@@ -1,7 +1,11 @@
 const redirects = {
+    loadingscreen: "https://loadingscreen.metastruct.net/",
     gallery: "https://loadingscreen.metastruct.net/",
+    gitlab: "https://gitlab.com/metastruct",
+    github: "https://github.com/metastruct",
+    gitlab2: "https://gitlab.threekelv.in/metastruct",
     msdnaa: "https://www3.metastruct.net/msdnaa",
-    rocket: "https://www3.metastruct.net/rocket",
+    rocket: "https://www3.metastruct.net/rocket2",
     rocket2: "https://www3.metastruct.net/rocket2",
     discord: "https://discord.gg/CHuxFSd",
     webchat: "https://www3.metastruct.net/webchat",
@@ -10,9 +14,10 @@ const redirects = {
 const joinURLs = {
     // This is separate from config.gameservers, apparently
     eu1: "g1.metastruct.net:27015",
-    eu2: "g2.metastruct.net:27018",
-    hl2coop: "g2.metastruct.net:27016",
-    hl2dm: "g2.metastruct.net:27015",
+    eu2: "g2.metastruct.net:27015",
+    us1: "g3.metastruct.net:27015",
+    hl2coop: "94.23.170.2:27016",
+    hl2dm: "94.23.170.2:27015",
 };
 
 module.exports = app => {
