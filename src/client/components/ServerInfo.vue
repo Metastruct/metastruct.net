@@ -4,7 +4,7 @@
     .background-container(@click="join")
         .background
     .card-content
-        p.title.has-text-primary-light(@click="join") {{ idToName[id] || "???" }}
+        p.title.has-text-primary-light(@click="join") {{ idToName[id] || id }}
         p.subtitle(@click="join")
             | Online since {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours
             br
@@ -141,7 +141,7 @@ export default {
     props: ["server", "id"],
     data() {
         return {
-            idToName: { eu1: "Europe #1", eu2: "Europe #2" },
+            idToName: { eu1: "Europe #1", eu2: "Europe #2", us1: "United States #1" },
         };
     },
     methods: {
