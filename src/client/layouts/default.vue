@@ -18,6 +18,7 @@
                         .navbar-dropdown
                             nuxt-link.navbar-item(to="/irc") IRC
                             a.navbar-item(href="https://www3.metastruct.net/webchat") Webchat
+                            a.navbar-item(href="https://metastruct.net/discord") Discord        
                     a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
                         b-icon(icon="forum")
                         span &nbsp;Forums
