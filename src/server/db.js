@@ -13,7 +13,7 @@ module.exports = async app => {
         logging: false,
 
         // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
-        operatorsAliases: false,
+        operatorsAliases: "0",
     });
 
     let models = {};

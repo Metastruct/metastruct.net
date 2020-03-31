@@ -1,22 +1,22 @@
 <template lang="pug">
 
 .card.server-info
-    .background-container(@click="join")
+    .background-container
         .background
-    .card-content
-        p.title.has-text-primary-light(@click="join") {{ idToName[id] || id }}
-        p.subtitle(@click="join")
+    .card-content(@mousedown="startJoin", @mouseup="endJoin")
+        p.title.has-text-primary-light {{ idToName[id] || id }}
+        p.subtitle
             | Online since {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours
             br
             | {{ server.playerinfo.length > 0 ? server.playerinfo.length + " players" : "Empty," }} on {{ server.serverinfo.map }}
-        ul.playerlist(v-if="server.playerinfo.length > 0")
+        ul.playerlist(v-if="server.playerinfo.length > 0", @mousedown.stop, @mouseup.stop)
             li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
                 a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
                     img.avatar(:src="player.avatarfull")
                     span.nick {{ player.Nick }}
                 a.join-goto(:title="'Join and go to ' + player.Nick", :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/GO:_${player.EntIndex}`")
                     b-icon(icon="arrow-right", type="is-success")
-        .server-info-bottom(@click="join")
+        .server-info-bottom
             a.has-text-primary-light Join us!
 
 </template>
@@ -142,11 +142,17 @@ export default {
     data() {
         return {
             idToName: { eu1: "Europe #1", eu2: "Europe #2", us1: "United States #1" },
+            mX: null,
+            mY: null,
         };
     },
     methods: {
-        join() {
-            window.open(`steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`, "_blank");
+        startJoin(ev) {
+            [this.mX, this.mY] = [ev.x, ev.y];
+        },
+        endJoin(ev) {
+            if (this.mX - ev.x === 0 && this.mY - ev.y === 0)
+                window.open(`steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`, "_blank");
         },
     },
 };
