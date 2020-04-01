@@ -3,6 +3,11 @@ const pkg = require("./package");
 module.exports = {
     mode: "universal",
 
+    server: {
+        port: 20080, // default: 3000
+        host: '0.0.0.0' // default: localhost
+    },
+
     /*
      ** Headers of the page
      */
@@ -68,14 +73,13 @@ module.exports = {
      ** Build configuration
      */
 
+    /*
     buildDir: "_nuxt",
     build: {
-        /*
-         ** You can extend webpack config here
-         */
         extend(config, ctx) {},
         publicPath: "/_nuxt/dist/client",
     },
+    */
 
     srcDir: "src/client",
 };

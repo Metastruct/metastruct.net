@@ -67,6 +67,7 @@ typings/
 
 # nuxt.js build output
 _nuxt
+.nuxt
 
 # Nuxt generate
 dist
@@ -80,4 +81,7 @@ dist
 # IDE
 .idea
 
+# Metastruct specific
 config.json
+ecosystem.config.js
+
