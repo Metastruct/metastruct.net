@@ -16,25 +16,25 @@
 </template>
 
 <script>
-export default {
-    props: ["editing", "showDelete"],
-};
+	export default {
+		props: ["editing", "showDelete"],
+	};
 </script>
 
 <style lang="scss">
-.edit-button {
-    display: inline-flex;
-    align-content: center;
+	.edit-button {
+		display: inline-flex;
+		align-content: center;
 
-    a {
-        margin-left: 0;
+		a {
+			margin-left: 0;
 
-        &:not(:first-child) {
-            margin-left: 0.75em;
-        }
+			&:not(:first-child) {
+				margin-left: 0.75em;
+			}
 
-        display: flex;
-        align-content: center;
-    }
-}
+			display: flex;
+			align-content: center;
+		}
+	}
 </style>

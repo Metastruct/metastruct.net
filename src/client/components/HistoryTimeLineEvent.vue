@@ -17,107 +17,106 @@
 </template>
 
 <style lang="scss">
-@import "@/assets/_variables.scss";
+	.timeline-event {
+		position: relative;
+		width: calc(50% - 1.5em);
+		margin-bottom: 3em;
 
-.timeline-event {
-    position: relative;
-    width: calc(50% - 1.5em);
-    margin-bottom: 3em;
+		.timeline-link {
+			display: block;
+			position: absolute;
+			width: 1.5em;
+			height: 1.5em;
+			top: calc(3em - 1.5em * 0.5);
+			color: $primary;
+		}
 
-    .timeline-link {
-        display: block;
-        position: absolute;
-        width: 1.5em;
-        height: 1.5em;
-        top: calc(3em - 1.5em * 0.5);
-        color: $primary;
-    }
+		&.is-left {
+			float: left;
+			clear: left;
+		}
 
-    &.is-left {
-        float: left;
-        clear: left;
-    }
+		&.is-right {
+			float: right;
+			clear: right;
+		}
 
-    &.is-right {
-        float: right;
-        clear: right;
-    }
+		.card {
+			.card-content {
+				&.editing {
+					padding: 0.75em;
+				}
+			}
 
-    .card {
-        .card-content {
-            &.editing {
-                padding: 0.75em;
-            }
-        }
+			animation: fade 0.5s ease-out;
 
-        animation: fade 0.5s ease-out;
+			&:empty {
+				animation: loading 1s ease-in-out infinite;
+			}
 
-        &:empty {
-            animation: loading 1s ease-in-out infinite;
-        }
+			.datepicker {
+				margin-bottom: 0;
+			}
+		}
 
-        .datepicker {
-            margin-bottom: 0;
-        }
-    }
+		@keyframes fade {
+			0% {
+				opacity: 0;
+			}
 
-    @keyframes fade {
-        0% {
-            opacity: 0;
-        }
+			100% {
+				opacity: 1;
+			}
+		}
 
-        100% {
-            opacity: 1;
-        }
-    }
+		@keyframes loading {
+			0% {
+				opacity: 1;
+			}
 
-    @keyframes loading {
-        0% {
-            opacity: 1;
-        }
+			50% {
+				opacity: 0.5;
+			}
 
-        50% {
-            opacity: 0.5;
-        }
+			100% {
+				opacity: 1;
+			}
+		}
 
-        100% {
-            opacity: 1;
-        }
-    }
+		.edit-button {
+			position: absolute;
+			top: -0.75em;
+			left: 0.75em;
+			transform: translateY(-100%);
+			z-index: 1;
+			transition: opacity 0.25s ease-out 1.5s;
+			opacity: 0;
+		}
 
-    .edit-button {
-        position: absolute;
-        top: -0.75em;
-        left: 0.75em;
-        transform: translateY(-100%);
-        z-index: 1;
-        transition: opacity 0.25s ease-out 1.5s;
-        opacity: 0;
-    }
-
-    &:hover {
-        .edit-button {
-            opacity: 1;
-            transition-delay: 0s;
-        }
-    }
-}
+		&:hover {
+			.edit-button {
+				opacity: 1;
+				transition-delay: 0s;
+			}
+		}
+	}
 </style>
 
 <script>
-import EditButton from "@/components/EditButton.vue";
+	import EditButton from "@/components/EditButton.vue";
 
-export default {
-    props: ["event", "timeline", "index"],
-    components: {
-        EditButton,
-    },
-    computed: {
-        id() {
-            if (this.event && this.event.date) {
-                return this.event.date.toISOString().slice(0, 10);
-            }
-        },
-    },
-};
+	export default {
+		components: {
+			EditButton,
+		},
+		props: ["event", "timeline", "index"],
+		computed: {
+			id() {
+				if (this.event && this.event.date) {
+					return this.event.date.toISOString().slice(0, 10);
+				}
+				return undefined;
+			},
+		},
+	};
 </script>

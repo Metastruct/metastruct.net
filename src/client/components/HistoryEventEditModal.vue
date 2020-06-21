@@ -25,71 +25,79 @@
 </template>
 
 <style lang="scss">
-.history-edit-modal {
-    .modal-card .modal-card-head .event-title {
-        width: 100%;
-    }
-}
+	.history-edit-modal {
+		.modal-card .modal-card-head .event-title {
+			width: 100%;
+		}
+	}
 </style>
 
 <script>
-export default {
-    props: ["history"],
-    data() {
-        return {
-            show: false,
-            editing: false,
-            adding: false,
-            editingEvent: {
-                date: new Date(),
-            },
-        };
-    },
-    methods: {
-        start(evt) {
-            this.show = true;
-            if (evt) {
-                this.editing = true;
-                this.editingEvent = evt.event;
-            } else {
-                this.adding = true;
-            }
+	export default {
+		props: ["history"],
+		data() {
+			return {
+				show: false,
+				editing: false,
+				adding: false,
+				editingEvent: {
+					date: new Date(),
+				},
+			};
+		},
+		methods: {
+			start(evt) {
+				this.show = true;
+				if (evt) {
+					this.editing = true;
+					this.editingEvent = evt.event;
+				} else {
+					this.adding = true;
+				}
 
-            this.$nextTick(() => {
-                document.querySelector(".modal-card-head input").focus();
-            });
-        },
-        discard() {
-            this.show = false;
-            this.editing = false;
-            this.adding = false;
-            this.editingEvent = {};
-        },
-        askDelete() {
-            this.$dialog.confirm({
-                message: "Are you sure you want to delete this event?",
-                onConfirm: async () => {
-                    await this.$axios.delete("/api/v1/history", { data: [this.editingEvent] }).catch(console.error);
-                    this.discard();
-                    this.$emit("refresh");
-                },
-            });
-        },
-        async confirm() {
-            let res;
-            if (this.adding) {
-                res = await this.$axios.post("/api/v1/history", [this.editingEvent]).catch(console.error);
-            } else if (this.editing) {
-                res = await this.$axios.patch("/api/v1/history", [this.editingEvent]).catch(console.error);
-            }
+				this.$nextTick(() => {
+					document.querySelector(".modal-card-head input").focus();
+				});
+			},
+			discard() {
+				this.show = false;
+				this.editing = false;
+				this.adding = false;
+				this.editingEvent = {};
+			},
+			askDelete() {
+				this.$dialog.confirm({
+					message: "Are you sure you want to delete this event?",
+					onConfirm: async () => {
+						await this.$axios
+							.delete("/api/v1/history", {
+								data: [this.editingEvent],
+							})
+							.catch(console.error);
+						this.discard();
+						this.$emit("refresh");
+					},
+				});
+			},
+			async confirm() {
+				let res;
+				if (this.adding) {
+					res = await this.$axios
+						.post("/api/v1/history", [this.editingEvent])
+						.catch(console.error);
+				} else if (this.editing) {
+					res = await this.$axios
+						.patch("/api/v1/history", [this.editingEvent])
+						.catch(console.error);
+				}
 
-            this.show = false;
-            this.editing = false;
-            this.adding = false;
-            this.editingEvent = {};
-            let year = new Date(res.data.entries[0].date).getFullYear();
-            this.$emit("refresh", year);
-        },
-    },
-};
+				this.show = false;
+				this.editing = false;
+				this.adding = false;
+				this.editingEvent = {};
+				const year = new Date(res.data.entries[0].date).getFullYear();
+				this.$emit("refresh", year);
+			},
+		},
+	};
 </script>

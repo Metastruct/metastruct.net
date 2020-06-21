@@ -121,62 +121,51 @@
 
 </template>
 
-<script>
-import CyclingBackground from "@/components/CyclingBackground.vue";
-import axios from "axios";
-
-export default {
-    components: {
-        CyclingBackground,
-    },
-    data() {
-        return {
-            burger: false,
-
-            backgrounds: [
-                "/img/banner/ugly.jpg",
-                "/img/banner/1.jpg",
-                "/img/banner/2.jpg",
-                "/img/banner/3.jpg",
-                "/img/banner/4.jpg",
-                "/img/banner/5.jpg",
-                "/img/banner/6.jpg",
-                "/img/banner/7.jpg",
-                "/img/banner/9.jpg",
-            ],
-        };
-    },
-    mounted() {
-        this.$axios
-            .get("https://metastruct.net/discord/auth/info.json")
-            .then(res => {
-                this.$store.commit("discordUser", res.data);
-            })
-            .catch(console.error);
-    },
-};
-</script>
-
 <style lang="scss">
-@import "@/assets/_variables.scss";
+	.navbar {
+		.navbar-brand {
+			.logo {
+				padding-top: 0;
+				padding-bottom: 0;
+			}
+		}
+	}
 
-.navbar {
-    .navbar-brand {
-        .logo {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-    }
-}
+	.hero-body {
+		height: 100%;
 
-.hero-body {
-    height: 100%;
-
-    .container {
-        height: 100%;
-        flex-direction: column;
-        display: flex;
-        justify-content: center;
-    }
-}
+		.container {
+			height: 100%;
+			flex-direction: column;
+			display: flex;
+			justify-content: center;
+		}
+	}
 </style>
+
+<script>
+	import CyclingBackground from "@/components/CyclingBackground.vue";
+
+	export default {
+		components: {
+			CyclingBackground,
+		},
+		data() {
+			return {
+				burger: false,
+
+				backgrounds: [
+					"/img/banner/ugly.jpg",
+					"/img/banner/1.jpg",
+					"/img/banner/2.jpg",
+					"/img/banner/3.jpg",
+					"/img/banner/4.jpg",
+					"/img/banner/5.jpg",
+					"/img/banner/6.jpg",
+					"/img/banner/7.jpg",
+					"/img/banner/9.jpg",
+				],
+			};
+		},
+	};
+</script>

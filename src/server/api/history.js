@@ -1,89 +1,93 @@
 module.exports = (api, app) => {
-    const HistoryEvent = app.db.models.HistoryEvent;
+	const HistoryEvent = app.db.models.HistoryEvent;
 
-    api.get("/history", async (req, res) => {
-        let events = await HistoryEvent.findAll({ raw: true });
-        events.sort((a, b) => {
-            return a.id - b.id;
-        });
+	api.get("/history", async (req, res) => {
+		const events = await HistoryEvent.findAll({ raw: true });
+		events.sort((a, b) => {
+			return a.id - b.id;
+		});
 
-        res.json(events);
-    });
+		res.json(events);
+	});
 
-    let methods = [
-        {
-            method: "post",
-            async callback(data) {
-                let hasCreated = false;
-                let entries = [];
-                for (let val of data) {
-                    await HistoryEvent.findOrCreate({ where: val })
-                        .spread((entry, created) => {
-                            entry = entry.get({ plain: true });
-                            if (created) {
-                                hasCreated = true;
-                                entry.justCreated = true;
-                            }
-                            entries.push(entry);
-                            return null;
-                        })
-                        .catch(console.error);
-                }
+	const methods = [
+		{
+			method: "post",
+			async callback(data) {
+				let hasCreated = false;
+				const entries = [];
+				for (const val of data) {
+					await HistoryEvent.findOrCreate({ where: val })
+						.spread((entry, created) => {
+							entry = entry.get({ plain: true });
+							if (created) {
+								hasCreated = true;
+								entry.justCreated = true;
+							}
+							entries.push(entry);
+							return null;
+						})
+						.catch(console.error);
+				}
 
-                return { success: hasCreated, entries };
-            },
-        },
-        {
-            method: "patch",
-            async callback(data) {
-                let found = false;
-                let entries = [];
-                for (let val of data) {
-                    let entry = await HistoryEvent.findOne({ where: { id: val.id } });
-                    if (entry) {
-                        found = true;
-                        await entry.update(val);
-                        entry = entry.get({ plain: true });
-                        entries.push(entry);
-                    }
-                }
+				return { success: hasCreated, entries };
+			},
+		},
+		{
+			method: "patch",
+			async callback(data) {
+				let found = false;
+				const entries = [];
+				for (const val of data) {
+					let entry = await HistoryEvent.findOne({
+						where: { id: val.id },
+					});
+					if (entry) {
+						found = true;
+						await entry.update(val);
+						entry = entry.get({ plain: true });
+						entries.push(entry);
+					}
+				}
 
-                return { success: found, entries };
-            },
-        },
-        {
-            method: "delete",
-            async callback(data) {
-                let found = false;
-                for (let val of data) {
-                    let entry = await HistoryEvent.findOne({ where: { id: val.id } });
-                    if (entry) {
-                        found = true;
-                        await entry.destroy();
-                    }
-                }
+				return { success: found, entries };
+			},
+		},
+		{
+			method: "delete",
+			async callback(data) {
+				let found = false;
+				for (const val of data) {
+					const entry = await HistoryEvent.findOne({
+						where: { id: val.id },
+					});
+					if (entry) {
+						found = true;
+						await entry.destroy();
+					}
+				}
 
-                return { success: found };
-            },
-        },
-    ];
+				return { success: found };
+			},
+		},
+	];
 
-    for (let method of methods) {
-        api[method.method]("/history", async (req, res) => {
-            let data = req.body;
+	for (const method of methods) {
+		api[method.method]("/history", async (req, res) => {
+			const data = req.body;
 
-            if (Array.isArray(data)) {
-                let { success, entries } = await method.callback(data);
+			if (Array.isArray(data)) {
+				const { success, entries } = await method.callback(data);
 
-                return res.json({
-                    success,
-                    entries,
-                });
-            }
+				return res.json({
+					success,
+					entries,
+				});
+			}
 
-            res.json({
-                success: false,
-            });
-        });
-    }
+			res.json({
+				success: false,
+			});
+		});
+	}
 };

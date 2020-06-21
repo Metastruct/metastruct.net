@@ -18,75 +18,73 @@
 </template>
 
 <style lang="scss">
-@import "@/assets/_variables.scss";
+	.timeline {
+		.timeline-year {
+			display: block;
+			clear: both;
+			padding: 0.25em;
+			border-radius: 4px;
+			font-size: 2em;
+			font-weight: 550;
+			background: darken($secondary, 10%);
+			margin-bottom: 1.5em;
+		}
+	}
 
-.timeline {
-    .timeline-year {
-        display: block;
-        clear: both;
-        padding: 0.25em;
-        border-radius: 4px;
-        font-size: 2em;
-        font-weight: 550;
-        background: darken($secondary, 10%);
-        margin-bottom: 1.5em;
-    }
-}
+	.year-picker {
+		position: sticky;
+		top: 1.5em;
 
-.year-picker {
-    position: sticky;
-    top: 1.5em;
+		.year {
+			display: flex;
+			align-content: center;
+			padding: 0.5em 0.75em;
+			width: 100%;
+			color: $light;
+			border-radius: 4px;
 
-    .year {
-        display: flex;
-        align-content: center;
-        padding: 0.5em 0.75em;
-        width: 100%;
-        color: $light;
-        border-radius: 4px;
+			&:hover {
+				background: darken($dark, 5%);
+			}
 
-        &:hover {
-            background: darken($dark, 5%);
-        }
-
-        &:active,
-        &.is-active {
-            background: darken($secondary, 10%);
-        }
-    }
-}
+			&:active,
+			&.is-active {
+				background: darken($secondary, 10%);
+			}
+		}
+	}
 </style>
 
 <script>
-import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
+	import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
 
-export default {
-    components: {
-        HistoryTimeLineEvent,
-    },
-    props: ["history"],
-    computed: {
-        historyYears() {
-            let historyYears = {},
-                history = this.history;
+	export default {
+		components: {
+			HistoryTimeLineEvent,
+		},
+		props: ["history"],
+		computed: {
+			historyYears() {
+				const historyYears = {},
+					history = this.history;
 
-            this.history.forEach(val => {
-                let year = val.date.getFullYear();
-                if (!historyYears[year]) historyYears[year] = [];
-                historyYears[year].push(val);
-            });
+				history.forEach(val => {
+					const year = val.date.getFullYear();
+					if (!historyYears[year]) historyYears[year] = [];
+					historyYears[year].push(val);
+				});
 
-            for (const year in historyYears) {
-                if (historyYears.hasOwnProperty(year)) {
-                    const val = historyYears[year];
-                    val.sort((a, b) => {
-                        return a.date > b.date ? 1 : -1;
-                    });
-                }
-            }
+				for (const year in historyYears) {
+					if (historyYears.hasOwnProperty(year)) {
+						const val = historyYears[year];
+						val.sort((a, b) => {
+							return a.date > b.date ? 1 : -1;
+						});
+					}
+				}
 
-            return historyYears;
-        },
-    },
-};
+				return historyYears;
+			},
+		},
+	};
 </script>

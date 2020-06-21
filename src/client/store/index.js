@@ -1,29 +1,28 @@
-import Vuex from "vuex";
+export const state = () => ({
+	user: {},
+	discordUser: {},
+});
 
-const createStore = () => {
-    return new Vuex.Store({
-        state() {
-            return {
-                user: {},
-                discordUser: {},
-            };
-        },
-        mutations: {
-            discordUser(state, user) {
-                state.discordUser = user;
-            },
-            user(state, user) {
-                state.user = user;
-            },
-        },
-        actions: {
-            nuxtServerInit(store, ctx) {
-                if (ctx.req.user) {
-                    store.commit("user", ctx.req.user);
-                }
-            },
-        },
-    });
+export const mutations = {
+	discordUser(state, user) {
+		state.discordUser = user;
+	},
+	user(state, user) {
+		state.user = user;
+	},
 };
 
-export default createStore;
+export const actions = {
+	nuxtServerInit(store, { req, $axios }) {
+		if (req.user) {
+			store.commit("user", req.user);
+		}
+
+		$axios
+			.get("https://metastruct.net/discord/auth/info.json")
+			.then(res => {
+				store.commit("discordUser", res.data);
+			})
+			.catch(console.error);
+	},
+};

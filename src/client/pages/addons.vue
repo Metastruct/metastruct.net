@@ -27,146 +27,147 @@
 
 </template>
 
-<script>
-import EditButton from "@/components/EditButton.vue";
-import draggable from "vuedraggable";
-
-export default {
-    head() {
-        return {
-            title: "Add-ons - Meta Construct",
-        };
-    },
-    components: {
-        draggable,
-        EditButton,
-    },
-    data() {
-        return {
-            sortable: {
-                animation: 250,
-                filter: ".add-button, .input, .textarea, .remove",
-                move(evt) {
-                    if (evt.related.firstChild.classList.contains("add")) return false;
-                },
-                preventOnFilter: false,
-            },
-
-            addons: [],
-            editingAddons: [],
-
-            editing: false,
-        };
-    },
-    async asyncData({ app }) {
-        let addons = (await app.$axios.get("/api/v1/addons")).data;
-
-        return { addons };
-    },
-    methods: {
-        startEdits() {
-            this.editingAddons = this.addons.slice();
-            this.editing = true;
-        },
-        saveEdits() {
-            this.$axios
-                .post("/api/v1/addons", this.editingAddons)
-                .then(() => {
-                    this.addons = this.editingAddons;
-                    this.editing = false;
-                })
-                .catch(console.error);
-        },
-        cancelEdits() {
-            this.editingAddons = this.addons;
-            this.editing = false;
-        },
-        addAddon() {
-            this.editingAddons.push({
-                name: "Unnamed",
-                description: "Empty description",
-                url: "https://google.com",
-            });
-        },
-        removeAddon(id) {
-            this.editingAddons.splice(id, 1);
-        },
-    },
-};
-</script>
-
 <style lang="scss">
-@import "@/assets/_variables.scss";
+	#addons {
+		.title {
+			display: inline-block;
+			margin-right: 0.25em;
+		}
 
-#addons {
-    .title {
-        display: inline-block;
-        margin-right: 0.25em;
-    }
+		.card {
+			.card-content {
+				padding: 0.75em;
+			}
 
-    .card {
-        .card-content {
-            padding: 0.75em;
-        }
+			cursor: grab;
 
-        cursor: grab;
+			.remove-button {
+				padding: inherit;
+				text-decoration: none;
+				position: absolute;
+				top: 0;
+				right: 0;
+				display: flex;
+				align-content: center;
+			}
+		}
 
-        .remove-button {
-            padding: inherit;
-            text-decoration: none;
-            position: absolute;
-            top: 0;
-            right: 0;
-            display: flex;
-            align-content: center;
-        }
-    }
+		.field {
+			.label {
+				cursor: grab;
+			}
 
-    .field {
-        .label {
-            cursor: grab;
-        }
+			.control {
+				&.name,
+				&.url {
+					.input {
+						color: $primary;
+					}
+				}
+			}
+		}
 
-        .control {
-            &.name,
-            &.url {
-                .input {
-                    color: $primary;
-                }
-            }
-        }
-    }
+		.sortable-ghost {
+			opacity: 0.5;
+		}
 
-    .sortable-ghost {
-        opacity: 0.5;
-    }
+		a.card.add-button {
+			cursor: pointer;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 
-    a.card.add-button {
-        cursor: pointer;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+			.icon {
+				transform-origin: center;
+				height: 5rem;
+				width: 5rem;
+				color: rgba(255, 255, 255, 0.25);
+				transition: transform 0.1s linear;
 
-        .icon {
-            transform-origin: center;
-            height: 5rem;
-            width: 5rem;
-            color: rgba(255, 255, 255, 0.25);
-            transition: transform 0.1s linear;
+				.mdi::before {
+					font-size: 96px !important;
+				}
+			}
 
-            .mdi::before {
-                font-size: 96px !important;
-            }
-        }
-
-        &:hover,
-        &:active,
-        &:focus {
-            .icon {
-                transform: scale(1.125, 1.125);
-            }
-        }
-    }
-}
+			&:hover,
+			&:active,
+			&:focus {
+				.icon {
+					transform: scale(1.125, 1.125);
+				}
+			}
+		}
+	}
 </style>
+
+<script>
+	import EditButton from "@/components/EditButton.vue";
+	import draggable from "vuedraggable";
+
+	export default {
+		components: {
+			draggable,
+			EditButton,
+		},
+		async asyncData({ app }) {
+			const addons = (
+				await app.$axios.get("/api/v1/addons").catch(console.error)
+			).data;
+
+			return { addons };
+		},
+		data() {
+			return {
+				sortable: {
+					animation: 250,
+					filter: ".add-button, .input, .textarea, .remove",
+					move(evt) {
+						if (evt.related.firstChild.classList.contains("add"))
+							return false;
+					},
+					preventOnFilter: false,
+				},
+
+				addons: [],
+				editingAddons: [],
+
+				editing: false,
+			};
+		},
+		methods: {
+			startEdits() {
+				this.editingAddons = this.addons.slice();
+				this.editing = true;
+			},
+			saveEdits() {
+				this.$axios
+					.post("/api/v1/addons", this.editingAddons)
+					.then(() => {
+						this.addons = this.editingAddons;
+						this.editing = false;
+					})
+					.catch(console.error);
+			},
+			cancelEdits() {
+				this.editingAddons = this.addons;
+				this.editing = false;
+			},
+			addAddon() {
+				this.editingAddons.push({
+					name: "Unnamed",
+					description: "Empty description",
+					url: "https://google.com",
+				});
+			},
+			removeAddon(id) {
+				this.editingAddons.splice(id, 1);
+			},
+		},
+		head() {
+			return {
+				title: "Add-ons - Meta Construct",
+			};
+		},
+	};
+</script>

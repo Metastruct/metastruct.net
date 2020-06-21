@@ -54,111 +54,116 @@
 </template>
 
 <style lang="scss">
-@import "@/assets/_variables.scss";
-
-#docs {
-    .card {
-        padding: 1.5em;
-        height: 100%;
-    }
-}
+	#docs {
+		.card {
+			padding: 1.5em;
+			height: 100%;
+		}
+	}
 </style>
 
 <script>
-export default {
-    head() {
-        return {
-            title: "API Documentation - Meta Construct",
-        };
-    },
-    data() {
-        return {
-            endpoints: [
-                {
-                    path: "/servers",
-                    method: "GET",
-                    description: "Retrieves info about all online Meta Construct servers.",
-                },
-                {
-                    path: "/addons",
-                    method: "GET",
-                    description: "Retrieves all info about add-ons displayed on the site.",
-                },
-                {
-                    path: "/addons",
-                    method: "POST",
-                    description: "Manages creation, modification and deletion of add-ons.",
-                    parameters: [
-                        {
-                            type: "Array",
-                            name: "addons",
-                            description: "An array of add-on entries.",
-                        },
-                    ],
-                    adminOnly: true,
-                },
-                {
-                    path: "/history",
-                    method: "GET",
-                    description: "Retrieves the history of Meta Construct, in data form.",
-                },
-                {
-                    path: "/history",
-                    method: "POST",
-                    description: "Creates new history event entries.",
-                    parameters: [
-                        {
-                            type: "Array",
-                            name: "event",
-                            description: "An array of event entries.",
-                        },
-                    ],
-                    adminOnly: true,
-                },
-                {
-                    path: "/history",
-                    method: "PATCH",
-                    description: "Updates existing history event entries.",
-                    parameters: [
-                        {
-                            type: "Array",
-                            name: "event",
-                            description: "An array of event entries.",
-                        },
-                    ],
-                    adminOnly: true,
-                },
+	export default {
+		asyncData({ req }) {
+			return {
+				location: req ? req.headers.host : window.location.hostname,
+			};
+		},
+		data() {
+			return {
+				endpoints: [
+					{
+						path: "/servers",
+						method: "GET",
+						description:
+							"Retrieves info about all online Meta Construct servers.",
+					},
+					{
+						path: "/addons",
+						method: "GET",
+						description:
+							"Retrieves all info about add-ons displayed on the site.",
+					},
+					{
+						path: "/addons",
+						method: "POST",
+						description:
+							"Manages creation, modification and deletion of add-ons.",
+						parameters: [
+							{
+								type: "Array",
+								name: "addons",
+								description: "An array of add-on entries.",
+							},
+						],
+						adminOnly: true,
+					},
+					{
+						path: "/history",
+						method: "GET",
+						description:
+							"Retrieves the history of Meta Construct, in data form.",
+					},
+					{
+						path: "/history",
+						method: "POST",
+						description: "Creates new history event entries.",
+						parameters: [
+							{
+								type: "Array",
+								name: "event",
+								description: "An array of event entries.",
+							},
+						],
+						adminOnly: true,
+					},
+					{
+						path: "/history",
+						method: "PATCH",
+						description: "Updates existing history event entries.",
+						parameters: [
+							{
+								type: "Array",
+								name: "event",
+								description: "An array of event entries.",
+							},
+						],
+						adminOnly: true,
+					},
 
-                {
-                    path: "/history",
-                    method: "DELETE",
-                    description: "Deletes existing history event entries.",
-                    parameters: [
-                        {
-                            type: "Array",
-                            name: "event",
-                            description: "An array of event entries.",
-                        },
-                    ],
-                    adminOnly: true,
-                },
-                {
-                    path: "/auth",
-                    method: "GET",
-                    description: "Retrieves info about the logged-in Steam user.",
-                },
-            ],
+					{
+						path: "/history",
+						method: "DELETE",
+						description: "Deletes existing history event entries.",
+						parameters: [
+							{
+								type: "Array",
+								name: "event",
+								description: "An array of event entries.",
+							},
+						],
+						adminOnly: true,
+					},
+					{
+						path: "/auth",
+						method: "GET",
+						description:
+							"Retrieves info about the logged-in Steam user.",
+					},
+				],
 
-            location: null,
-        };
-    },
-    asyncData({ req }) {
-        return { location: req ? req.headers.host : window.location.hostname };
-    },
-    methods: {
-        getEndpointId(endpoint) {
-            return endpoint.method + "-" + endpoint.path.substr(1);
-        },
-    },
-};
+				location: null,
+			};
+		},
+		methods: {
+			getEndpointId(endpoint) {
+				return endpoint.method + "-" + endpoint.path.substr(1);
+			},
+		},
+		head() {
+			return {
+				title: "API Documentation - Meta Construct",
+			};
+		},
+	};
 </script>

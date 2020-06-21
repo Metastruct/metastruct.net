@@ -8,76 +8,86 @@
 </template>
 
 <style lang="scss">
-#history {
-    .title {
-        display: inline-block;
-        margin-right: 0.25em;
-    }
+	#history {
+		.title {
+			display: inline-block;
+			margin-right: 0.25em;
+		}
 
-    .add-button {
-        display: inline-flex;
-        align-content: center;
+		.add-button {
+			display: inline-flex;
+			align-content: center;
 
-        a {
-            display: flex;
-            align-content: center;
+			a {
+				display: flex;
+				align-content: center;
 
-            margin-left: 0;
+				margin-left: 0;
 
-            &:not(:first-child) {
-                margin-left: 0.5em;
-            }
-        }
-    }
-}
+				&:not(:first-child) {
+					margin-left: 0.5em;
+				}
+			}
+		}
+	}
 </style>
 
 <script>
-import HistoryTimeLine from "@/components/HistoryTimeLine.vue";
-import HistoryEventEditModal from "@/components/HistoryEventEditModal.vue";
+	import HistoryTimeLine from "@/components/HistoryTimeLine.vue";
+	import HistoryEventEditModal from "@/components/HistoryEventEditModal.vue";
 
-export default {
-    head() {
-        return {
-            title: "History - Meta Construct",
-        };
-    },
-    components: {
-        HistoryTimeLine,
-        HistoryEventEditModal,
-    },
-    data() {
-        return {
-            history: [],
-        };
-    },
-    mounted() {
-        if (this.$refs.modal) {
-            this.$refs.timeline.$on("wantAdd", () => this.$refs.modal.start());
-            this.$refs.timeline.$on("wantEdit", evt => this.$refs.modal.start(evt));
-        }
-    },
-    async asyncData({ app }) {
-        let history = (await app.$axios.get("/api/v1/history")).data;
+	export default {
+		components: {
+			HistoryTimeLine,
+			HistoryEventEditModal,
+		},
+		async asyncData({ app }) {
+			const history = (
+				await app.$axios.get("/api/v1/history").catch(console.error)
+			).data;
 
-        history.forEach(val => {
-            val.date = new Date(val.date);
-        });
+			history.forEach(val => {
+				val.date = new Date(val.date);
+			});
 
-        return { history };
-    },
-    methods: {
-        async refreshHistory(year) {
-            let history = (await this.$axios.get("/api/v1/history")).data;
+			return { history };
+		},
+		data() {
+			return {
+				history: [],
+			};
+		},
+		mounted() {
+			if (this.$refs.modal) {
+				this.$refs.timeline.$on("wantAdd", () =>
+					this.$refs.modal.start()
+				);
+				this.$refs.timeline.$on("wantEdit", evt =>
+					this.$refs.modal.start(evt)
+				);
+			}
+		},
+		methods: {
+			async refreshHistory(year) {
+				const history = (
+					await this.$axios
+						.get("/api/v1/history")
+						.catch(console.error)
+				).data;
 
-            history.forEach(val => {
-                val.date = new Date(val.date);
-            });
+				history.forEach(val => {
+					val.date = new Date(val.date);
+				});
 
-            this.history = history;
+				this.history = history;
 
-            if (year) this.$router.push({ hash: `#${year}` });
-        },
-    },
-};
+				if (year) this.$router.push({ hash: `#${year}` });
+			},
+		},
+		head() {
+			return {
+				title: "History - Meta Construct",
+			};
+		},
+	};
 </script>
