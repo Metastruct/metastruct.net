@@ -61,7 +61,7 @@ module.exports = app => {
 
 				console.log(
 					`'${user.nickname}' logged in ${
-						user.isAdmin ? "as admin" : ""
+					user.isAdmin ? "as admin" : ""
 					}.`
 				);
 
@@ -95,5 +95,8 @@ module.exports = app => {
 		} else {
 			res.redirect("/");
 		}
+	});
+	app.get("/auth/logout", req => {
+		req.logout();
 	});
 };

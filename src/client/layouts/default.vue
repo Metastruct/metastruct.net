@@ -59,6 +59,18 @@
                             a.navbar-item(v-if="!$store.state.discordUser.id", href="https://metastruct.net/discord/auth")
                                 b-icon(icon="discord")
                                 span &nbsp;Discord
+                    .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.steamId || $store.state.discordUser.id")
+                        a.navbar-link
+                                b-icon(icon="logout")
+                                span &nbsp;Log out
+                        .navbar-dropdown
+                            a.navbar-item(v-if="$store.state.user.steamId", :href="`/auth/logout`")
+                                b-icon(icon="steam")
+                                span &nbsp;Steam
+                            a.navbar-item(v-if="$store.state.discordUser.id", href="https://metastruct.net/discord/auth/logout")
+                                b-icon(icon="discord")
+                                span &nbsp;Discord
+
     .hero.is-dark
         CyclingBackground(:images="backgrounds")
             .hero-body
@@ -74,8 +86,9 @@
                         img.logo(src="/img/logo.svg")
                 .column.is-one-quarter
                     p.subtitle
+                        .is-relative
                         b-icon(icon="map", size="is-small")
-                        span &nbsp;Sitemap
+                            span Sitemap
                     ul
                         li: nuxt-link(to="/")
                             b-icon(icon="home", size="is-small")
