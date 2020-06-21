@@ -6,9 +6,9 @@
     .card-content(@mousedown="startJoin", @mouseup="endJoin")
         p.title.has-text-primary-light {{ idToName[id] || id }}
         p.subtitle
-            | Online since {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours
-            br
             | {{ server.playerinfo.length > 0 ? server.playerinfo.length + " players" : "Empty," }} on {{ server.serverinfo.map }}
+            br
+            | {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours uptime
         ul.playerlist(v-if="server.playerinfo.length > 0", @mousedown.stop, @mouseup.stop)
             li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
                 a(title="View profile", :href="`https://steamcommunity.com/profiles/[U:1:${player.AccountID}]`", target="_blank")
