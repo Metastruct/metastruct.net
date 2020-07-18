@@ -96,4 +96,7 @@ module.exports = app => {
 			res.redirect("/");
 		}
 	});
+	app.get("/auth/logout", req => {
+		req.logout();
+	});
 };
