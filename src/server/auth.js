@@ -60,8 +60,8 @@ module.exports = app => {
 				const user = await getUserInfo(steamId);
 
 				console.log(
-					`'${user.nickname}' logged in ${
-						user.isAdmin ? "as admin" : ""
+					`'${user.nickname}' logged in${
+						user.isAdmin ? " as admin" : ""
 					}.`
 				);
 
