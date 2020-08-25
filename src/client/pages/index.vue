@@ -57,6 +57,8 @@
 			}
 
 			return `${online} online, ${mostPlayedCounter} playing ${mostPlayedGame}`;
+		} else {
+			return "Failed to retrieve Discord widget data";
 		}
 	}
 
@@ -67,14 +69,14 @@
 			Timeline,
 		},
 		async asyncData({ app }) {
-			const servers = (await app.$axios.get("/api/v1/servers")).data;
-			const discordData = (
-				await app.$axios
+			const { data: servers } =
+				(await app.$axios.get("/api/v1/servers")) || {};
+			const { data: discordData } =
+				(await app.$axios
 					.get(
 						"https://discordapp.com/api/servers/164734812668559360/widget.json"
 					)
-					.catch(console.error)
-			).data;
+					.catch(console.error)) || {};
 
 			return {
 				servers,
@@ -135,21 +137,22 @@
 		},
 		methods: {
 			async refreshData() {
-				this.servers = (
-					await this.$axios
+				const { data: servers } =
+					(await this.$axios
 						.get("/api/v1/servers", {
 							progress: false,
 						})
-						.catch(console.error)
-				).data;
-				this.discordData = (
-					await this.$axios
+						.catch(console.error)) || {};
+				const { data: discordData } =
+					(await this.$axios
 						.get(
 							"https://discordapp.com/api/servers/164734812668559360/widget.json",
 							{ progress: false }
 						)
-						.catch(console.error)
-				).data;
+						.catch(console.error)) || {};
+
+				this.servers = servers;
+				this.discordData = discordData;
 			},
 		},
 		head() {
