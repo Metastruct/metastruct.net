@@ -15,27 +15,27 @@ module.exports = (api, app) => {
 		// I am pretty sure this isn't the way to do this stuff, but it works.
 		if (Array.isArray(data)) {
 			// Add or update entries
-			for (const [val, key] of data.entries()) {
-				val.id = key + 1;
-				await Addon.findOrCreate({ where: { id: val.id } })
-					.spread((obj, created) => {
-						obj.update(val);
+			for (const addon of data) {
+				if (addon.id) {
+					await Addon.findOne({ where: { id: addon.id } }).then(obj => {
+						if (obj) obj.update(addon);
 						return null;
-					})
-					.catch(console.error);
+					});
+				} else {
+					await Addon.create(addon).then(item => {
+						addon.id = item.id;
+					});
+				}
 			}
 
 			// Cleanup missing IDs
 			const addons = await Addon.findAll({ raw: true });
-			for (const [val] of addons.entries()) {
-				val.id--;
-				if (!data[val.id]) {
-					await Addon.findOne({ where: { id: val.id } })
-						.then(obj => {
-							if (obj) obj.destroy();
-							return null;
-						})
-						.catch(console.error);
+			for (const addon of addons) {
+				if (!data.find(({ id }) => addon.id === id)) {
+					await Addon.findOne({ where: { id: addon.id } }).then(obj => {
+						if (obj) obj.destroy();
+						return null;
+					});
 				}
 			}
 

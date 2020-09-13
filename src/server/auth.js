@@ -22,8 +22,7 @@ module.exports = app => {
 		});
 	}
 
-	const adminsList =
-		"https://steamcommunity.com/gid/103582791433481287/memberslistxml?xml=1";
+	const adminsList = "https://steamcommunity.com/gid/103582791433481287/memberslistxml?xml=1";
 
 	async function getUserInfo(steamId) {
 		const user = await steam.getUserSummary(steamId);
@@ -59,11 +58,7 @@ module.exports = app => {
 
 				const user = await getUserInfo(steamId);
 
-				console.log(
-					`'${user.nickname}' logged in${
-						user.isAdmin ? " as admin" : ""
-					}.`
-				);
+				console.log(`'${user.nickname}' logged in${user.isAdmin ? " as admin" : ""}.`);
 
 				return done(null, user);
 			}

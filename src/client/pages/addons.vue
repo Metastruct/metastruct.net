@@ -10,7 +10,7 @@
                         a.subtitle.has-text-primary(:href="addon.url").has-text-primary {{ addon.name }}
                         p {{ addon.description }}
             template(v-if="$store.state.user.isAdmin && editing")
-                draggable.columns.is-multiline(v-model="editingAddons", v-bind="sortable")
+                draggable.columns.is-multiline(v-model="editingAddons", v-bind="sortable", @end="sortable.onEnd")
                     .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
                         .card
                             .card-content
@@ -111,9 +111,16 @@
 			EditButton,
 		},
 		async asyncData({ app }) {
-			const addons = (
-				await app.$axios.get("/api/v1/addons").catch(console.error)
-			).data;
+			const addons = (await app.$axios.get("/api/v1/addons").catch(console.error)).data;
+			for (const addon of addons) {
+				if (addon.order === undefined || addon.order === null) {
+					for (const [order, addon] of addons.entries()) {
+						addon.order = order;
+					}
+					break;
+				}
+			}
+			addons.sort((a, b) => a.order - b.order);
 
 			return { addons };
 		},
@@ -123,10 +130,14 @@
 					animation: 250,
 					filter: ".add-button, .input, .textarea, .remove",
 					move(evt) {
-						if (evt.related.firstChild.classList.contains("add"))
-							return false;
+						if (evt.related.firstChild.classList.contains("add")) return false;
 					},
 					preventOnFilter: false,
+					onEnd: () => {
+						for (const [order, addon] of this.editingAddons.entries()) {
+							addon.order = order;
+						}
+					},
 				},
 
 				addons: [],
@@ -158,6 +169,7 @@
 					name: "Unnamed",
 					description: "Empty description",
 					url: "https://google.com",
+					order: this.editingAddons.length,
 				});
 			},
 			removeAddon(id) {

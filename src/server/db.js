@@ -11,7 +11,7 @@ module.exports = async app => {
 		host: app.config.postgres.host,
 		port: app.config.postgres.port,
 		dialect: "postgres",
-		logging: false,
+		// logging: console.log,
 
 		// http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
 		operatorsAliases: "0",
@@ -20,10 +20,7 @@ module.exports = async app => {
 	const models = {};
 	fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
 		const filePath = path.join(__dirname, "models", file);
-		if (
-			fs.statSync(filePath).isFile() &&
-			path.extname(filePath) === ".js"
-		) {
+		if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
 			const model = sequelize.import(filePath);
 			models[model.name] = model;
 		}

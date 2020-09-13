@@ -30,10 +30,7 @@ module.exports = app => {
 	for (const [id, hostname] of Object.entries(joinURLs)) {
 		console.log("Added join URL for " + id + " at " + hostname);
 		app.get(`/join/${id}/:pwd?`, (req, res) => {
-			const pwd = (req.params.pwd || "metawebsite").replace(
-				/[^a-zA-Z*0-9:+-\s]+/g,
-				""
-			);
+			const pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
 			res.redirect(`steam://connect/${hostname}/${pwd}`);
 		});
 	}
