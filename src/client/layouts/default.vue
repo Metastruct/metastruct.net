@@ -86,9 +86,8 @@
                         img.logo(src="/img/logo.svg")
                 .column.is-one-quarter
                     p.subtitle
-                        .is-relative
                         b-icon(icon="map", size="is-small")
-                            span Sitemap
+                        span &nbsp;Sitemap
                     ul
                         li: nuxt-link(to="/")
                             b-icon(icon="home", size="is-small")
