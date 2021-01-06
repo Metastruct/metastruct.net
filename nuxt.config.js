@@ -1,7 +1,7 @@
 const pkg = require("./package");
 
 module.exports = {
-	mode: "universal",
+	// mode: "universal",
 
 	server: {
 		port: 20080, // default: 3000

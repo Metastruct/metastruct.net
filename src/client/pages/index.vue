@@ -18,8 +18,8 @@
 <style lang="scss">
 	.vue-twitter-embed {
 		display: flex;
-		max-height: 384px;
-		overflow-y: scroll;
+		height: auto;
+		overflow-y: auto;
 	}
 	.twitter-timeline {
 		margin: calc(1.5rem - 10px) !important;
@@ -36,9 +36,7 @@
 		if (discord.id) {
 			const online = discord.members.length;
 
-			const games = discord.members
-				.filter(val => val.game)
-				.map(val => val.game.name);
+			const games = discord.members.filter(val => val.game).map(val => val.game.name);
 			const playingStats = {};
 			games.forEach(val => {
 				if (!playingStats[val]) playingStats[val] = 0;
@@ -69,13 +67,10 @@
 			Timeline,
 		},
 		async asyncData({ app }) {
-			const { data: servers } =
-				(await app.$axios.get("/api/v1/servers")) || {};
+			const { data: servers } = (await app.$axios.get("/api/v1/servers")) || {};
 			const { data: discordData } =
 				(await app.$axios
-					.get(
-						"https://discordapp.com/api/servers/164734812668559360/widget.json"
-					)
+					.get("https://discordapp.com/api/servers/164734812668559360/widget.json")
 					.catch(console.error)) || {};
 
 			return {
@@ -91,8 +86,7 @@
 					{
 						path: "https://loadingscreen.metastruct.net",
 						title: "Gallery",
-						subtitle:
-							"Upload, view and rate your favorite screenshots of the server!",
+						subtitle: "Upload, view and rate your favorite screenshots of the server!",
 						icon: "folder-image",
 					},
 					{
@@ -112,8 +106,7 @@
 					{
 						path: "https://steamcommunity.com/groups/metastruct",
 						title: "Steam",
-						subtitle:
-							"Become a member and participate to various forum discussions!",
+						subtitle: "Become a member and participate to various forum discussions!",
 						icon: "steam",
 					},
 					{
@@ -123,6 +116,11 @@
 						icon: "discord",
 					},
 				],
+			};
+		},
+		head() {
+			return {
+				title: "Home - Meta Construct",
 			};
 		},
 		computed: {
@@ -145,20 +143,14 @@
 						.catch(console.error)) || {};
 				const { data: discordData } =
 					(await this.$axios
-						.get(
-							"https://discordapp.com/api/servers/164734812668559360/widget.json",
-							{ progress: false }
-						)
+						.get("https://discordapp.com/api/servers/164734812668559360/widget.json", {
+							progress: false,
+						})
 						.catch(console.error)) || {};
 
 				this.servers = servers;
 				this.discordData = discordData;
 			},
-		},
-		head() {
-			return {
-				title: "Home - Meta Construct",
-			};
 		},
 	};
 </script>

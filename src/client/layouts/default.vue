@@ -113,7 +113,7 @@
                             b-icon(icon="minus-circle", size="is-small")
                             span &nbsp;Bans
                 .column.is-one-quarter
-                    p Copyright Metastruct © 2018-2020
+                    p Copyright Metastruct © 2018-2021
                     p
                         | website:
                         |

@@ -25,5 +25,6 @@ module.exports = {
 		"one-var": "off",
 		"import/order": "off",
 		"vue/require-prop-types": "off",
+		"vue/component-tags-order": "off",
 	},
 };

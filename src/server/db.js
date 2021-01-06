@@ -22,7 +22,7 @@ module.exports = async app => {
 	fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
 		const filePath = path.join(__dirname, "models", file);
 		if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
-			const model = sequelize.import(filePath);
+			const model = require(filePath)(sequelize, Sequelize.DataTypes);
 			models[model.name] = model;
 		}
 	});
