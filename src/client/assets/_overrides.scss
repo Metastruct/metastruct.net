@@ -1,272 +1,286 @@
 .__nuxt-error-page {
-    position: fixed;
-    z-index: 9999;
+	position: fixed;
+	z-index: 9999;
 }
 
 .hero {
-    background-color: $black-ter;
+	background-color: $black-ter;
 }
 
 .delete {
-    background-color: rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.2);
 
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
 }
 
 .label {
-    color: $light;
+	color: $light;
 }
 
 .control .icon {
-    color: $grey-lighter !important;
+	color: $grey-lighter !important;
 }
 
-.input, .textarea {
-    background: rgba($black-bis, 0.33);
-    padding: 0.5em;
-    border-color: $grey-dark;
-    color: $light;
+.input,
+.textarea {
+	background: rgba($black-bis, 0.33);
+	padding: 0.5em;
+	border-color: $grey-dark;
+	color: $light;
 
-    &:active, &:focus {
-        border-color: $secondary-dark;
-        box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
-    }
+	&:active,
+	&:focus {
+		border-color: $secondary-dark;
+		box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
+	}
 
-    &::placeholder {
-        color: rgba($white, 0.5);
-    }
+	&::placeholder {
+		color: rgba($white, 0.5);
+	}
 }
 
 .textarea {
-    min-height: 76px !important;
+	min-height: 76px !important;
 }
 
 .notification {
-    background: $notification-background-color;
+	background: $notification-background-color;
 
-    @each $name, $pair in $colors {
-        $color: nth($pair, 1);
-        $color-invert: nth($pair, 2);
+	@each $name, $pair in $colors {
+		$color: nth($pair, 1);
+		$color-invert: nth($pair, 2);
 
-        &.is-#{$name} {
-            a:not(.button) {
-                color: $color-invert;
-                text-decoration: underline;
-            }
-        }
-    }
+		&.is-#{$name} {
+			a:not(.button) {
+				color: $color-invert;
+				text-decoration: underline;
+			}
+		}
+	}
 }
 
-a.notification, a.card {
-    transition: background 0.1s ease-out;
+a.notification,
+a.card {
+	transition: background 0.1s ease-out;
 
-    &:hover, &:active, &:focus {
-        background: $secondary-dark;
-    }
+	&:hover,
+	&:active,
+	&:focus {
+		background: $secondary-dark;
+	}
 }
 
 .card {
-    $card-border-color: $grey-light;
-    background-color: $grey-lighter;
-    border-radius: 4px;
+	$card-border-color: $grey-light;
+	background-color: $grey-lighter;
+	border-radius: 4px;
 
-    .card-image {
-        position: relative;
+	.card-image {
+		position: relative;
 
-        figure.image {
-            float: left;
-            position: absolute !important;
-            bottom: 0;
-            top: 0;
-            left: 0;
-            right: 0;
-            overflow: hidden; // scroll;
+		figure.image {
+			float: left;
+			position: absolute !important;
+			bottom: 0;
+			top: 0;
+			left: 0;
+			right: 0;
+			overflow: hidden; // scroll;
 
-            img {
-                left: 0;
-                right: 0;
-                width: 100%;
-                height: auto;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-        }
+			img {
+				left: 0;
+				right: 0;
+				width: 100%;
+				height: auto;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+		}
 
-        img, figure.image {
-            border-radius: 4px 4px 0px 0px;
-        }
-    }
+		img,
+		figure.image {
+			border-radius: 4px 4px 0px 0px;
+		}
+	}
 
+	.card-content {
+		padding: 1.5em;
+	}
 
-    .card-content {
-        padding: 1.5em;
-    }
+	.card-header {
+		box-shadow: none;
+		background-color: rgba($black-bis, 0.33);
+	}
 
-    .card-header {
-        box-shadow: none;
-        background-color: rgba($black-bis, 0.33);
-    }
+	.card-footer {
+		background-color: rgba($black-bis, 0.33);
+	}
 
-    .card-footer {
-        background-color: rgba($black-bis, 0.33);
-    }
-
-    .card-footer,
-    .card-footer-item {
-        border-color: $card-border-color;
-    }
+	.card-footer,
+	.card-footer-item {
+		border-color: $card-border-color;
+	}
 }
 
 .message-header {
-    background-color: $black-ter;
-    color: $white;
+	background-color: $black-ter;
+	color: $white;
 }
 
 .message-body {
-    border-color: $black-ter;
+	border-color: $black-ter;
 }
 
-
 .modal {
-    overflow: auto;
+	overflow: auto;
 
-    .animation-content {
-        z-index: 40;
-    }
+	.animation-content {
+		z-index: 40;
+	}
 
-    .modal-card {
-        &, .modal-card-body {
-            overflow: visible;
-        }
+	.modal-card {
+		&,
+		.modal-card-body {
+			overflow: visible;
+		}
 
-        .modal-card-body {
-            background-color: $black-ter;
-        }
+		.modal-card-body {
+			background-color: $black-ter;
+		}
 
-        .modal-card-foot,
-        .modal-card-head {
-            border-color: $black-ter;
-        }
-    }
+		.modal-card-foot,
+		.modal-card-head {
+			border-color: $black-ter;
+		}
+	}
 
-    .modal-background {
-        z-index: 40;
-        position: fixed;
-    }
+	.modal-background {
+		z-index: 40;
+		position: fixed;
+	}
 }
 
 .navbar {
-    .navbar-brand {
-        img.navbar-item {
-            height: 52px;
-        }
-    }
+	.navbar-brand {
+		img.navbar-item {
+			height: 52px;
+		}
+	}
 
-    border: none;
-    .navbar-dropdown {
-        border: none;
-    }
+	border: none;
+	.navbar-dropdown {
+		border: none;
+	}
 
-    .navbar-menu {
-        background-color: $navbar-background-color;
-    }
+	.navbar-menu {
+		background-color: $navbar-background-color;
+	}
 
-    a.navbar-item, .navbar-item.has-dropdown, .navbar-link {
-        &:hover, &:active, &:focus, &:hover .navbar-link {
-            color: $primary;
-            background-color: $grey-dark;
-        }
-    }
+	a.navbar-item,
+	.navbar-item.has-dropdown,
+	.navbar-link {
+		&:hover,
+		&:active,
+		&:focus,
+		&:hover .navbar-link {
+			color: $primary;
+			background-color: $grey-dark;
+		}
+	}
 }
 
 .hero {
-    background-color: $grey;
+	background-color: $grey;
 
-    .navbar {
-        &,
-        .navbar-menu,
-        .navbar-dropdown {
-            border: none;
-        }
-    }
+	.navbar {
+		&,
+		.navbar-menu,
+		.navbar-dropdown {
+			border: none;
+		}
+	}
 }
 
 .datepicker {
-    margin-bottom: 1.5em;
+	margin-bottom: 1.5em;
 
-    .dropdown {
-        &.is-inline {
-            .dropdown-menu {
-                width: 100%;
-            }
-        }
-    }
+	.dropdown {
+		&.is-inline {
+			.dropdown-menu {
+				width: 100%;
+			}
+		}
+	}
 
-    .dropdown-content {
-        background: #1e1e1e;
-        border: 1px solid $grey-dark;
-    }
+	.dropdown-content {
+		background: #1e1e1e;
+		border: 1px solid $grey-dark;
+	}
 
-    .dropdown-header {
-        border: 1px solid $grey-dark;
-    }
+	.dropdown-header {
+		border: 1px solid $grey-dark;
+	}
 
+	.pagination-previous,
+	.pagination-next,
+	.select select {
+		background: rgba($black-bis, 0.33);
+		border-color: $grey-dark;
 
-    .pagination-previous, .pagination-next, .select select {
-        background: rgba($black-bis, 0.33);
-        border-color: $grey-dark;
+		.has-text-primary {
+			color: $secondary !important;
+		}
+	}
 
-        .has-text-primary {
-            color: $secondary !important;
-        }
-    }
+	.select::after,
+	.select:hover::after {
+		border-color: $secondary !important;
+	}
 
-    .select::after, .select:hover::after {
-        border-color: $secondary !important;
-    }
+	.datepicker-header {
+		border-color: $grey-dark;
+	}
 
-    .datepicker-header {
-        border-color: $grey-dark;
-    }
+	.select select {
+		color: $light;
 
-    .select select {
-        color: $light;
+		option {
+			background: $dark;
+			color: $light;
+		}
+	}
 
-        option {
-            background: $dark;
-            color: $light;
-        }
-    }
+	.datepicker-cell,
+	.select select {
+		&:active,
+		&:focus {
+			box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
+		}
+	}
 
-    .datepicker-cell, .select select     {
-        &:active, &:focus {
-            box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
-        }
-    }
+	.datepicker-table .datepicker-header .datepicker-cell {
+		color: $white-ter;
+	}
 
-    .datepicker-table .datepicker-header .datepicker-cell {
-        color: $white-ter;
-    }
+	.datepicker-table .datepicker-body .datepicker-row .datepicker-cell {
+		&.is-selectable {
+			color: $white !important;
+		}
 
-    .datepicker-table .datepicker-body .datepicker-row .datepicker-cell {
-        &.is-selectable {
-            color: $white !important;
-        }
+		&.is-unselectable {
+			color: rgba($white, 0.5);
+		}
 
-        &.is-unselectable {
-            color: rgba($white, 0.5);
-        }
-
-        &.is-selected {
-            background: $secondary;
-            border-color: rgba($secondary-dark, 0.5);
-            color: $light;
-        }
-    }
+		&.is-selected {
+			background: $secondary;
+			border-color: rgba($secondary-dark, 0.5);
+			color: $light;
+		}
+	}
 }
 
 .tile {
-    flex-basis: auto;
+	flex-basis: auto;
 }

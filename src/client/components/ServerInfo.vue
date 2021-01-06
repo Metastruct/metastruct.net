@@ -45,11 +45,7 @@
 				bottom: 0;
 				left: 0;
 				right: 0;
-				background: linear-gradient(
-						0deg,
-						rgba(0, 0, 0, 0.5),
-						rgba(0, 0, 0, 0.5)
-					),
+				background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
 					url("/img/gm_construct_m.jpg");
 				background-size: cover;
 				background-position: center center;

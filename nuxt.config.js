@@ -29,8 +29,7 @@ module.exports = {
 			{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
 			{
 				rel: "stylesheet",
-				href:
-					"//cdn.materialdesignicons.com/3.2.89/css/materialdesignicons.min.css",
+				href: "//cdn.materialdesignicons.com/3.2.89/css/materialdesignicons.min.css",
 			},
 		],
 		htmlAttrs: {
@@ -81,8 +80,7 @@ module.exports = {
 	axios: {
 		// See https://github.com/nuxt-community/axios-module#options
 		baseURL: `http://localhost:${
-			process.env.PORT ||
-			(process.env.NODE_ENV === "production" ? 20080 : 3000)
+			process.env.PORT || (process.env.NODE_ENV === "production" ? 20080 : 3000)
 		}`,
 		// browserBaseURL: "//metastruct.net/"
 	},

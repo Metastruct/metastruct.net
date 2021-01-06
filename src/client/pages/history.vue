@@ -42,9 +42,7 @@
 			HistoryEventEditModal,
 		},
 		async asyncData({ app }) {
-			const history = (
-				await app.$axios.get("/api/v1/history").catch(console.error)
-			).data;
+			const history = (await app.$axios.get("/api/v1/history").catch(console.error)).data;
 
 			history.forEach(val => {
 				val.date = new Date(val.date);
@@ -59,21 +57,14 @@
 		},
 		mounted() {
 			if (this.$refs.modal) {
-				this.$refs.timeline.$on("wantAdd", () =>
-					this.$refs.modal.start()
-				);
-				this.$refs.timeline.$on("wantEdit", evt =>
-					this.$refs.modal.start(evt)
-				);
+				this.$refs.timeline.$on("wantAdd", () => this.$refs.modal.start());
+				this.$refs.timeline.$on("wantEdit", evt => this.$refs.modal.start(evt));
 			}
 		},
 		methods: {
 			async refreshHistory(year) {
-				const history = (
-					await this.$axios
-						.get("/api/v1/history")
-						.catch(console.error)
-				).data;
+				const history = (await this.$axios.get("/api/v1/history").catch(console.error))
+					.data;
 
 				history.forEach(val => {
 					val.date = new Date(val.date);

@@ -75,20 +75,17 @@
 					{
 						path: "/servers",
 						method: "GET",
-						description:
-							"Retrieves info about all online Meta Construct servers.",
+						description: "Retrieves info about all online Meta Construct servers.",
 					},
 					{
 						path: "/addons",
 						method: "GET",
-						description:
-							"Retrieves all info about add-ons displayed on the site.",
+						description: "Retrieves all info about add-ons displayed on the site.",
 					},
 					{
 						path: "/addons",
 						method: "POST",
-						description:
-							"Manages creation, modification and deletion of add-ons.",
+						description: "Manages creation, modification and deletion of add-ons.",
 						parameters: [
 							{
 								type: "Array",
@@ -101,8 +98,7 @@
 					{
 						path: "/history",
 						method: "GET",
-						description:
-							"Retrieves the history of Meta Construct, in data form.",
+						description: "Retrieves the history of Meta Construct, in data form.",
 					},
 					{
 						path: "/history",
@@ -147,8 +143,7 @@
 					{
 						path: "/auth",
 						method: "GET",
-						description:
-							"Retrieves info about the logged-in Steam user.",
+						description: "Retrieves info about the logged-in Steam user.",
 					},
 				],
 

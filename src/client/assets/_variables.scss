@@ -1,12 +1,12 @@
 $body-size: 14px;
 $family-sans-serif: "Open Sans";
 
-$grey-accent:  #020202;
-$grey-darker:  #0D0D0D;
-$grey-dark:    #171717;
-$grey:         #212121;
-$grey-light:   #353535;
-$grey-lighter: #4A4A4A;
+$grey-accent: #020202;
+$grey-darker: #0d0d0d;
+$grey-dark: #171717;
+$grey: #212121;
+$grey-light: #353535;
+$grey-lighter: #4a4a4a;
 
 $dark: $grey;
 
@@ -22,9 +22,18 @@ $secondary-dark-invert: findColorInvert($secondary-dark) !default;
 $secondary-invert: findColorInvert($secondary) !default;
 
 $custom-colors: (
-    "primary-light": ($primary-light, $primary-light-invert),
-    "secondary": ($secondary, $secondary-invert),
-    "secondary-dark": ($secondary-dark, $secondary-dark-invert),
+	"primary-light": (
+		$primary-light,
+		$primary-light-invert,
+	),
+	"secondary": (
+		$secondary,
+		$secondary-invert,
+	),
+	"secondary-dark": (
+		$secondary-dark,
+		$secondary-dark-invert,
+	),
 );
 
 $white: #fefefe;
