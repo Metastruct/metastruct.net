@@ -69,6 +69,7 @@
 
 <script>
 import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
+import sortBy from "lodash.sortby";
 
 export default {
   components: {
@@ -88,9 +89,7 @@ export default {
       }
 
       for (const events of Object.values(historyYears)) {
-        events.sort((a, b) => {
-          return a.date > b.date ? 1 : -1;
-        });
+        sortBy(events, ["date"]);
       }
 
       return historyYears;
