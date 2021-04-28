@@ -1,10 +1,10 @@
 require("dotenv").config();
 
 process.on("unhandledRejection", r => {
-	const { request, response, statusCode } = r;
-	if (request && response && statusCode === 500) {
-		console.log(request.path);
-	}
+  const { request, response, statusCode } = r;
+  if (request && response && statusCode === 500) {
+    console.log(request.path);
+  }
 });
 
 const express = require("express");
@@ -25,15 +25,15 @@ app.set("port", port);
 app.config = require("../../config.json");
 
 app.use(
-	session({
-		// Look into options
-		name: "metastruct.net",
-		resave: true,
-		saveUninitialized: true,
-		secret: app.config.secret,
-		proxy: true,
-		cookie: { secure: "auto" },
-	})
+  session({
+    // Look into options
+    name: "metastruct.net",
+    resave: true,
+    saveUninitialized: true,
+    secret: app.config.secret,
+    proxy: true,
+    cookie: { secure: "auto" },
+  })
 );
 
 app.use(bodyParser.json());
@@ -44,32 +44,32 @@ const nuxtConfig = require("../../nuxt.config.js");
 nuxtConfig.dev = !(process.env.NODE_ENV === "production");
 
 async function start() {
-	// Init our stuff
-	app.db = await require("./db.js")(app);
-	require("./auth.js")(app);
-	require("./api")(app);
-	require("./redirects.js")(app);
+  // Init our stuff
+  app.db = await require("./db.js")(app);
+  require("./auth.js")(app);
+  require("./api")(app);
+  require("./redirects.js")(app);
 
-	// Init Nuxt.js
-	const nuxt = new Nuxt(nuxtConfig);
+  // Init Nuxt.js
+  const nuxt = new Nuxt(nuxtConfig);
 
-	// Build only in dev mode
-	if (nuxtConfig.dev) {
-		const builder = new Builder(nuxt);
-		await builder.build();
-	}
+  // Build only in dev mode
+  if (nuxtConfig.dev) {
+    const builder = new Builder(nuxt);
+    await builder.build();
+  }
 
-	// Give nuxt middleware to express
-	app.use(nuxt.render);
+  // Give nuxt middleware to express
+  app.use(nuxt.render);
 
-	// Listen the server
-	app.listen(port, host);
-	consola.ready({
-		message: `Server listening on http://${host}:${port}`,
-		badge: true,
-	});
+  // Listen the server
+  app.listen(port, host);
+  consola.ready({
+    message: `Server listening on http://${host}:${port}`,
+    badge: true,
+  });
 
-	/* Probably not right
+  /* Probably not right
     consola.ready({
         message: `REPL started`,
         badge: true,

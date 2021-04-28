@@ -1,3 +1,3 @@
 export default function ({ $axios, redirect }) {
-	$axios.defaults.baseURL = "//" + window.location.host + "/";
+  $axios.defaults.baseURL = "//" + window.location.host + "/";
 }
