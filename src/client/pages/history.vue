@@ -9,7 +9,13 @@
         :history.sync="history",
         @refresh="refreshHistory($event)"
       )
-      HistoryTimeLine(ref="timeline", :history.sync="history", @refresh="refreshHistory")
+      HistoryTimeLine(
+        ref="timeline",
+        :history.sync="history",
+        @refresh="refreshHistory",
+        @add="$refs.modal.start()",
+        @edit="$refs.modal.start($event)"
+      )
 </template>
 
 <style lang="scss">
@@ -49,34 +55,23 @@ export default {
   async asyncData({ $axios }) {
     const history = (await $axios.get("/api/v1/history").catch(console.error)).data;
 
-    history.forEach(val => {
-      val.date = new Date(val.date);
-    });
+    for (const event of history) {
+      event.date = new Date(event.date);
+    }
 
     return { history };
-  },
-  data() {
-    return {
-      history: [],
-    };
   },
   head() {
     return {
       title: "History - Meta Construct",
     };
   },
-  mounted() {
-    if (this.$refs.modal) {
-      this.$refs.timeline.$on("wantAdd", () => this.$refs.modal.start());
-      this.$refs.timeline.$on("wantEdit", evt => this.$refs.modal.start(evt));
-    }
-  },
   methods: {
     async refreshHistory(year) {
       const history = (await this.$axios.get("/api/v1/history").catch(console.error)).data;
 
-      history.forEach(val => {
-        val.date = new Date(val.date);
+      history.forEach(event => {
+        event.date = new Date(event.date);
       });
 
       this.history = history;
