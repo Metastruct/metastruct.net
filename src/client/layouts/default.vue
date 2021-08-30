@@ -135,7 +135,7 @@
           p
             | website:
             |
-            a(href="https://tenrys.pw") Tenri
+            a(href="https://tenrys.pw") Tenrys
           p
             | history layout:
             |
