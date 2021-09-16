@@ -135,19 +135,19 @@
           p
             | website:
             |
-            a(href="https://tenrys.pw") Tenrys
+            a(href="https://tenrys.moe") Tenrys
           p
             | history layout:
             |
-            a(href="https://zombie.computer/") ukgamer
+            a(href="https://zombie.computer") ukgamer
           p
             | discord linking:
             |
-            a(href="http://potcfdk.bplaced.net/") PotcFdk
+            a(href="http://potcfdk.bplaced.net") PotcFdk
           p
             | logo:
             |
-            a(href="http://keylimepie.me/") KeyLimePie
+            a(href="http://keylimepie.me") KeyLimePie
 </template>
 
 <style lang="scss">
