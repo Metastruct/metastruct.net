@@ -17,17 +17,13 @@ module.exports = (api, app) => {
         let hasCreated = false;
         const entries = [];
         for (const val of data) {
-          await HistoryEvent.findOrCreate({ where: val })
-            .spread((entry, created) => {
-              entry = entry.get({ plain: true });
-              if (created) {
-                hasCreated = true;
-                entry.justCreated = true;
-              }
-              entries.push(entry);
-              return null;
-            })
-            .catch(console.error);
+          const [result, created] = await HistoryEvent.findOrCreate({ where: val });
+          const entry = result.get({ plain: true });
+          if (created) {
+            hasCreated = true;
+            entry.justCreated = true;
+          }
+          entries.push(entry);
         }
 
         return { success: hasCreated, entries };
