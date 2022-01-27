@@ -7,10 +7,11 @@
         HistoryTimeLineEvent(
           v-for="(event, index) in events",
           v-bind="event",
+          :id="undefined",
           :is-left="index % 2 == 0",
           :timeline="events",
           :key="`${year}-${index}`",
-          @edit="$emit('edit', $event)"
+          @edit="$emit('edit', event)"
         )
       //- .is-clearfix
   .column.is-2
@@ -28,6 +29,36 @@
       ) {{ year }}
       nuxt-link.year.has-text-primary(to="#") Back to top
 </template>
+
+<script>
+import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
+import sortBy from "lodash.sortby";
+
+export default {
+  components: {
+    HistoryTimeLineEvent,
+  },
+  props: ["history"],
+  computed: {
+    historyYears() {
+      const historyYears = {},
+        history = this.history;
+
+      for (const event of history) {
+        const year = event.date.getFullYear();
+        if (!historyYears[year]) historyYears[year] = [];
+        historyYears[year].push(event);
+      }
+
+      for (const events of Object.values(historyYears)) {
+        sortBy(events, ["date"]);
+      }
+
+      return historyYears;
+    },
+  },
+};
+</script>
 
 <style lang="scss">
 .timeline {
@@ -66,34 +97,3 @@
   }
 }
 </style>
-
-<script>
-import HistoryTimeLineEvent from "@/components/HistoryTimeLineEvent.vue";
-import sortBy from "lodash.sortby";
-
-export default {
-  components: {
-    HistoryTimeLineEvent,
-  },
-  props: ["history"],
-  computed: {
-    historyYears() {
-      const historyYears = {},
-        history = this.history;
-
-      for (const event of history) {
-        delete event.id;
-        const year = event.date.getFullYear();
-        if (!historyYears[year]) historyYears[year] = [];
-        historyYears[year].push(event);
-      }
-
-      for (const events of Object.values(historyYears)) {
-        sortBy(events, ["date"]);
-      }
-
-      return historyYears;
-    },
-  },
-};
-</script>

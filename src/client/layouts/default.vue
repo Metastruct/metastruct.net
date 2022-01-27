@@ -62,7 +62,7 @@
             .navbar-dropdown
               a.navbar-item(
                 v-if="!$store.state.user.steamId",
-                :href="`/auth?redirect=${\$route.name}`"
+                :href="`/auth?redirect=${$route.name}`"
               )
                 b-icon(icon="steam")
                 span &nbsp;Steam

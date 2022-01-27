@@ -1,4 +1,4 @@
-const Sequelize = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 const consola = require("consola");
@@ -18,12 +18,10 @@ module.exports = async app => {
     operatorsAliases: "0",
   });
 
-  const models = {};
   fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
     const filePath = path.join(__dirname, "models", file);
     if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
-      const model = require(filePath)(sequelize, Sequelize.DataTypes);
-      models[model.name] = model;
+      require(filePath)(sequelize, DataTypes);
     }
   });
 
@@ -37,5 +35,5 @@ module.exports = async app => {
     })
     .catch(console.error.bind(console, "Connection error:"));
 
-  return { models, sequelize };
+  return { sequelize };
 };

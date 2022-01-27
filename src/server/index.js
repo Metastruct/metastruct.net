@@ -79,3 +79,9 @@ async function start() {
     */
 }
 start();
+
+// process.on("unhandledRejection", (...args) => {
+//   console.log("UNHANDLED PROMISE REJECTION:");
+//   console.log("SOMEHOW NODE.JS DOESN'T PRINT THIS AT ALL EVER");
+//   console.error(...args);
+// });

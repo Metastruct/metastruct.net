@@ -26,7 +26,7 @@
           )
         b-field(label="Image URL")
           b-input(placeholder="(optional) https://i.imgur.com", v-model="editingEvent.imageUrl")
-        b-field(label="URL (\"Read more\")")
+        b-field(label='URL (\"Read more\")')
           b-input(placeholder="(optional) https://google.com", v-model="editingEvent.url")
       .modal-card-foot.buttons.is-right
         button.button(@click="discard")
@@ -38,14 +38,6 @@
           b-icon(icon="check")
           span &nbsp;Confirm
 </template>
-
-<style lang="scss">
-.history-edit-modal {
-  .modal-card .modal-card-head .event-title {
-    width: 100%;
-  }
-}
-</style>
 
 <script>
 export default {
@@ -65,13 +57,13 @@ export default {
       this.show = true;
       if (evt) {
         this.editing = true;
-        this.editingEvent = evt.event;
+        this.editingEvent = evt;
       } else {
         this.adding = true;
       }
 
       this.$nextTick(() => {
-        document.querySelector(".modal-card-head input").focus();
+        document.querySelector(".modal-card-head input")?.focus();
       });
     },
     discard() {
@@ -81,7 +73,7 @@ export default {
       this.editingEvent = {};
     },
     askDelete() {
-      this.$dialog.confirm({
+      this.$buefy.dialog.confirm({
         message: "Are you sure you want to delete this event?",
         onConfirm: async () => {
           await this.$axios
@@ -112,3 +104,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.history-edit-modal {
+  .modal-card .modal-card-head .event-title {
+    width: 100%;
+  }
+}
+</style>

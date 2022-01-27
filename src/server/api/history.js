@@ -1,5 +1,5 @@
 module.exports = (api, app) => {
-  const HistoryEvent = app.db.models.HistoryEvent;
+  const HistoryEvent = app.db.sequelize.models.HistoryEvent;
 
   api.get("/history", async (req, res) => {
     const events = await HistoryEvent.findAll({ raw: true });

@@ -1,5 +1,5 @@
 module.exports = (api, app) => {
-  const Addon = app.db.models.Addon;
+  const Addon = app.db.sequelize.models.Addon;
 
   api.get("/addons", async (req, res) => {
     const addons = await Addon.findAll({ raw: true });
