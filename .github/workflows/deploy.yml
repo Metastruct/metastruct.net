@@ -7,9 +7,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: webfactory/ssh-agent
-        uses: webfactory/ssh-agent@v0.4.1
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker Login
+        uses: docker/login-action@v1.14.1
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Deploy
-        run: ssh -o StrictHostKeyChecking=no -p22 metastruct@threekelv.in metastruct
+          registry: ghcr.io
+          username: ${{secrets.CR_USER}}
+          password: ${{secrets.CR_PAT}}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.9.0
+        with:
+          push: true
+          tags: ghcr.io/metastruct/metastruct.net:latest
