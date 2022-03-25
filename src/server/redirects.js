@@ -3,12 +3,10 @@ const redirects = {
   gallery: "https://loadingscreen.metastruct.net/",
   gitlab: "https://gitlab.com/metastruct",
   github: "https://github.com/metastruct",
-  gitlab2: "https://gitlab.threekelv.in/metastruct",
   msdnaa: "https://www3.metastruct.net/msdnaa",
   rocket: "https://www3.metastruct.net/rocket2",
   rocket2: "https://www3.metastruct.net/rocket2",
   discord: "https://discord.gg/CHuxFSd",
-  webchat: "https://www3.metastruct.net/webchat",
   re: "https://g2cf.metastruct.net/reauth",
 };
 const joinURLs = {
