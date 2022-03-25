@@ -42,7 +42,7 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^7.9.0",
-    "node-sass": "^5.0.0",
+    "node-sass": "^7.0.0",
     "nodemon": "^2.0.15",
     "nuxt-buefy": "^0.4.4",
     "prettier": "^2.0.5",
