@@ -42,7 +42,7 @@ import CardTile from "@/components/CardTile.vue";
 import { Timeline } from "vue-tweet-embed";
 
 function getDiscordStats(discord) {
-  if (discord.id) {
+  if (discord?.id) {
     const online = discord.members.length;
 
     const games = discord.members.filter(val => val.game).map(val => val.game.name);
@@ -124,7 +124,7 @@ export default {
           icon: "steam",
         },
         {
-          path: discordData.instant_invite || "/discord",
+          path: discordData?.instant_invite || "/discord",
           title: "Discord",
           subtitle: getDiscordStats(discordData),
           icon: "discord",
