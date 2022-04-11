@@ -76,11 +76,16 @@ export default {
     Timeline,
   },
   async asyncData({ app }) {
-    const { data: servers } = (await app.$axios.get("/api/v1/servers")) || {};
-    const { data: discordData } =
-      (await app.$axios
-        .get("https://discordapp.com/api/servers/164734812668559360/widget.json")
-        .catch(console.error)) || {};
+    const { data: servers } = await app.$axios.get("/api/v1/servers").catch(err => {
+      console.error(err);
+      return {};
+    });
+    const { data: discordData } = await app.$axios
+      .get("https://discordapp.com/api/servers/164734812668559360/widget.json")
+      .catch(err => {
+        console.error(err);
+        return {};
+      });
 
     return {
       servers,
@@ -144,21 +149,23 @@ export default {
   },
   methods: {
     async refreshData() {
-      const { data: servers } =
-        (await this.$axios
-          .get("/api/v1/servers", {
-            progress: false,
-          })
-          .catch(console.error)) || {};
-      const { data: discordData } =
-        (await this.$axios
-          .get("https://discordapp.com/api/servers/164734812668559360/widget.json", {
-            progress: false,
-          })
-          .catch(console.error)) || {};
+      try {
+        const { data: servers } = await this.$axios.get("/api/v1/servers", {
+          progress: false,
+        });
 
-      this.servers = servers;
-      this.discordData = discordData;
+        const { data: discordData } = await this.$axios.get(
+          "https://discordapp.com/api/servers/164734812668559360/widget.json",
+          {
+            progress: false,
+          }
+        );
+
+        this.servers = servers;
+        this.discordData = discordData;
+      } catch (err) {
+        console.error(err);
+      }
     },
   },
 };
