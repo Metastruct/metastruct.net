@@ -51,8 +51,8 @@ export default {
         historyYears[year].push(event);
       }
 
-      for (const events of Object.values(historyYears)) {
-        sortBy(events, ["date"]);
+      for (const [year, events] of Object.entries(historyYears)) {
+        historyYears[year] = sortBy(events, ["date"]);
       }
 
       return historyYears;
