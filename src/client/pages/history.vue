@@ -3,12 +3,13 @@
   section.section
     .container
       h1.title History of Meta Construct
-      HistoryEventEditModal(
-        ref="modal",
-        v-if="$store.state.user.isAdmin",
-        :history.sync="history",
-        @refresh="refreshHistory($event)"
-      )
+      client-only
+        HistoryEventEditModal(
+          ref="modal",
+          v-if="$store.state.user.isAdmin",
+          :history.sync="history",
+          @refresh="refreshHistory($event)"
+        )
       HistoryTimeLine(
         ref="timeline",
         :history.sync="history",

@@ -33,63 +33,61 @@
             b-icon(icon="shopping")
             span &nbsp;Merchandise
         .navbar-end
-          client-only
-            .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
-              a.navbar-link
+          .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
+            a.navbar-link
+              b-icon(icon="key")
+              span &nbsp;Admin
+            .navbar-dropdown
+              a.navbar-item(href="https://gitlab.com/metastruct")
+                b-icon(icon="gitlab")
+                span &nbsp;GitLab
+              a.navbar-item(href="/rocket2")
+                b-icon(icon="rocket")
+                span &nbsp;Rocket
+              a.navbar-item(href="/msdnaa")
                 b-icon(icon="key")
-                span &nbsp;Admin
-              .navbar-dropdown
-                a.navbar-item(href="https://gitlab.com/metastruct")
-                  b-icon(icon="gitlab")
-                  span &nbsp;GitLab
-                a.navbar-item(href="/rocket2")
-                  b-icon(icon="rocket")
-                  span &nbsp;Rocket
-                a.navbar-item(href="/msdnaa")
-                  b-icon(icon="key")
-                  span &nbsp;MSDNAA
+                span &nbsp;MSDNAA
           nuxt-link.navbar-item(to="/api/v1/docs")
             b-icon(icon="application")
             span &nbsp;API
-          client-only
-            .navbar-item(v-if="$store.state.user.steamId")
-              b-icon(icon="account")
-              span &nbsp;{{ $store.state.user.nickname }}
-            .navbar-item.has-dropdown.is-hoverable(
-              v-if="!$store.state.user.steamId || !$store.state.discordUser.id"
-            )
-              a.navbar-link
-                b-icon(icon="login")
-                span &nbsp;Log in
-              .navbar-dropdown
-                a.navbar-item(
-                  v-if="!$store.state.user.steamId",
-                  :href="`/auth?redirect=${$route.name}`"
-                )
-                  b-icon(icon="steam")
-                  span &nbsp;Steam
-                a.navbar-item(
-                  v-if="!$store.state.discordUser.id",
-                  href="https://metastruct.net/discord/auth"
-                )
-                  b-icon(icon="discord")
-                  span &nbsp;Discord
-            .navbar-item.has-dropdown.is-hoverable(
-              v-if="$store.state.user.steamId || $store.state.discordUser.id"
-            )
-              a.navbar-link
-                b-icon(icon="logout")
-                span &nbsp;Log out
-              .navbar-dropdown
-                a.navbar-item(v-if="$store.state.user.steamId", :href="`/auth/logout`")
-                  b-icon(icon="steam")
-                  span &nbsp;Steam
-                a.navbar-item(
-                  v-if="$store.state.discordUser.id",
-                  href="https://metastruct.net/discord/auth/logout"
-                )
-                  b-icon(icon="discord")
-                  span &nbsp;Discord
+          .navbar-item(v-if="$store.state.user.steamId")
+            b-icon(icon="account")
+            span &nbsp;{{ $store.state.user.nickname }}
+          .navbar-item.has-dropdown.is-hoverable(
+            v-if="!$store.state.user.steamId || !$store.state.discordUser.id"
+          )
+            a.navbar-link
+              b-icon(icon="login")
+              span &nbsp;Log in
+            .navbar-dropdown
+              a.navbar-item(
+                v-if="!$store.state.user.steamId",
+                :href="`/auth?redirect=${$route.name}`"
+              )
+                b-icon(icon="steam")
+                span &nbsp;Steam
+              a.navbar-item(
+                v-if="!$store.state.discordUser.id",
+                href="https://metastruct.net/discord/auth"
+              )
+                b-icon(icon="discord")
+                span &nbsp;Discord
+          .navbar-item.has-dropdown.is-hoverable(
+            v-if="$store.state.user.steamId || $store.state.discordUser.id"
+          )
+            a.navbar-link
+              b-icon(icon="logout")
+              span &nbsp;Log out
+            .navbar-dropdown
+              a.navbar-item(v-if="$store.state.user.steamId", :href="`/auth/logout`")
+                b-icon(icon="steam")
+                span &nbsp;Steam
+              a.navbar-item(
+                v-if="$store.state.discordUser.id",
+                href="https://metastruct.net/discord/auth/logout"
+              )
+                b-icon(icon="discord")
+                span &nbsp;Discord
 
   .hero.is-dark
     CyclingBackground(:images="backgrounds")
