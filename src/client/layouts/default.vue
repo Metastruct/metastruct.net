@@ -33,20 +33,21 @@
             b-icon(icon="shopping")
             span &nbsp;Merchandise
         .navbar-end
-          .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
-            a.navbar-link
-              b-icon(icon="key")
-              span &nbsp;Admin
-            .navbar-dropdown
-              a.navbar-item(href="https://gitlab.com/metastruct")
-                b-icon(icon="gitlab")
-                span &nbsp;GitLab
-              a.navbar-item(href="/rocket2")
-                b-icon(icon="rocket")
-                span &nbsp;Rocket
-              a.navbar-item(href="/msdnaa")
+          client-only
+            .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
+              a.navbar-link
                 b-icon(icon="key")
-                span &nbsp;MSDNAA
+                span &nbsp;Admin
+              .navbar-dropdown
+                a.navbar-item(href="https://gitlab.com/metastruct")
+                  b-icon(icon="gitlab")
+                  span &nbsp;GitLab
+                a.navbar-item(href="/rocket2")
+                  b-icon(icon="rocket")
+                  span &nbsp;Rocket
+                a.navbar-item(href="/msdnaa")
+                  b-icon(icon="key")
+                  span &nbsp;MSDNAA
           nuxt-link.navbar-item(to="/api/v1/docs")
             b-icon(icon="application")
             span &nbsp;API
