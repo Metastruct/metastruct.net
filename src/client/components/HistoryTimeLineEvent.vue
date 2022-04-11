@@ -1,6 +1,7 @@
 <template lang="pug">
 .timeline-event(:id="dateString", :class="{ 'is-left': isLeft, 'is-right': !isLeft }")
-  EditButton(v-if="$store.state.user.isAdmin", @start="$emit('edit')")
+  client-only
+    EditButton(v-if="$store.state.user.isAdmin", @start="$emit('edit')")
   .card
     .card-image.image.is-16by9(v-if="!!imageUrl")
       figure.image

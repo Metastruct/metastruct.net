@@ -16,11 +16,12 @@
       //- .is-clearfix
   .column.is-2
     .year-picker
-      template(v-if="$store.state.user.isAdmin")
-        a.has-text-primary.year(@click="$emit('add')")
-          b-icon(icon="plus")
-          span &nbsp;Add new event
-        hr.divider
+      client-only
+        template(v-if="$store.state.user.isAdmin")
+          a.has-text-primary.year(@click="$emit('add')")
+            b-icon(icon="plus")
+            span &nbsp;Add new event
+          hr.divider
       nuxt-link.year(
         v-for="(_, year) in historyYears",
         :to="`#${year}`",
