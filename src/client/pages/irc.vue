@@ -26,11 +26,11 @@
           a(href="https://www.mirc.co.uk/") mIRC
           | . There are also web-based clients available such as
           |
-          a(href="https://kiwiirc.com/nextclient/#irc://irc.threekelv.in/#metastruct") Kiwi IRC
+          a(href="https://kiwiirc.com/nextclient/#ircs://irc.litterbin.dev:+6697/#metastruct") Kiwi IRC
           |
           | and
           |
-          a(href="https://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
+          a(href="https://mibbit.com/?channel=%23metastruct&amp;server=litterbin.dev%3A%2B6697") Mibbit
           | .
         p
           | You can view a more comprehensive list of clients
@@ -42,13 +42,13 @@
         p
           | You can join
           |
-          a(href="irc://threekelv.in/metastruct") #metastruct on threekelv.in
+          a(href="ircs://irc.litterbin.dev/metastruct") #metastruct on litterbin.dev
           |
           | (
-          a(href="https://kiwiirc.com/nextclient/#irc://irc.threekelv.in/#metastruct") Kiwi IRC
+          a(href="https://kiwiirc.com/nextclient/#ircs://irc.litterbin.dev:+6697/#metastruct") Kiwi IRC
           | ,
           |
-          a(href="https://mibbit.com/?channel=%23metastruct&amp;server=threekelv.in") Mibbit
+          a(href="https://mibbit.com/?channel=%23metastruct&amp;server=litterbin.dev%3A%2B6697") Mibbit
           | ).
 
         h5.has-text-secondary Registration, or: Why do I see ticks/crosses next to people's names in-game?
@@ -91,7 +91,7 @@
         p
           | If you need help with IRC, join the
           |
-          a(href="irc://threekelv.in/help") #help
+          a(href="ircs://litterbin.dev/help") #help
           |
           | channel!
 </template>
