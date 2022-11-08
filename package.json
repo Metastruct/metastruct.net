@@ -21,7 +21,7 @@
     "js-cookie": "^2.2.1",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^2.15.8",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-saml": "^2.0.2",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
