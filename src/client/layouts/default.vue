@@ -135,7 +135,7 @@
           p
             | website:
             |
-            a(href="https://tenrys.moe") Tenrys
+            a(href="https://bell.moe") Bell
           p
             | history layout:
             |
