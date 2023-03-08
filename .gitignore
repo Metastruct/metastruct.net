@@ -82,7 +82,7 @@ dist
 .idea
 
 # Metastruct specific
-config.json
+config*.json
 ecosystem.config.js
 
 # Google verification
