@@ -16,30 +16,30 @@
             CardTile(v-for="(data, key) in middle", :data="data", :key="`middle-${key}`")
           .tile.is-parent.is-vertical
             CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
-            .tile.is-child.card
-              Timeline#metastruct(
-                sourceType="profile",
-                :options="{ tweetLimit: 2, theme: 'dark', linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }",
-                widget-class="vue-twitter-embed"
-              )
+            //- .tile.is-child.card
+            //-   Timeline#metastruct(
+            //-     sourceType="profile",
+            //-     :options="{ tweetLimit: 2, theme: 'dark', linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }",
+            //-     widget-class="vue-twitter-embed"
+            //-   )
 </template>
 
 <style lang="scss">
-.vue-twitter-embed {
-  display: flex;
-  height: auto;
-  overflow-y: auto;
-}
-.twitter-timeline {
-  margin: calc(1.5rem - 10px) !important;
-  width: calc(100% - 1.5em) !important;
-}
+// .vue-twitter-embed {
+//   display: flex;
+//   height: auto;
+//   overflow-y: auto;
+// }
+// .twitter-timeline {
+//   margin: calc(1.5rem - 10px) !important;
+//   width: calc(100% - 1.5em) !important;
+// }
 </style>
 
 <script>
 import ServerInfo from "@/components/ServerInfo.vue";
 import CardTile from "@/components/CardTile.vue";
-import { Timeline } from "vue-tweet-embed";
+// import { Timeline } from "vue-tweet-embed";
 
 function getDiscordStats(discord) {
   if (discord?.id) {
@@ -73,7 +73,7 @@ export default {
   components: {
     ServerInfo,
     CardTile,
-    Timeline,
+    // Timeline,
   },
   async asyncData({ app }) {
     const { data: servers } = await app.$axios.get("/api/v1/servers").catch(err => {
