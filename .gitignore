@@ -87,3 +87,6 @@ ecosystem.config.js
 
 # Google verification
 src/client/static/google934edf4e65e4e186.html
+
+# VSCode
+.devcontainer
