@@ -51,7 +51,7 @@ module.exports = app => {
       {
         path: "/auth/callback",
         entryPoint: app.config.saml.entryPoint,
-        issuer: "passport-saml",
+        issuer: "metastructnet-passport-saml",
         cert: "fake cert"
       },
       async (profile, done) => {
