@@ -11,9 +11,9 @@ const redirects = {
 };
 const joinURLs = {
   // This is separate from config.gameservers, apparently
-  eu1: "g1.metastruct.net:27015",
-  eu2: "g2.metastruct.net:27015",
-  us1: "g3.metastruct.net:27015",
+  eu1: "195.154.166.219:27015",
+  eu2: "176.9.65.121:27015",
+  us1: "66.42.103.116:27015",
   hl2coop: "94.23.170.2:27016",
   hl2dm: "94.23.170.2:27015",
 };
