@@ -93,6 +93,13 @@ module.exports = app => {
     }
   });
   app.get("/auth/logout", req => {
-    req.logout();
+    req.logout(
+      (err) => {
+        if (err) { 
+          return next(err); 
+        }
+      res.redirect("/");
+      }
+    )
   });
 };
