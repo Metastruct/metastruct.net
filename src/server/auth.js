@@ -49,10 +49,10 @@ module.exports = app => {
   passport.use(
     new SamlStrategy(
       {
-        path: "/auth/callback",
+        callbackUrl: "/auth/callback",
         entryPoint: app.config.saml.entryPoint,
         issuer: "metastructnet-passport-saml",
-        cert: "fake cert"
+        cert: app.config.saml.cert
       },
       async (profile, done) => {
         const steamId = profile.openid.match(/\/(\d+)$/)[1];
