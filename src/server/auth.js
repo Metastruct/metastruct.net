@@ -99,7 +99,6 @@ module.exports = app => {
           return next(err); 
         }
       res.redirect("/");
-      }
-    )
+    });
   });
 };
