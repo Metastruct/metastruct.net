@@ -54,7 +54,7 @@
             b-icon(icon="account")
             span &nbsp;{{ $store.state.user.nickname }}
           .navbar-item.has-dropdown.is-hoverable(
-            v-if="!$store.state.user.steamId || !$store.state.discordUser.id"
+            v-if="!$store.state.user.steamId"
           )
             a.navbar-link
               b-icon(icon="login")
