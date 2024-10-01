@@ -92,7 +92,7 @@ module.exports = app => {
       res.redirect("/");
     }
   });
-  app.get("/auth/logout", req => {
+  app.get("/auth/logout", (req, res) => {
     req.logout(
       (err) => {
         if (err) { 
