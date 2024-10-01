@@ -66,14 +66,8 @@
               )
                 b-icon(icon="steam")
                 span &nbsp;Steam
-              //- a.navbar-item(
-              //-   v-if="!$store.state.discordUser.id",
-              //-   href="https://metastruct.net/discord/auth"
-              //- )
-              //-   b-icon(icon="discord")
-              //-   span &nbsp;Discord
           .navbar-item.has-dropdown.is-hoverable(
-            v-if="$store.state.user.steamId || $store.state.discordUser.id"
+            v-if="$store.state.user.steamId"
           )
             a.navbar-link
               b-icon(icon="logout")
@@ -82,12 +76,6 @@
               a.navbar-item(v-if="$store.state.user.steamId", :href="`/auth/logout`")
                 b-icon(icon="steam")
                 span &nbsp;Steam
-              a.navbar-item(
-                v-if="$store.state.discordUser.id",
-                href="https://metastruct.net/discord/auth/logout"
-              )
-                b-icon(icon="discord")
-                span &nbsp;Discord
 
   .hero.is-dark
     CyclingBackground(:images="backgrounds")
@@ -141,7 +129,7 @@
             |
             a(href="https://zombie.computer") ukgamer
           p
-            | discord linking:
+            | old discord linking:
             |
             a(href="http://potcfdk.bplaced.net") PotcFdk
           p
