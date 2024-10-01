@@ -66,12 +66,12 @@
               )
                 b-icon(icon="steam")
                 span &nbsp;Steam
-              a.navbar-item(
-                v-if="!$store.state.discordUser.id",
-                href="https://metastruct.net/discord/auth"
-              )
-                b-icon(icon="discord")
-                span &nbsp;Discord
+              //- a.navbar-item(
+              //-   v-if="!$store.state.discordUser.id",
+              //-   href="https://metastruct.net/discord/auth"
+              //- )
+              //-   b-icon(icon="discord")
+              //-   span &nbsp;Discord
           .navbar-item.has-dropdown.is-hoverable(
             v-if="$store.state.user.steamId || $store.state.discordUser.id"
           )
