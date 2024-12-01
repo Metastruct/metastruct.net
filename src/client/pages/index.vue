@@ -69,6 +69,8 @@ function getDiscordStats(discord) {
   }
 }
 
+const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.json"
+
 export default {
   components: {
     ServerInfo,
@@ -81,7 +83,7 @@ export default {
       return {};
     });
     const { data: discordData } = await app.$axios
-      .get("https://discord.com/api/guilds/164734812668559360/widget.json")
+      .get(WIDGET_URL)
       .catch(err => {
         console.error(err);
         return {};
@@ -155,7 +157,7 @@ export default {
         });
 
         const { data: discordData } = await this.$axios.get(
-          "https://discordapp.com/api/servers/164734812668559360/widget.json",
+          WIDGET_URL,
           {
             progress: false,
           }
