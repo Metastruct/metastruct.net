@@ -81,7 +81,7 @@ export default {
       return {};
     });
     const { data: discordData } = await app.$axios
-      .get("https://discordapp.com/api/servers/164734812668559360/widget.json")
+      .get("https://discord.com/api/guilds/164734812668559360/widget.json")
       .catch(err => {
         console.error(err);
         return {};
