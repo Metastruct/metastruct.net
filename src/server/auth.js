@@ -52,7 +52,7 @@ module.exports = app => {
         callbackUrl: "/auth/callback",
         entryPoint: app.config.saml.entryPoint,
         issuer: "metastructnet-passport-saml",
-        cert: app.config.saml.cert
+        cert: app.config.saml.cert,
       },
       async (profile, done) => {
         const steamId = profile.openid.match(/\/(\d+)$/)[1];
@@ -93,11 +93,10 @@ module.exports = app => {
     }
   });
   app.get("/auth/logout", (req, res) => {
-    req.logout(
-      (err) => {
-        if (err) { 
-          return next(err); 
-        }
+    req.logout(err => {
+      if (err) {
+        return next(err);
+      }
       res.redirect("/");
     });
   });
