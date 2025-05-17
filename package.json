@@ -5,7 +5,7 @@
   "author": "Tenri",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon --unhandled-rejections=warn src/server/index.js --watch src/server ",
+    "dev": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider nodemon --unhandled-rejections=warn src/server/index.js --watch src/server",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production node src/server/index.js",
     "generate": "nuxt generate"

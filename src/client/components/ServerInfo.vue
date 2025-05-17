@@ -4,15 +4,14 @@
     .background
   .card-content(@mousedown="startJoin", @mouseup="endJoin")
     p.title.has-text-primary-light {{ idToName[id] || id }}
-    p.subtitle
-      | {{ server.playerinfo.length > 0 ?
-      |
-      | server.playerinfo.length + (" player" + (server.playerinfo.length != 1 ? "s" : "")) :
-      |
-      | "Empty,"
-      | }} on {{ server.serverinfo.map }}
-      br
-      | {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours uptime
+    .subtitle
+      div(style="display: flex; align-items: center;")
+        span {{ playerCount }} on &nbsp;
+        span.small-code {{ server.serverinfo.map }}
+        template(v-if="!server.serverinfo.gm.includes('sandbox')")
+          span.small-code.gamemode(style="margin-left: 0.5em") {{ server.serverinfo.gm }}
+      .subtitle
+        | {{ ((server.time - server.started) / 60 / 60).toFixed(1) }} hours uptime
     ul.playerlist(v-if="server.playerinfo.length > 0", @mousedown.stop, @mouseup.stop)
       li.player(v-for="player in server.playerinfo", :class="{ 'is-admin': player.IsAdmin }")
         a(
@@ -52,16 +51,13 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background:
-        linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
         url("/img/gm_construct_m.jpg");
       background-size: cover;
       background-position: center center;
       filter: brightness(100%) blur(3px);
       transform-origin: center;
-      transition:
-        margin 0.25s ease-out,
-        filter 0.25s ease-out;
+      transition: margin 0.25s ease-out, filter 0.25s ease-out;
     }
   }
 
@@ -133,6 +129,27 @@
       }
     }
 
+    .small-code {
+      font-size: 11pt;
+      font-family: monospace;
+      font-weight: 400;
+    }
+
+    .gamemode {
+      --x-padding: 3px;
+      --height: 24px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      height: var(--height);
+      border-radius: calc(var(--height) + var(--x-padding));
+      padding: 3px 6px;
+      background: linear-gradient(225deg, hsl(25, 88%, 40%) 0%, hsl(25, 88%, 30%) 100%);
+      color: white;
+      font-size: 9pt;
+      opacity: 1;
+    }
+
     .server-info-bottom {
       display: flex;
       justify-content: space-around;
@@ -163,11 +180,20 @@ export default {
       mY: null,
     };
   },
+  computed: {
+    playerCount() {
+      return this.server.playerinfo.length > 0
+        ? this.server.playerinfo.length +
+            (" player" + (this.server.playerinfo.length !== 1 ? "s" : ""))
+        : "Empty,";
+    },
+  },
   methods: {
     startJoin(ev) {
       [this.mX, this.mY] = [ev.x, ev.y];
     },
     endJoin(ev) {
+      if (ev.button !== 0) return; // Only handle left click
       if (this.mX - ev.x === 0 && this.mY - ev.y === 0)
         window.open(
           `steam://connect/${this.server.serverinfo.address}:${this.server.serverinfo.port}`,
