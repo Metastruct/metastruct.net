@@ -156,6 +156,7 @@ export default {
       idToName: {
         eu1: "Europe #1",
         eu2: "Europe #2",
+        eu3: "Europe #3",
         us1: "United States #1",
       },
       mX: null,
