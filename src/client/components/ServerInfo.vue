@@ -5,7 +5,7 @@
   .card-content(@mousedown="startJoin", @mouseup="endJoin")
     p.title.has-text-primary-light {{ idToName[id] || id }}
     .subtitle
-      div(style="display: flex; align-items: center;")
+      div(style="display: flex; align-items: baseline;")
         span {{ playerCount }} on &nbsp;
         span.small-code {{ server.serverinfo.map }}
         template(v-if="!server.serverinfo.gm.includes('sandbox')")
