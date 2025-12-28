@@ -37,12 +37,9 @@ module.exports = async app => {
 
   for (const [name, data] of Object.entries(app.config.gameservers)) {
     const hostname = data.address;
-    let ip = await resolveHostname(hostname);
-    if (!ip && fallbackIPs[name]) {
-      ip = fallbackIPs[name];
-    } else {
-      continue;
-    }
+    const ip = (await resolveHostname(hostname)) ?? fallbackIPs[name];
+    if (!ip) continue;
+
     app.get(`/join/${name}/:pwd?`, (req, res) => {
       const pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
       res.redirect(`steam://connect/${ip}/${pwd}`);
