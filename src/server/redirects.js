@@ -29,6 +29,7 @@ module.exports = app => {
       res.redirect(url);
     });
   }
+  // hacky but should work
   (async () => {
     for (const [name, data] of Object.entries(app.config.gameservers)) {
       const hostname = data.address;
@@ -36,9 +37,9 @@ module.exports = app => {
       if (!ip) continue;
       app.get(`/join/${name}/:pwd?`, (req, res) => {
         const pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
-        res.redirect(`steam://connect/${hostname}/${pwd}`);
+        res.redirect(`steam://connect/${ip}/${pwd}`);
       });
-      console.log("Added join URL for " + name + " at " + hostname);
+      console.log("Added join URL for " + name + " at " + hostname + " with ip " + ip);
     }
   })
 };
