@@ -12,6 +12,13 @@ const redirects = {
   re: "https://g2cf.metastruct.net/reauth",
 };
 
+const fallbackIPs = {
+  eu1: "195.154.166.219:27015",
+  eu2: "164.92.180.157:27015",
+  eu3: "116.202.33.7:27015",
+  us1: "66.42.103.116:27015",
+}
+
 async function resolveHostname(hostname) {
   try {
     return (await dns.lookup(hostname)).address
@@ -32,8 +39,9 @@ module.exports = async app => {
 
   for (const [name, data] of Object.entries(app.config.gameservers)) {
     const hostname = data.address;
-    const ip = await resolveHostname(hostname);
-    if (!ip) continue;
+    let ip = await resolveHostname(hostname);
+    if (!ip && fallbackIPs[name]) { ip = fallbackIPs[name] }
+    else { continue }
     app.get(`/join/${name}/:pwd?`, (req, res) => {
       const pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
       res.redirect(`steam://connect/${ip}/${pwd}`);
