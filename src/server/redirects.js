@@ -12,7 +12,7 @@ const redirects = {
 const joinURLs = {
   // This is separate from config.gameservers, apparently
   eu1: "195.154.166.219:27015",
-  eu2: "176.9.65.121:27015",
+  eu2: "164.92.180.157:27015",
   eu3: "116.202.33.7:27015",
   us1: "66.42.103.116:27015",
   hl2coop: "94.23.170.2:27016",
