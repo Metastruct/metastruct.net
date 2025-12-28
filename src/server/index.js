@@ -48,7 +48,7 @@ async function start() {
   app.db = await require("./db.js")(app);
   require("./auth.js")(app);
   require("./api")(app);
-  require("./redirects.js")(app);
+  await require("./redirects.js")(app);
 
   // Init Nuxt.js
   const nuxt = new Nuxt(nuxtConfig);
