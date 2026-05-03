@@ -27,7 +27,10 @@
         )
           b-icon(icon="arrow-right", type="is-success")
     .server-info-bottom
-      a.has-text-primary-light Join us!
+        a.has-text-primary-light(
+          :title="'Join us!'",
+          :href="`steam://connect/${server.serverinfo.address}:${server.serverinfo.port}/metaweb`"
+        ) Join us!
 </template>
 
 <style lang="scss">

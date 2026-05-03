@@ -21,7 +21,7 @@ const fallbackIPs = {
 
 async function resolveHostname(hostname) {
   try {
-    return (await dns.lookup(hostname)).address;
+    return (await dns.lookup(hostname, { family: 4 })).address;
   } catch (err) {
     console.error("failed to resolve hostname", err);
   }
@@ -41,7 +41,7 @@ module.exports = async app => {
     if (!ip) continue;
 
     app.get(`/join/${name}/:pwd?`, (req, res) => {
-      const pwd = (req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
+      const pwd = (req.query.pwd || req.params.pwd || "metawebsite").replace(/[^a-zA-Z*0-9:+-\s]+/g, "");
       res.redirect(`steam://connect/${ip}/${pwd}`);
     });
     console.log("Added join URL for " + name + " at " + hostname + " with ip " + ip);
