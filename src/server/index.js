@@ -44,7 +44,11 @@ const nuxtConfig = require("../../nuxt.config.js");
 nuxtConfig.dev = !(process.env.NODE_ENV === "production");
 
 async function start() {
-  // Init our stuff
+  process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason); 
+  });
+  console.log("start");
+
   app.db = await require("./db.js")(app);
   require("./auth.js")(app);
   require("./api")(app);
@@ -79,9 +83,3 @@ async function start() {
     */
 }
 start();
-
-// process.on("unhandledRejection", (...args) => {
-//   console.log("UNHANDLED PROMISE REJECTION:");
-//   console.log("SOMEHOW NODE.JS DOESN'T PRINT THIS AT ALL EVER");
-//   console.error(...args);
-// });

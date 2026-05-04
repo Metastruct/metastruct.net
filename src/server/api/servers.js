@@ -1,5 +1,5 @@
 const request = require("request-promise-native");
-const dns = require('node:dns').promises;
+const dns = require('dns').promises;
 
 const dnsCache = new Map();
 async function resolveOnce(hostname) {
