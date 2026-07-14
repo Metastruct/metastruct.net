@@ -43,7 +43,7 @@ import CardTile from "@/components/CardTile.vue";
 
 function getDiscordStats(discord) {
   if (discord?.id) {
-    const online = discord.members.length;
+    const online = discord.presence_count;
 
     const games = discord.members.filter(val => val.game).map(val => val.game.name);
     const playingStats = {};
@@ -69,7 +69,7 @@ function getDiscordStats(discord) {
   }
 }
 
-const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.json"
+const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.json";
 
 export default {
   components: {
@@ -82,12 +82,10 @@ export default {
       console.error(err);
       return {};
     });
-    const { data: discordData } = await app.$axios
-      .get(WIDGET_URL)
-      .catch(err => {
-        console.error(err);
-        return {};
-      });
+    const { data: discordData } = await app.$axios.get(WIDGET_URL).catch(err => {
+      console.error(err);
+      return {};
+    });
 
     return {
       servers,
@@ -156,12 +154,9 @@ export default {
           progress: false,
         });
 
-        const { data: discordData } = await this.$axios.get(
-          WIDGET_URL,
-          {
-            progress: false,
-          }
-        );
+        const { data: discordData } = await this.$axios.get(WIDGET_URL, {
+          progress: false,
+        });
 
         this.servers = servers;
         this.discordData = discordData;
