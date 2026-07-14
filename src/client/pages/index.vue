@@ -126,7 +126,7 @@ export default {
           icon: "steam",
         },
         {
-          path: discordData?.instant_invite || "/discord",
+          path: discordData?.instant_invite || "https://discord.gg/CHuxFSd",
           title: "Discord",
           subtitle: getDiscordStats(discordData),
           icon: "discord",
