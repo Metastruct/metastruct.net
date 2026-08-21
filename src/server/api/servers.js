@@ -1,47 +1,23 @@
 const request = require("request-promise-native");
-const dns = require('dns').promises;
 
-const dnsCache = new Map();
-async function resolveOnce(hostname) {
-  if (dnsCache.has(hostname)) {
-    return dnsCache.get(hostname);
-  }
-
-  try {
-    const addresses = await dns.resolve4(hostname);
-    const primaryIp = addresses[0];
-    dnsCache.set(hostname, primaryIp);
-    return primaryIp;
-  } catch (err) {
-    console.error(`Failed to resolve ${hostname}:`, err.message);
-    return null;
-  }
-}
-
+// Live server/instance list per game, aggregated by metaconcord from the game
+// bridges. /join/<name> redirects stay in redirects.js on config.gameservers.
 module.exports = (api, app) => {
-  const gameservers = app.config.gameservers;
+  const baseUrl = (app.config.metaconcord && app.config.metaconcord.url) || "";
 
-  // https://g2cf.metastruct.net/app/playerlist?server=# gives a better result though
   api.get("/servers", async (req, res) => {
-	  
-    res.set("Cache-Control", "public, max-age=10, stale-while-revalidate=120, stale-if-error=3600");
-    const info = {};
-
-    for (const [name, data] of Object.entries(gameservers)) {
-      if (data.serverid) {
-        try {
-          const _info = JSON.parse(
-            await request(`https://g2cf.metastruct.net/app/playerlist?server=${data.serverid}`)
-          );
-          delete _info.players;
-          _info.serverinfo.dns = data.address;
-          _info.serverinfo.address = await resolveOnce(data.address) || data.address;
-          _info.serverinfo.port = data.port;
-          info[name] = _info;
-        } catch (e) {}
-      }
+    res.set("Cache-Control", "public, max-age=5, stale-while-revalidate=30, stale-if-error=600");
+    if (!baseUrl) {
+      res.status(503).json({ error: "metaconcord url not configured" });
+      return;
     }
 
-    res.json(info);
+    try {
+      const body = await request(`${baseUrl.replace(/\/$/, "")}/servers`, { timeout: 10000 });
+      res.type("json").send(body);
+    } catch (err) {
+      console.error("failed to fetch servers from metaconcord:", err.message);
+      res.status(502).json({ error: "metaconcord unavailable" });
+    }
   });
 };

@@ -74,7 +74,8 @@ export default {
         {
           path: "/servers",
           method: "GET",
-          description: "Retrieves info about all online Meta Construct servers.",
+          description:
+            "Retrieves the online servers and instances of every game, grouped by game, with players. Aggregated by metaconcord.",
         },
         {
           path: "/addons",

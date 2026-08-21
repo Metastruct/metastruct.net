@@ -29,6 +29,6 @@ $ yarn run generate
 "metaconcord": { "url": "https://metaconcord.metastruct.net" }
 ```
 
-`/api/v1/addons` proxies `<url>/addons` from node-metaconcord.
+`/api/v1/addons` and `/api/v1/servers` proxy `<url>/addons` and `<url>/servers` from node-metaconcord. `gameservers` is still needed for the `/join/<name>` redirects.
 
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).

@@ -4,14 +4,8 @@
     .hero-body
       .container
         .tile.is-ancestor
-          .tile.is-parent.is-vertical.is-4(v-if="!$isEmpty(servers)")
-            ServerInfo.tile.is-child(
-              v-for="(server, id) in servers",
-              :server="server",
-              :key="id",
-              :id="id",
-              tabindex="0"
-            )
+          .tile.is-parent.is-vertical.is-4(v-if="games.length")
+            GameServers(:games="games")
           .tile.is-parent.is-vertical
             CardTile(v-for="(data, key) in middle", :data="data", :key="`middle-${key}`")
           .tile.is-parent.is-vertical
@@ -37,7 +31,7 @@
 </style>
 
 <script>
-import ServerInfo from "@/components/ServerInfo.vue";
+import GameServers from "@/components/GameServers.vue";
 import CardTile from "@/components/CardTile.vue";
 // import { Timeline } from "vue-tweet-embed";
 
@@ -73,14 +67,14 @@ const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.jso
 
 export default {
   components: {
-    ServerInfo,
+    GameServers,
     CardTile,
     // Timeline,
   },
   async asyncData({ app }) {
     const { data: servers } = await app.$axios.get("/api/v1/servers").catch(err => {
       console.error(err);
-      return {};
+      return { data: { games: [] } };
     });
     const { data: discordData } = await app.$axios.get(WIDGET_URL).catch(err => {
       console.error(err);
@@ -88,7 +82,7 @@ export default {
     });
 
     return {
-      servers,
+      games: (servers && servers.games) || [],
       discordData,
       middle: [
         {
@@ -143,9 +137,12 @@ export default {
     },
   },
   mounted() {
-    setInterval(() => {
+    this.refreshTimer = setInterval(() => {
       this.refreshData();
     }, 20000);
+  },
+  beforeDestroy() {
+    clearInterval(this.refreshTimer);
   },
   methods: {
     async refreshData() {
@@ -158,7 +155,7 @@ export default {
           progress: false,
         });
 
-        this.servers = servers;
+        this.games = (servers && servers.games) || [];
         this.discordData = discordData;
       } catch (err) {
         console.error(err);
