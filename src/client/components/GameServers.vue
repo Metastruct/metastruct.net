@@ -3,9 +3,10 @@
 //- accordion as a whole.
 .tile.is-parent.is-vertical.is-4.game-servers(v-if="games.length")
   .game-category(
-    v-for="g in games",
+    v-for="(g, index) in games",
     :key="g.game",
-    :class="{ 'is-open': g.game === openGame }"
+    :class="{ 'is-open': g.game === openGame }",
+    :style="stickyOffsets(index)"
   )
     button.game-category-header(
       type="button",
@@ -16,7 +17,7 @@
       span.game-label {{ g.label }}
       span.game-summary(:class="{ 'is-empty': !playerTotal(g) }")
         b-icon(icon="account-multiple", size="is-small")
-        span {{ playerTotal(g) || "empty" }}
+        span {{ playerTotal(g) || 0 }}
       b-icon.game-chevron(icon="chevron-down", size="is-small")
     transition(
       name="game-collapse",
@@ -40,9 +41,17 @@
 
 <style lang="scss">
 .game-servers {
+  // Sticky headers park against each other, so both the row height and the gap
+  // between rows have to be known quantities rather than whatever the content
+  // works out to.
+  --header-height: 2.75rem;
+  --stack-gap: 1rem;
+  --band-bleed: 0.75rem;
+  --stack-inset: 1rem;
+
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--stack-gap);
 
   // Matches the surface of .card in _overrides: same fill, radius, glow and
   // purple hover as every other clickable card on the page.
@@ -51,7 +60,8 @@
     align-items: center;
     gap: 0.5em;
     width: 100%;
-    padding: 0.65em 1em;
+    height: var(--header-height);
+    padding: 0 1em;
     border: none;
     border-radius: 4px;
     background: $grey-lighter;
@@ -119,6 +129,68 @@
     }
   }
 
+  // A collapsed category is nothing but its header, so it has no room to slide
+  // within itself — the whole category sticks, against .game-servers.
+  .game-category:not(.is-open) {
+    position: sticky;
+    top: var(--sticky-top);
+    bottom: var(--sticky-bottom);
+    z-index: 3;
+
+    // The band of page background that hides whatever scrolls under the row. It
+    // is painted behind the row instead of being padding on it, so the row keeps
+    // its full width and the layout is untouched. It bleeds past the row on
+    // every side, because a card's shadow reaches about 6px beyond the card and
+    // would otherwise show at the edges of the strip.
+    //
+    // Upward it reaches a full gap, which is exactly the bottom edge of whatever
+    // sits above — no sliver of scrolling content between the two, and no
+    // overlap onto the card in normal flow.
+
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: calc(var(--stack-gap) * -1) calc(var(--band-bleed) * -1) calc(var(--stack-gap) / -2);
+      // Fades in over the gap it reaches into, so the strip's top edge does not
+      // cut across a card. That gap is bare page background in normal flow, so
+      // the fade is invisible there. Eased rather than linear: the fade only
+      // spans one gap, and a straight ramp steps more visibly over it.
+      background: linear-gradient(
+        to bottom,
+        rgba($body-background-color, 0) 0,
+        rgba($body-background-color, 0.016) calc(var(--stack-gap) * 0.125),
+        rgba($body-background-color, 0.063) calc(var(--stack-gap) * 0.25),
+        rgba($body-background-color, 0.141) calc(var(--stack-gap) * 0.375),
+        rgba($body-background-color, 0.25) calc(var(--stack-gap) * 0.5),
+        rgba($body-background-color, 0.391) calc(var(--stack-gap) * 0.625),
+        rgba($body-background-color, 0.563) calc(var(--stack-gap) * 0.75),
+        rgba($body-background-color, 0.766) calc(var(--stack-gap) * 0.875),
+        $body-background-color var(--stack-gap)
+      );
+    }
+  }
+
+  // Rows after the first meet the band of the row above them, so they only need
+  // to reach half a gap up.
+  .game-category:not(.is-open) + .game-category:not(.is-open)::before {
+    top: calc(var(--stack-gap) / -2);
+    background: $body-background-color;
+  }
+
+  // The bottom row floats clear of the viewport edge, so its band has to reach
+  // past that edge — otherwise a sliver of scrolling card shows under the strip.
+  .game-category:not(.is-open):last-child::before {
+    bottom: calc((var(--stack-gap) + var(--stack-inset)) * -1);
+  }
+
+  // An open one is tall enough to scroll through, so only its header sticks.
+  .game-category.is-open .game-category-header {
+    position: sticky;
+    top: var(--sticky-top);
+    z-index: 3;
+  }
+
   .game-category-cards {
     display: flex;
     flex-direction: column;
@@ -126,7 +198,7 @@
     padding-top: 0.5rem;
 
     .server-card .playerlist {
-      max-height: 16rem;
+      max-height: 10rem;
     }
   }
 
@@ -179,6 +251,15 @@ export default {
     },
   },
   methods: {
+    // Each header parks clear of the ones above it and the ones below it, so
+    // they tile instead of piling up on the same edge.
+    stickyOffsets(index) {
+      const step = "(var(--header-height) + var(--stack-gap))";
+      return {
+        "--sticky-top": `calc(${index} * ${step})`,
+        "--sticky-bottom": `calc(${this.games.length - 1 - index} * ${step} + var(--stack-inset))`,
+      };
+    },
     playerTotal(g) {
       return g.entries.reduce((total, entry) => total + (entry.playerCount || 0), 0);
     },

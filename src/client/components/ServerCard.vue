@@ -133,7 +133,10 @@
       min-height: 0;
       overflow-y: auto;
       color: $light;
+      // `safe` falls back to start alignment once the list overflows; plain
+      // centring puts the first rows above the scroll origin, out of reach.
       align-content: center;
+      align-content: safe center;
 
       &.is-two-columns {
         display: grid;
