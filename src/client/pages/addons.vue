@@ -3,7 +3,7 @@
   section.section
     .container
       h1.title Add-ons
-      p.subtitle.is-6.has-text-grey
+      p.subtitle.is-6.muted
         | Everything running on our servers right now, straight from the servers themselves.
       b-message(v-if="error", type="is-warning", has-icon) {{ error }}
       b-message(v-else-if="!servers.length", type="is-info", has-icon)
@@ -27,11 +27,21 @@
             b-icon(:icon="gameIcon(server.game)", size="is-small")
             span {{ server.serverName }}
           b-tag(:class="gameClass(server.game)", rounded) {{ gameLabel(server.game) }}
-          span.is-size-7.has-text-grey {{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}
+          span.is-size-7.muted {{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}
+          b-input.search(
+            v-model="search",
+            type="search",
+            icon="magnify",
+            placeholder="Search add-ons",
+            icon-right="close-circle",
+            icon-right-clickable,
+            @icon-right-click="search = ''"
+          )
+        p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
         .columns.is-multiline
           .column.is-one-quarter-desktop.is-half-tablet(
-            v-for="(addon, i) in server.addons",
-            :key="i"
+            v-for="addon in filteredAddons",
+            :key="addon.key || addon.name"
           )
             .card.addon(:class="{ 'is-private': addon.private }")
               .card-content
@@ -53,8 +63,8 @@
                       b-tag(size="is-small", :class="sourceClass(addon)") {{ sourceLabel(addon) }}
                       b-tag(v-if="addon.version", size="is-small") {{ addon.version }}
                 p.addon-description(v-if="addon.description") {{ short(addon.description) }}
-                p.addon-description.has-text-grey(v-else-if="addon.private") Private, no public source.
-                a.is-size-7(
+                p.addon-description.muted(v-else-if="addon.private") Private, no public source.
+                a.is-size-7.repo-link(
                   v-if="repoUrl(addon)",
                   :href="repoUrl(addon)",
                   target="_blank",
@@ -64,6 +74,10 @@
 
 <style lang="scss">
 #addons {
+  .muted {
+    color: rgba(254, 254, 254, 0.55) !important;
+  }
+
   .server-tabs {
     margin-top: 1.5rem;
     margin-bottom: 0;
@@ -83,6 +97,7 @@
 
     .server-header {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 0.75rem;
       margin-bottom: 1rem;
@@ -93,11 +108,20 @@
         align-items: center;
         gap: 0.4em;
       }
+
+      .search {
+        margin-left: auto;
+        width: 16rem;
+        max-width: 100%;
+      }
     }
   }
 
   .card.addon {
-    height: 100%;
+    // Fixed height so every card lines up regardless of description length.
+    height: 12.5rem;
+    display: flex;
+    flex-direction: column;
 
     &.is-private {
       opacity: 0.7;
@@ -105,6 +129,15 @@
 
     .card-content {
       padding: 0.75em;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .repo-link {
+      margin-top: auto;
+      padding-top: 0.25em;
     }
 
     .media {
@@ -142,6 +175,10 @@
       font-size: 0.85rem;
       white-space: pre-line;
       overflow-wrap: anywhere;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
     }
   }
 }
@@ -176,7 +213,7 @@ export default {
     }
   },
   data() {
-    return { servers: [], error: null };
+    return { servers: [], error: null, search: "" };
   },
   head() {
     return {
@@ -192,8 +229,24 @@ export default {
     server() {
       return this.servers.find(s => this.serverKey(s) === this.selectedKey) || null;
     },
+    filteredAddons() {
+      if (!this.server) return [];
+      const terms = this.search.toLowerCase().split(/\s+/).filter(Boolean);
+      if (!terms.length) return this.server.addons;
+      return this.server.addons.filter(addon => {
+        const haystack = [addon.name, addon.description, addon.version, this.sourceLabel(addon)]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return terms.every(term => haystack.includes(term));
+      });
+    },
   },
-  watchQuery: ["server"],
+  watch: {
+    selectedKey() {
+      this.search = "";
+    },
+  },
   methods: {
     serverKey(server) {
       return `${server.game}-${server.serverId}`;
@@ -236,7 +289,7 @@ export default {
     },
     short(text) {
       const clean = text.replace(/\[\/?[a-z*]+[^\]]*\]/gi, "").trim();
-      return clean.length > 180 ? clean.slice(0, 177) + "..." : clean;
+      return clean.length > 300 ? clean.slice(0, 297) + "..." : clean;
     },
     relative(ts) {
       const minutes = Math.round((Date.now() - ts) / 60000);
