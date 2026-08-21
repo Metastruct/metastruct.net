@@ -284,3 +284,43 @@ a.card {
 .tile {
   flex-basis: auto;
 }
+
+// Compact toggle tabs with logos, used for game and server selection.
+.tabs.is-toggle.toggle-tabs {
+  font-size: 0.85rem;
+  overflow: visible;
+
+  ul {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+  }
+
+  a {
+    gap: 0.4em;
+    padding: 0.4em 0.7em;
+    background: $grey-light;
+    border-color: $grey-lighter;
+    color: $white-ter;
+
+    &:hover {
+      background: $grey-lighter;
+    }
+
+    span {
+      white-space: nowrap;
+    }
+  }
+
+  li.is-active a {
+    background: $primary;
+    border-color: $primary;
+    color: $white;
+  }
+
+  .game-logo {
+    width: 1.25em;
+    height: 1.25em;
+    border-radius: 3px;
+    flex: none;
+  }
+}

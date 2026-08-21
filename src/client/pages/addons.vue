@@ -9,7 +9,7 @@
       b-message(v-else-if="!servers.length", type="is-info", has-icon)
         | No server has published its add-on list yet.
 
-      .tabs.is-toggle.server-tabs(v-if="servers.length > 1")
+      .tabs.is-toggle.toggle-tabs.server-tabs(v-if="servers.length > 1")
         ul
           li(
             v-for="s in servers",
@@ -83,10 +83,6 @@
   .server-tabs {
     margin-top: 1.5rem;
     margin-bottom: 0;
-
-    a {
-      gap: 0.4em;
-    }
   }
 
   .game-logo {

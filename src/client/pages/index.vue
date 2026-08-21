@@ -3,9 +3,9 @@
   .hero
     .hero-body
       .container
+        GameTabs(:games="games")
         .tile.is-ancestor
-          .tile.is-parent.is-vertical.is-4(v-if="games.length")
-            GameServers(:games="games")
+          GameServers(v-if="games.length", :games="games")
           .tile.is-parent.is-vertical
             CardTile(v-for="(data, key) in middle", :data="data", :key="`middle-${key}`")
           .tile.is-parent.is-vertical
@@ -32,6 +32,7 @@
 
 <script>
 import GameServers from "@/components/GameServers.vue";
+import GameTabs from "@/components/GameTabs.vue";
 import CardTile from "@/components/CardTile.vue";
 // import { Timeline } from "vue-tweet-embed";
 
@@ -68,6 +69,7 @@ const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.jso
 export default {
   components: {
     GameServers,
+    GameTabs,
     CardTile,
     // Timeline,
   },
@@ -88,7 +90,7 @@ export default {
         {
           path: "/addons",
           title: "Add-ons",
-          subtitle: "Public add-ons we use on the server.",
+          subtitle: "Public add-ons we use on our servers.",
           icon: "puzzle",
         },
         {

@@ -16,9 +16,6 @@
           span(aria-hidden="true")
       .navbar-menu(:class="{ 'is-active': burger }")
         .navbar-start
-          a.navbar-item(href="https://www.metastruct.net/discord")
-            b-icon(icon="discord")
-            span &nbsp;Discord
           a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
             b-icon(icon="forum")
             span &nbsp;Forums
