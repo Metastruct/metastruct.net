@@ -79,20 +79,8 @@ export default {
         {
           path: "/addons",
           method: "GET",
-          description: "Retrieves all info about add-ons displayed on the site.",
-        },
-        {
-          path: "/addons",
-          method: "POST",
-          description: "Manages creation, modification and deletion of add-ons.",
-          parameters: [
-            {
-              type: "Array",
-              name: "addons",
-              description: "An array of add-on entries.",
-            },
-          ],
-          adminOnly: true,
+          description:
+            "Retrieves the add-ons, workshop items and mods running on each server, grouped by server. Aggregated by metaconcord.",
         },
         {
           path: "/history",

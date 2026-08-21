@@ -1,47 +1,27 @@
+const request = require("request-promise-native");
+
+// Addon lists are aggregated by metaconcord from the game servers themselves
+// (gserv repos, workshop, modrinth, curseforge). This only proxies them so the
+// browser stays on one origin.
 module.exports = (api, app) => {
-  const Addon = app.db.sequelize.models.Addon;
+  const baseUrl = (app.config.metaconcord && app.config.metaconcord.url) || "";
 
   api.get("/addons", async (req, res) => {
-    const addons = await Addon.findAll({ raw: true });
-    addons.sort((a, b) => {
-      return a.id - b.id;
-    });
+    res.set(
+      "Cache-Control",
+      "public, max-age=300, stale-while-revalidate=3600, stale-if-error=86400"
+    );
+    if (!baseUrl) {
+      res.status(503).json({ error: "metaconcord url not configured" });
+      return;
+    }
 
-    res.json(addons);
-  });
-  api.post("/addons", async (req, res) => {
-    const data = req.body;
-
-    // I am pretty sure this isn't the way to do this stuff, but it works.
-    if (Array.isArray(data)) {
-      // Add or update entries
-      for (const addon of data) {
-        if (addon.id) {
-          await Addon.findOne({ where: { id: addon.id } }).then(obj => {
-            if (obj) obj.update(addon);
-            return null;
-          });
-        } else {
-          await Addon.create(addon).then(item => {
-            addon.id = item.id;
-          });
-        }
-      }
-
-      // Cleanup missing IDs
-      const addons = await Addon.findAll({ raw: true });
-      for (const addon of addons) {
-        if (!data.find(({ id }) => addon.id === id)) {
-          await Addon.findOne({ where: { id: addon.id } }).then(obj => {
-            if (obj) obj.destroy();
-            return null;
-          });
-        }
-      }
-
-      res.json({
-        success: true,
-      });
+    try {
+      const body = await request(`${baseUrl.replace(/\/$/, "")}/addons`, { timeout: 10000 });
+      res.type("json").send(body);
+    } catch (err) {
+      console.error("failed to fetch addons from metaconcord:", err.message);
+      res.status(502).json({ error: "metaconcord unavailable" });
     }
   });
 };

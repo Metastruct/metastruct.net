@@ -21,4 +21,14 @@ $ yarn start
 $ yarn run generate
 ```
 
+## Config
+
+`config.json` at the repo root (gitignored). Besides `secret`, `postgres`, `steam`, `saml` and `gameservers`, the add-ons page needs:
+
+```json
+"metaconcord": { "url": "https://metaconcord.metastruct.net" }
+```
+
+`/api/v1/addons` proxies `<url>/addons` from node-metaconcord.
+
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).

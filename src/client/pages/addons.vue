@@ -3,204 +3,248 @@
   section.section
     .container
       h1.title Add-ons
-      EditButton(
-        v-if="$store.state.user.isAdmin",
-        :editing="editing",
-        @start="startEdits",
-        @save="saveEdits",
-        @cancel="cancelEdits"
-      )
-      template(v-if="!$store.state.user.isAdmin || !editing")
+      p.subtitle.is-6.has-text-grey
+        | Everything running on our servers right now, straight from the servers themselves.
+      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
+      b-message(v-else-if="!servers.length", type="is-info", has-icon)
+        | No server has published its add-on list yet.
+
+      .tabs.is-toggle.server-tabs(v-if="servers.length > 1")
+        ul
+          li(
+            v-for="s in servers",
+            :key="serverKey(s)",
+            :class="{ 'is-active': serverKey(s) === selectedKey }"
+          )
+            a(:href="'?server=' + serverKey(s)", @click.prevent="select(s)")
+              b-icon(:icon="gameIcon(s.game)", size="is-small")
+              span {{ s.serverName }}
+              span.count {{ s.addons.length }}
+
+      .server(v-if="server", :key="serverKey(server)")
+        .server-header
+          h2.title.is-4
+            b-icon(:icon="gameIcon(server.game)", size="is-small")
+            span {{ server.serverName }}
+          b-tag(:class="gameClass(server.game)", rounded) {{ gameLabel(server.game) }}
+          span.is-size-7.has-text-grey {{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}
         .columns.is-multiline
-          .column.is-one-quarter(v-for="addon in addons")
-            a.subtitle.has-text-primary.has-text-primary(:href="addon.url") {{ addon.name }}
-            p {{ addon.description }}
-      template(v-if="$store.state.user.isAdmin && editing")
-        draggable.columns.is-multiline(
-          v-model="editingAddons",
-          v-bind="sortable",
-          @end="sortable.onEnd"
-        )
-          .column.is-one-quarter(v-for="(addon, id) in editingAddons", :key="id")
-            .card
+          .column.is-one-quarter-desktop.is-half-tablet(
+            v-for="(addon, i) in server.addons",
+            :key="i"
+          )
+            .card.addon(:class="{ 'is-private': addon.private }")
               .card-content
-                a.remove-button.has-text-danger(
-                  @click="removeAddon(id)",
-                  style="font-size: 0.75rem"
-                ) Delete
-                b-field(label="Name", custom-class="is-small")
-                  b-input.name(
-                    placeholder="My cool add-on",
-                    v-model="addon.name",
-                    size="is-medium"
-                  )
-                b-field(label="URL", custom-class="is-small")
-                  b-input.url(placeholder="https://google.com", v-model="addon.url")
-                b-field(label="Description", custom-class="is-small")
-                  b-input(
-                    placeholder="Some descriptive text",
-                    type="textarea",
-                    minlength="0",
-                    maxlength="2000",
-                    v-model="addon.description"
-                  )
-          .column.is-one-quarter
-            a.card.add-button(@click="addAddon", tabindex="0")
-              b-icon(icon="plus")
+                .media
+                  .media-left
+                    figure.image.is-48x48
+                      img(v-if="addon.thumbnail", :src="addon.thumbnail", loading="lazy", alt="")
+                      .placeholder(v-else)
+                        b-icon(:icon="sourceIcon(addon)")
+                  .media-content
+                    a.addon-name.has-text-primary(
+                      v-if="addonUrl(addon)",
+                      :href="addonUrl(addon)",
+                      target="_blank",
+                      rel="noopener"
+                    ) {{ addon.name }}
+                    span.addon-name(v-else) {{ addon.name }}
+                    .tags
+                      b-tag(size="is-small", :class="sourceClass(addon)") {{ sourceLabel(addon) }}
+                      b-tag(v-if="addon.version", size="is-small") {{ addon.version }}
+                p.addon-description(v-if="addon.description") {{ short(addon.description) }}
+                p.addon-description.has-text-grey(v-else-if="addon.private") Private, no public source.
+                a.is-size-7(
+                  v-if="repoUrl(addon)",
+                  :href="repoUrl(addon)",
+                  target="_blank",
+                  rel="noopener"
+                ) source repository
 </template>
 
 <style lang="scss">
 #addons {
-  .title {
-    display: inline-block;
-    margin-right: 0.25em;
+  .server-tabs {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+
+    a {
+      gap: 0.4em;
+    }
+
+    .count {
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
   }
 
-  .card {
+  .server {
+    margin-top: 2rem;
+
+    .server-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+
+      .title {
+        margin-bottom: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4em;
+      }
+    }
+  }
+
+  .card.addon {
+    height: 100%;
+
+    &.is-private {
+      opacity: 0.7;
+    }
+
     .card-content {
       padding: 0.75em;
     }
 
-    cursor: grab;
+    .media {
+      margin-bottom: 0.5em;
+    }
 
-    .remove-button {
-      padding: inherit;
-      text-decoration: none;
-      position: absolute;
-      top: 0;
-      right: 0;
+    .image img,
+    .placeholder {
+      border-radius: 6px;
+      object-fit: cover;
+      width: 48px;
+      height: 48px;
+    }
+
+    .placeholder {
       display: flex;
-      align-content: center;
-    }
-  }
-
-  .field {
-    .label {
-      cursor: grab;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.5);
     }
 
-    .control {
-      &.name,
-      &.url {
-        .input {
-          color: $primary;
-        }
-      }
-    }
-  }
-
-  .sortable-ghost {
-    opacity: 0.5;
-  }
-
-  a.card.add-button {
-    cursor: pointer;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .icon {
-      transform-origin: center;
-      height: 5rem;
-      width: 5rem;
-      color: rgba(255, 255, 255, 0.25);
-      transition: transform 0.1s linear;
-
-      .mdi::before {
-        font-size: 96px !important;
-      }
+    .addon-name {
+      font-weight: 600;
+      display: block;
+      overflow-wrap: anywhere;
     }
 
-    &:hover,
-    &:active,
-    &:focus {
-      .icon {
-        transform: scale(1.125, 1.125);
-      }
+    .tags {
+      margin-top: 0.25em;
+      margin-bottom: 0;
+    }
+
+    .addon-description {
+      font-size: 0.85rem;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
     }
   }
 }
 </style>
 
 <script>
-import EditButton from "@/components/EditButton.vue";
-import draggable from "vuedraggable";
+const GAMES = {
+  gmod: { label: "Garry's Mod", icon: "gamepad-variant", class: "is-primary" },
+  minecraft: { label: "Minecraft", icon: "cube-outline", class: "is-success" },
+};
+
+const SOURCES = {
+  workshop: { label: "Workshop", icon: "steam", class: "is-info" },
+  github: { label: "GitHub", icon: "github", class: "is-dark" },
+  gitlab: { label: "GitLab", icon: "gitlab", class: "is-warning" },
+  git: { label: "Git", icon: "git", class: "is-dark" },
+  modrinth: { label: "Modrinth", icon: "cube", class: "is-success" },
+  curseforge: { label: "CurseForge", icon: "fire", class: "is-danger" },
+  website: { label: "Website", icon: "web", class: "" },
+  private: { label: "Private", icon: "lock", class: "" },
+  unknown: { label: "Unknown", icon: "help-circle-outline", class: "" },
+};
 
 export default {
-  components: {
-    draggable,
-    EditButton,
-  },
   async asyncData({ app }) {
-    const addons = (await app.$axios.get("/api/v1/addons").catch(console.error)).data;
-    for (const addon of addons) {
-      if (addon.order === undefined || addon.order === null) {
-        for (const [order, addon] of addons.entries()) {
-          addon.order = order;
-        }
-        break;
-      }
+    try {
+      const { data } = await app.$axios.get("/api/v1/addons");
+      return { servers: data.servers || [], error: null };
+    } catch (err) {
+      console.error(err);
+      return { servers: [], error: "The add-on list is unavailable right now." };
     }
-    addons.sort((a, b) => a.order - b.order);
-
-    return { addons };
   },
   data() {
-    return {
-      sortable: {
-        animation: 250,
-        filter: ".add-button, .input, .textarea, .remove",
-        move(evt) {
-          if (evt.related.firstChild.classList.contains("add")) return false;
-        },
-        preventOnFilter: false,
-        onEnd: () => {
-          for (const [order, addon] of this.editingAddons.entries()) {
-            addon.order = order;
-          }
-        },
-      },
-
-      addons: [],
-      editingAddons: [],
-
-      editing: false,
-    };
+    return { servers: [], error: null };
   },
   head() {
     return {
       title: "Add-ons - Meta Construct",
     };
   },
+  computed: {
+    selectedKey() {
+      const wanted = this.$route.query.server;
+      const match = this.servers.find(s => this.serverKey(s) === wanted);
+      return match ? wanted : this.servers.length ? this.serverKey(this.servers[0]) : null;
+    },
+    server() {
+      return this.servers.find(s => this.serverKey(s) === this.selectedKey) || null;
+    },
+  },
+  watchQuery: ["server"],
   methods: {
-    startEdits() {
-      this.editingAddons = this.addons.slice();
-      this.editing = true;
+    serverKey(server) {
+      return `${server.game}-${server.serverId}`;
     },
-    saveEdits() {
-      this.$axios
-        .post("/api/v1/addons", this.editingAddons)
-        .then(() => {
-          this.addons = this.editingAddons;
-          this.editing = false;
-        })
-        .catch(console.error);
+    select(server) {
+      const key = this.serverKey(server);
+      if (key === this.selectedKey) return;
+      this.$router.replace({ query: { ...this.$route.query, server: key } });
     },
-    cancelEdits() {
-      this.editingAddons = this.addons;
-      this.editing = false;
+    gameLabel(game) {
+      return (GAMES[game] || { label: game }).label;
     },
-    addAddon() {
-      this.editingAddons.push({
-        name: "Unnamed",
-        description: "Empty description",
-        url: "https://google.com",
-        order: this.editingAddons.length,
-      });
+    gameIcon(game) {
+      return (GAMES[game] || { icon: "server" }).icon;
     },
-    removeAddon(id) {
-      this.editingAddons.splice(id, 1);
+    gameClass(game) {
+      return (GAMES[game] || { class: "is-light" }).class;
+    },
+    sourceKey(addon) {
+      if (addon.private) return "private";
+      const { source } = addon;
+      if (source.kind === "git") return SOURCES[source.host] ? source.host : "git";
+      return SOURCES[source.kind] ? source.kind : "unknown";
+    },
+    sourceLabel(addon) {
+      return SOURCES[this.sourceKey(addon)].label;
+    },
+    sourceClass(addon) {
+      return SOURCES[this.sourceKey(addon)].class;
+    },
+    sourceIcon(addon) {
+      return SOURCES[this.sourceKey(addon)].icon;
+    },
+    addonUrl(addon) {
+      if (addon.private) return null;
+      return addon.source.url || null;
+    },
+    repoUrl(addon) {
+      return addon.source.kind === "workshop" ? addon.source.repoUrl || null : null;
+    },
+    short(text) {
+      const clean = text.replace(/\[\/?[a-z*]+[^\]]*\]/gi, "").trim();
+      return clean.length > 180 ? clean.slice(0, 177) + "..." : clean;
+    },
+    relative(ts) {
+      const minutes = Math.round((Date.now() - ts) / 60000);
+      if (minutes < 1) return "just now";
+      if (minutes < 60) return `${minutes} min ago`;
+      const hours = Math.round(minutes / 60);
+      if (hours < 48) return `${hours} h ago`;
+      return `${Math.round(hours / 24)} days ago`;
     },
   },
 };
