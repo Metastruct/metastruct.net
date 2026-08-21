@@ -46,7 +46,13 @@
   // works out to.
   --header-height: 2.75rem;
   --stack-gap: 1rem;
+  // Negated up front. postcss-values-parser, which postcss-preset-env runs in
+  // the production build only, cannot parse an operator followed by a negative
+  // literal — `calc(var(--x) * -1)` fails there but builds fine in dev.
+  --stack-gap-negative: -1rem;
+  --half-gap-negative: -0.5rem;
   --band-bleed: 0.75rem;
+  --band-bleed-negative: -0.75rem;
   --stack-inset: 1rem;
 
   display: flex;
@@ -151,7 +157,7 @@
       content: "";
       position: absolute;
       z-index: -1;
-      inset: calc(var(--stack-gap) * -1) calc(var(--band-bleed) * -1) calc(var(--stack-gap) / -2);
+      inset: var(--stack-gap-negative) var(--band-bleed-negative) var(--half-gap-negative);
       // Fades in over the gap it reaches into, so the strip's top edge does not
       // cut across a card. That gap is bare page background in normal flow, so
       // the fade is invisible there. Eased rather than linear: the fade only
@@ -174,14 +180,14 @@
   // Rows after the first meet the band of the row above them, so they only need
   // to reach half a gap up.
   .game-category:not(.is-open) + .game-category:not(.is-open)::before {
-    top: calc(var(--stack-gap) / -2);
+    top: var(--half-gap-negative);
     background: $body-background-color;
   }
 
   // The bottom row floats clear of the viewport edge, so its band has to reach
   // past that edge — otherwise a sliver of scrolling card shows under the strip.
   .game-category:not(.is-open):last-child::before {
-    bottom: calc((var(--stack-gap) + var(--stack-inset)) * -1);
+    bottom: calc(var(--stack-gap-negative) - var(--stack-inset));
   }
 
   // An open one is tall enough to scroll through, so only its header sticks.
