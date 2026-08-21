@@ -16,13 +16,9 @@
           span(aria-hidden="true")
       .navbar-menu(:class="{ 'is-active': burger }")
         .navbar-start
-          .navbar-item.has-dropdown.is-hoverable
-            a.navbar-link
-              b-icon(icon="chat")
-              span &nbsp;Chat
-            .navbar-dropdown
-              nuxt-link.navbar-item(to="/irc") IRC
-              a.navbar-item(href="https://www.metastruct.net/discord") Discord
+          a.navbar-item(href="https://www.metastruct.net/discord")
+            b-icon(icon="discord")
+            span &nbsp;Discord
           a.navbar-item(href="https://steamcommunity.com/groups/metastruct/discussions")
             b-icon(icon="forum")
             span &nbsp;Forums
@@ -32,6 +28,14 @@
           a.navbar-item(href="https://merch.metastruct.net")
             b-icon(icon="shopping")
             span &nbsp;Merchandise
+          .navbar-item.has-dropdown.is-hoverable
+            a.navbar-link
+              b-icon(icon="dots-horizontal")
+              span &nbsp;Others
+            .navbar-dropdown
+              a.navbar-item(href="https://chatsounds.metastruct.net") Chatsounds
+              a.navbar-item(href="https://dumps.metastruct.net") Gmod Dumps
+              a.navbar-item(href="https://wiki.metastruct.net") Gmod Wiki
         .navbar-end
           .navbar-item.has-dropdown.is-hoverable(v-if="$store.state.user.isAdmin")
             a.navbar-link
@@ -104,9 +108,9 @@
             li: nuxt-link(to="/history")
               b-icon(icon="calendar-multiselect", size="is-small")
               span &nbsp;History
-            li: nuxt-link(to="/irc")
-              b-icon(icon="chat", size="is-small")
-              span &nbsp;IRC
+            li: a(href="https://www.metastruct.net/discord")
+              b-icon(icon="discord", size="is-small")
+              span &nbsp;Discord
         .column.is-one-quarter
           p.subtitle
             b-icon(icon="arrow-right", size="is-small")
@@ -129,13 +133,9 @@
             |
             a(href="https://zombie.computer") ukgamer
           p
-            | old discord linking:
-            |
-            a(href="http://potcfdk.bplaced.net") PotcFdk
+            | old discord linking: PotcFdk
           p
-            | logo:
-            |
-            a(href="http://keylimepie.me") KeyLimePie
+            | logo: KeyLimePie
 </template>
 
 <style lang="scss">

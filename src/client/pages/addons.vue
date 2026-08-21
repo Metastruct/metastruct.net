@@ -17,16 +17,18 @@
             :class="{ 'is-active': serverKey(s) === selectedKey }"
           )
             a(:href="'?server=' + serverKey(s)", @click.prevent="select(s)")
-              b-icon(:icon="gameIcon(s.game)", size="is-small")
+              img.game-logo(:src="gameLogo(s.game)", :alt="gameLabel(s.game)", :title="gameLabel(s.game)")
               span {{ s.serverName }}
-              span.count {{ s.addons.length }}
 
       .server(v-if="server", :key="serverKey(server)")
         .server-header
           h2.title.is-4
-            b-icon(:icon="gameIcon(server.game)", size="is-small")
+            img.game-logo(
+              :src="gameLogo(server.game)",
+              :alt="gameLabel(server.game)",
+              :title="gameLabel(server.game)"
+            )
             span {{ server.serverName }}
-          b-tag(:class="gameClass(server.game)", rounded) {{ gameLabel(server.game) }}
           span.is-size-7.muted {{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}
           b-input.search(
             v-model="search",
@@ -85,11 +87,13 @@
     a {
       gap: 0.4em;
     }
+  }
 
-    .count {
-      font-size: 0.75rem;
-      opacity: 0.6;
-    }
+  .game-logo {
+    width: 1.25em;
+    height: 1.25em;
+    border-radius: 3px;
+    flex: none;
   }
 
   .server {
@@ -186,8 +190,8 @@
 
 <script>
 const GAMES = {
-  gmod: { label: "Garry's Mod", icon: "gamepad-variant", class: "is-primary" },
-  minecraft: { label: "Minecraft", icon: "cube-outline", class: "is-success" },
+  gmod: { label: "Garry's Mod", logo: "/img/games/gmod.png" },
+  minecraft: { label: "Minecraft", logo: "/img/games/minecraft.png" },
 };
 
 const SOURCES = {
@@ -259,11 +263,8 @@ export default {
     gameLabel(game) {
       return (GAMES[game] || { label: game }).label;
     },
-    gameIcon(game) {
-      return (GAMES[game] || { icon: "server" }).icon;
-    },
-    gameClass(game) {
-      return (GAMES[game] || { class: "is-light" }).class;
+    gameLogo(game) {
+      return (GAMES[game] || { logo: "/img/logo.png" }).logo;
     },
     sourceKey(addon) {
       if (addon.private) return "private";
