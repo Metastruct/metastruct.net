@@ -3,6 +3,7 @@
   .hero
     .hero-body
       .container
+        UpcomingEvents(:events="events")
         .tile.is-ancestor
           GameServers(v-if="games.length", :games="games")
           .tile.is-parent.is-vertical
@@ -32,6 +33,7 @@
 <script>
 import GameServers from "@/components/GameServers.vue";
 import CardTile from "@/components/CardTile.vue";
+import UpcomingEvents from "@/components/UpcomingEvents.vue";
 // import { Timeline } from "vue-tweet-embed";
 
 function getDiscordStats(discord) {
@@ -66,11 +68,13 @@ export default {
   components: {
     GameServers,
     CardTile,
+    UpcomingEvents,
     // Timeline,
   },
   data() {
     return {
       games: [],
+      events: [],
       discordData: {},
       middle: [
         {
@@ -137,7 +141,7 @@ export default {
   },
   methods: {
     async refreshData() {
-      await Promise.all([this.refreshServers(), this.refreshDiscord()]);
+      await Promise.all([this.refreshServers(), this.refreshDiscord(), this.refreshEvents()]);
     },
     async refreshServers() {
       try {
@@ -160,6 +164,19 @@ export default {
         this.discordData = data;
       } catch (err) {
         console.error("discord widget", err);
+      }
+    },
+    async refreshEvents() {
+      try {
+        const { data } = await this.$axios.get(
+          `${this.$config.metaconcordUrl}/discord/guild/events?limit=3`,
+          {
+            progress: false,
+          }
+        );
+        this.events = (data && data.events) || [];
+      } catch (err) {
+        console.error("discord events", err);
       }
     },
   },
