@@ -26,4 +26,4 @@ Environment variables, read at build time (see `.env.example`):
 - `METACONCORD_URL`: metaconcord base URL, default `https://metaconcord.metastruct.net`
 - `HISTORY_URL`: raw URL of `history.json`, default the `Metastruct/history` master branch
 
-The Dockerfile builds the site and serves `dist/` with nginx on port 20080.
+Pushes to `master` build and deploy `dist/` to GitHub Pages through `.github/workflows/deploy.yml`. `static/CNAME` sets the custom domain.

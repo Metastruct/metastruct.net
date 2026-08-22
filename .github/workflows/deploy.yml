@@ -1,39 +1,45 @@
 name: Deploy
 
-on: push
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  DEFAULT_BRANCH: ${{ format('refs/heads/{0}', github.event.repository.default_branch) }}
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  build_or_push_image:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Docker Login
-        uses: docker/login-action@v1.14.1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+        env:
+          NODE_ENV: production
+          METACONCORD_URL: https://metaconcord.metastruct.net
+          HISTORY_URL: https://raw.githubusercontent.com/Metastruct/history/master/history.json
+      - run: cp dist/200.html dist/404.html
+      - uses: actions/upload-pages-artifact@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest,enable=${{ github.ref == env.DEFAULT_BRANCH }}
+          path: dist
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v2.9.0
-        with:
-          context: .
-          push: ${{ github.ref == env.DEFAULT_BRANCH }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
