@@ -108,9 +108,9 @@ export default {
         onConfirm: async () => {
           this.saving = true;
           try {
-            await this.request("delete", `/${this.editingEvent.id}`);
+            const res = await this.request("delete", `/${this.editingEvent.id}`);
             this.discard();
-            this.$emit("refresh");
+            this.$emit("saved", res.data.events);
           } catch (err) {
             this.fail(err);
           }
@@ -130,7 +130,7 @@ export default {
         }
         const year = Number(res.data.event.date.slice(0, 4));
         this.discard();
-        this.$emit("refresh", year);
+        this.$emit("saved", res.data.events, year);
       } catch (err) {
         this.fail(err);
       }
