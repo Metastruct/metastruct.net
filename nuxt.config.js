@@ -4,7 +4,7 @@ const isProd = process.env.NODE_ENV === "production";
 const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
 const HISTORY_URL =
   process.env.HISTORY_URL ||
-  "https://raw.githubusercontent.com/Metastruct/history/main/history.json";
+  "https://raw.githubusercontent.com/Metastruct/history/master/history.json";
 
 module.exports = {
   target: "static",
