@@ -45,9 +45,6 @@
               a.navbar-item(href="/rocket2")
                 b-icon(icon="rocket")
                 span &nbsp;Rocket
-              a.navbar-item(href="/msdnaa")
-                b-icon(icon="key")
-                span &nbsp;MSDNAA
           .navbar-item(v-if="$store.state.user.login")
             img.avatar(:src="$store.state.user.avatarUrl", :alt="$store.state.user.login")
             span &nbsp;{{ $store.state.user.login }}
