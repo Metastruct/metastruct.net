@@ -3,9 +3,10 @@
   .upcoming-header
     b-icon(icon="calendar-clock")
     span &nbsp;Upcoming events
-  .columns.is-multiline
-    .column.is-one-third(v-for="event in events", :key="event.id")
-      a.card.event-card(:href="event.url", target="_blank", rel="noopener")
+  //- Same tile grid as the rows below, three is-4 columns, so the edges line up.
+  .tile.is-ancestor
+    .tile.is-parent.is-4(v-for="event in events", :key="event.id")
+      a.tile.is-child.card.event-card(:href="event.url", target="_blank", rel="noopener")
         .event-image(v-if="event.image", :style="{ backgroundImage: `url(${event.image})` }")
         .card-content
           p.title.is-5.has-text-primary-light {{ event.name }}
@@ -17,6 +18,7 @@
             b-icon(icon="map-marker", size="is-small")
             span &nbsp;{{ event.location }}
           p.event-description(v-if="event.description") {{ event.description }}
+  hr.divider
 </template>
 
 <script>
@@ -39,20 +41,21 @@ export default {
 
 <style lang="scss">
 .upcoming-events {
-  margin-bottom: 1.5rem;
-
   .upcoming-header {
     display: flex;
     align-items: center;
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
     color: $white-ter;
+  }
+
+  .divider {
+    margin: 0.75rem 0 1.5rem;
   }
 
   .event-card {
     display: block;
-    height: 100%;
     overflow: hidden;
     transition: transform 0.1s linear;
 

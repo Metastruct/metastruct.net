@@ -6,9 +6,10 @@
         UpcomingEvents(:events="events")
         .tile.is-ancestor
           GameServers(v-if="games.length", :games="games")
-          .tile.is-parent.is-vertical
+          //- Explicit widths so the columns line up with the events row above.
+          .tile.is-parent.is-vertical(:class="games.length ? 'is-4' : 'is-6'")
             CardTile(v-for="(data, key) in middle", :data="data", :key="`middle-${key}`")
-          .tile.is-parent.is-vertical
+          .tile.is-parent.is-vertical(:class="games.length ? 'is-4' : 'is-6'")
             CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
             //- .tile.is-child.card
             //-   Timeline#metastruct(
