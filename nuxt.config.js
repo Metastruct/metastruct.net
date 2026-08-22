@@ -89,10 +89,6 @@ module.exports = {
     scss: "@/assets/_variables.scss",
   },
 
-  axios: {
-    credentials: true,
-  },
-
   /*
    ** Build configuration
    */
