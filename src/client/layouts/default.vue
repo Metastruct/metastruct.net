@@ -48,9 +48,6 @@
               a.navbar-item(href="/msdnaa")
                 b-icon(icon="key")
                 span &nbsp;MSDNAA
-          nuxt-link.navbar-item(to="/api/v1/docs")
-            b-icon(icon="application")
-            span &nbsp;API
           .navbar-item(v-if="$store.state.user.login")
             img.avatar(:src="$store.state.user.avatarUrl", :alt="$store.state.user.login")
             span &nbsp;{{ $store.state.user.login }}
