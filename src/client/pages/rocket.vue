@@ -35,7 +35,11 @@
                   b-icon(icon="map", size="is-small")
                   span &nbsp;{{ status.map }}
               span.stat.offline(v-else) offline
-            .terminal(ref="terminal", @click="focusInput")
+            .terminal-wrap
+              .terminal(ref="terminal", @click="focusInput")
+              .term-loader(v-if="state === 'connecting'")
+                .spinner
+                span attaching to {{ current.name }}…
             .actions
               button.button.is-small(
                 v-for="action in gservActions",
@@ -180,10 +184,44 @@
     }
   }
 
+  .terminal-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+
   .terminal {
     flex: 1;
     min-height: 0;
     padding: 0.5rem 0 0 0.75rem;
+  }
+
+  .term-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: rgba($grey-darker, 0.85);
+    color: $white-ter;
+    font-size: 0.9rem;
+
+    .spinner {
+      width: 1.4rem;
+      height: 1.4rem;
+      border: 2px solid $grey-light;
+      border-top-color: $primary-light;
+      border-radius: 50%;
+      animation: rocket-spin 0.8s linear infinite;
+    }
+  }
+
+  @keyframes rocket-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .actions {
@@ -390,7 +428,7 @@ export default {
       )}/console/ws?server=${serverId}`;
       const ws = new WebSocket(url);
       this.ws = ws;
-      ws.onopen = () => (this.state = "open");
+      // stay in "connecting" until the bridge reports the console is attached (ready)
       ws.onmessage = ev => {
         let msg;
         try {
@@ -398,7 +436,8 @@ export default {
         } catch {
           return;
         }
-        if (msg.type === "data") this.term.write(msg.data);
+        if (msg.type === "ready") this.state = "open";
+        else if (msg.type === "data") this.term.write(msg.data);
         else if (msg.type === "gserv-done") this.gservBusy = false;
         else if (msg.type === "meta" || msg.type === "exit")
           this.term.writeln(`\r\n\x1b[3;90m--- ${msg.text || msg.reason} ---\x1b[0m`);
@@ -431,11 +470,12 @@ export default {
         if (!this.current) return;
         const id = this.current.id;
         try {
-          const {
-            data,
-          } = await this.$axios.get(`${this.$config.metaconcordUrl}/console/status/${id}`, {
-            progress: false,
-          });
+          const { data } = await this.$axios.get(
+            `${this.$config.metaconcordUrl}/console/status/${id}`,
+            {
+              progress: false,
+            }
+          );
           if (this.current && this.current.id === id) this.status = data;
         } catch {
           // keep the last known status
