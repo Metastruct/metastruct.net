@@ -72,7 +72,10 @@ export default {
         const url = bustCache
           ? `${this.$config.historyUrl}?t=${Date.now()}`
           : this.$config.historyUrl;
-        const { data } = await this.$axios.get(url, { withCredentials: false, progress: false });
+        // plain fetch: the axios instance adds headers that trigger a preflight raw.github rejects
+        const res = await fetch(url, { mode: "cors", credentials: "omit", cache: "no-cache" });
+        if (!res.ok) throw new Error(`history ${res.status}`);
+        const data = await res.json();
         this.history = data.map(event => ({
           ...event,
           date: new Date(`${event.date}T00:00:00`),

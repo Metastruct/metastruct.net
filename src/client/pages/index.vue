@@ -62,8 +62,6 @@ function getDiscordStats(discord) {
   }
 }
 
-const WIDGET_URL = "https://discord.com/api/guilds/164734812668559360/widget.json";
-
 export default {
   components: {
     GameServers,
@@ -153,10 +151,12 @@ export default {
     },
     async refreshDiscord() {
       try {
-        const { data } = await this.$axios.get(WIDGET_URL, {
-          progress: false,
-          withCredentials: false,
-        });
+        const { data } = await this.$axios.get(
+          `${this.$config.metaconcordUrl}/discord/guild/widget`,
+          {
+            progress: false,
+          }
+        );
         this.discordData = data;
       } catch (err) {
         console.error("discord widget", err);
