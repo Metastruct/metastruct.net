@@ -7,7 +7,7 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 ARG METACONCORD_URL=https://metaconcord.metastruct.net
-ARG HISTORY_URL=https://raw.githubusercontent.com/Metastruct/history/main/history.json
+ARG HISTORY_URL=https://raw.githubusercontent.com/Metastruct/history/master/history.json
 ENV NODE_ENV=production
 RUN yarn build
 
