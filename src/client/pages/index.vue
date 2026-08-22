@@ -139,19 +139,27 @@ export default {
   },
   methods: {
     async refreshData() {
+      await Promise.all([this.refreshServers(), this.refreshDiscord()]);
+    },
+    async refreshServers() {
       try {
-        const { data: servers } = await this.$axios.get(`${this.$config.metaconcordUrl}/servers`, {
+        const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/servers`, {
           progress: false,
         });
-
-        const { data: discordData } = await this.$axios.get(WIDGET_URL, {
-          progress: false,
-        });
-
-        this.games = (servers && servers.games) || [];
-        this.discordData = discordData;
+        this.games = (data && data.games) || [];
       } catch (err) {
-        console.error(err);
+        console.error("servers", err);
+      }
+    },
+    async refreshDiscord() {
+      try {
+        const { data } = await this.$axios.get(WIDGET_URL, {
+          progress: false,
+          withCredentials: false,
+        });
+        this.discordData = data;
+      } catch (err) {
+        console.error("discord widget", err);
       }
     },
   },
