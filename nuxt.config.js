@@ -16,7 +16,9 @@ module.exports = {
     metaconcordUrl: isProd ? METACONCORD_URL : "/mc",
   },
 
-  proxy: isProd ? {} : { "/mc/": { target: METACONCORD_URL, pathRewrite: { "^/mc/": "/" } } },
+  proxy: isProd
+    ? {}
+    : { "/mc/": { target: METACONCORD_URL, pathRewrite: { "^/mc/": "/" }, ws: true } },
 
   /*
    ** Headers of the page
@@ -92,6 +94,11 @@ module.exports = {
   /*
 	buildDir: "_nuxt",
 	*/
+  build: {
+    // xterm ships syntax webpack 4 can't parse, run it through babel
+    transpile: ["@xterm/xterm", "@xterm/addon-fit"],
+  },
+
   // build: {
   // 	extend(config, ctx) {
   // 		// Run ESLint on save

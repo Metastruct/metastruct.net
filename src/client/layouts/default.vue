@@ -42,9 +42,16 @@
               a.navbar-item(href="https://gitlab.com/metastruct")
                 b-icon(icon="gitlab")
                 span &nbsp;GitLab
-              a.navbar-item(href="/rocket2")
+              nuxt-link.navbar-item(to="/rocket")
                 b-icon(icon="rocket")
                 span &nbsp;Rocket
+              a.navbar-item(
+                v-if="($store.state.user.teams || []).includes('administrators')",
+                :href="$config.metaconcordUrl",
+                target="_blank"
+              )
+                b-icon(icon="robot")
+                span &nbsp;Metaconcord
           .navbar-item(v-if="$store.state.user.login")
             img.avatar(:src="$store.state.user.avatarUrl", :alt="$store.state.user.login")
             span &nbsp;{{ $store.state.user.login }}
@@ -58,7 +65,7 @@
             b-icon(icon="logout")
             span &nbsp;Log out
 
-  .hero.is-dark
+  .hero.is-dark(v-if="$route.name !== 'rocket'")
     CyclingBackground(:images="backgrounds")
       .hero-body
         .container

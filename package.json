@@ -14,6 +14,8 @@
     "@nuxtjs/axios": "^5.9.5",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/style-resources": "^1.0.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "bulma": "^0.9.3",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^2.15.8",

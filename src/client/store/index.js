@@ -1,10 +1,13 @@
 export const state = () => ({
   user: {},
+  // false until /auth/me answered once, so pages can tell "loading" from "logged out"
+  userLoaded: false,
 });
 
 export const mutations = {
   user(state, user) {
     state.user = user;
+    state.userLoaded = true;
   },
 };
 
