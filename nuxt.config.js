@@ -2,9 +2,6 @@ const pkg = require("./package");
 
 const isProd = process.env.NODE_ENV === "production";
 const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
-const HISTORY_URL =
-  process.env.HISTORY_URL ||
-  "https://raw.githubusercontent.com/Metastruct/history/master/history.json";
 
 module.exports = {
   target: "static",
@@ -17,7 +14,6 @@ module.exports = {
   // in dev, metaconcord is reached through the nuxt proxy so its session cookie stays first-party
   publicRuntimeConfig: {
     metaconcordUrl: isProd ? METACONCORD_URL : "/mc",
-    historyUrl: HISTORY_URL,
   },
 
   proxy: isProd ? {} : { "/mc/": { target: METACONCORD_URL, pathRewrite: { "^/mc/": "/" } } },

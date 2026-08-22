@@ -67,17 +67,12 @@ export default {
     };
   },
   methods: {
-    async loadHistory(bustCache) {
+    async loadHistory() {
       try {
-        // plain fetch: the axios instance adds headers that trigger a preflight raw.github rejects
-        const res = await fetch(this.$config.historyUrl, {
-          mode: "cors",
-          credentials: "omit",
-          cache: bustCache ? "reload" : "default",
+        const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/history`, {
+          progress: false,
         });
-        if (!res.ok) throw new Error(`history ${res.status}`);
-        const data = await res.json();
-        this.history = data.map(event => ({
+        this.history = data.events.map(event => ({
           ...event,
           date: new Date(`${event.date}T00:00:00`),
         }));
@@ -87,7 +82,7 @@ export default {
         this.error = "The history is unavailable right now.";
       }
     },
-    // the list comes back from metaconcord after a save, raw.github would serve a stale file for 5 minutes
+    // the list comes back from metaconcord after a save
     applyHistory(events, year) {
       this.history = events.map(event => ({
         ...event,
@@ -96,7 +91,7 @@ export default {
       if (year) this.$router.push({ hash: `#${year}` });
     },
     async refreshHistory() {
-      await this.loadHistory(true);
+      await this.loadHistory();
     },
   },
 };

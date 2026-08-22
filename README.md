@@ -4,7 +4,7 @@
 
 > Website for the Meta Construct community
 
-Static Nuxt 2 site. Everything dynamic (server list, add-ons, GitHub login, history editing, `/join` and short links) is served by [node-metaconcord](https://github.com/Metastruct/node-metaconcord). The history timeline is read from `history.json` in the [Metastruct/history](https://github.com/Metastruct/history) repo.
+Static Nuxt 2 site. Everything dynamic (server list, add-ons, GitHub login, history editing, `/join` and short links) is served by [node-metaconcord](https://github.com/Metastruct/node-metaconcord). The history timeline lives in `history.json` in the [Metastruct/history](https://github.com/Metastruct/history) repo, served and edited through metaconcord.
 
 ## Build Setup
 
@@ -24,6 +24,5 @@ $ yarn build
 Environment variables, read at build time (see `.env.example`):
 
 - `METACONCORD_URL`: metaconcord base URL, default `https://metaconcord.metastruct.net`
-- `HISTORY_URL`: raw URL of `history.json`, default the `Metastruct/history` master branch
 
 Pushes to `master` build and deploy `dist/` to GitHub Pages through `.github/workflows/deploy.yml`. `static/CNAME` sets the custom domain.

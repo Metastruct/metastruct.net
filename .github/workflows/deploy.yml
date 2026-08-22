@@ -28,7 +28,6 @@ jobs:
         env:
           NODE_ENV: production
           METACONCORD_URL: https://metaconcord.metastruct.net
-          HISTORY_URL: https://raw.githubusercontent.com/Metastruct/history/master/history.json
       - run: cp dist/200.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
