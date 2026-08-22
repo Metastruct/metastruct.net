@@ -10,7 +10,7 @@
           :id="undefined",
           :is-left="index % 2 == 0",
           :timeline="events",
-          :key="`${year}-${index}`",
+          :key="event.id",
           @edit="$emit('edit', event)"
         )
       //- .is-clearfix
