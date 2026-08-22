@@ -5,18 +5,21 @@
       .content
         h1 API Documentation
         p
-          | All of these endpoints are preceded by
+          | All of these endpoints are served by
           |
-          code /api/v1
+          a(href="https://github.com/Metastruct/node-metaconcord") metaconcord
           |
-          | and accessible from
+          | at
           |
           code {{ location }}
           | .
         p
           code.has-text-white-ter ADMIN
           |
-          | endpoints are reserved for logged-in developers only.
+          | endpoints are reserved for logged-in Metastruct developers (GitHub login) and commit to the
+          |
+          a(href="https://github.com/Metastruct/history") history repo
+          | .
         p
           | All data is represented in
           |
@@ -37,7 +40,7 @@
                   code {{ endpoint.path }}
                   code.has-text-info(v-if="endpoint.method == 'GET'") {{ endpoint.method }}
                   code.has-text-success(v-if="endpoint.method == 'POST'") {{ endpoint.method }}
-                  code.has-text-secondary(v-if="endpoint.method == 'PATCH'") {{ endpoint.method }}
+                  code.has-text-secondary(v-if="endpoint.method == 'PUT'") {{ endpoint.method }}
                   code.has-text-danger(v-if="endpoint.method == 'DELETE'") {{ endpoint.method }}
                   code.has-text-white-ter(v-if="endpoint.adminOnly") ADMIN
               p {{ endpoint.description }}
@@ -63,79 +66,79 @@
 
 <script>
 export default {
-  asyncData({ req }) {
-    return {
-      location: req ? req.headers.host : window.location.hostname,
-    };
-  },
   data() {
     return {
+      location: this.$config.metaconcordUrl,
       endpoints: [
         {
           path: "/servers",
           method: "GET",
           description:
-            "Retrieves the online servers and instances of every game, grouped by game, with players. Aggregated by metaconcord.",
+            "Retrieves the online servers and instances of every game, grouped by game, with players.",
         },
         {
           path: "/addons",
           method: "GET",
           description:
-            "Retrieves the add-ons, workshop items and mods running on each server, grouped by server. Aggregated by metaconcord.",
+            "Retrieves the add-ons, workshop items and mods running on each server, grouped by server.",
         },
         {
-          path: "/history",
+          path: "/addons/:game/:id",
           method: "GET",
-          description: "Retrieves the history of Meta Construct, in data form.",
+          description: "Retrieves the add-on list of a single server.",
         },
         {
-          path: "/history",
+          path: "/join/:label",
+          method: "GET",
+          description:
+            "Redirects to a steam://connect link for a Garry's Mod server (eu1, us1...).",
+          parameters: [
+            {
+              type: "String",
+              name: "pwd",
+              description: "Optional server password, as a query string or extra path segment.",
+            },
+          ],
+        },
+        {
+          path: "/auth/me",
+          method: "GET",
+          description: "Retrieves info about the logged-in GitHub user.",
+        },
+        {
+          path: "/history/events",
           method: "POST",
-          description: "Creates new history event entries.",
+          description:
+            "Adds a history event. The public data lives in the history repo as history.json.",
           parameters: [
             {
-              type: "Array",
+              type: "Object",
               name: "event",
-              description: "An array of event entries.",
+              description: "{ name, description, date (YYYY-MM-DD), url?, imageUrl? }",
             },
           ],
           adminOnly: true,
         },
         {
-          path: "/history",
-          method: "PATCH",
-          description: "Updates existing history event entries.",
+          path: "/history/events/:id",
+          method: "PUT",
+          description: "Replaces an existing history event.",
           parameters: [
             {
-              type: "Array",
+              type: "Object",
               name: "event",
-              description: "An array of event entries.",
+              description: "{ name, description, date (YYYY-MM-DD), url?, imageUrl? }",
             },
           ],
           adminOnly: true,
         },
-
         {
-          path: "/history",
+          path: "/history/events/:id",
           method: "DELETE",
-          description: "Deletes existing history event entries.",
-          parameters: [
-            {
-              type: "Array",
-              name: "event",
-              description: "An array of event entries.",
-            },
-          ],
+          description: "Deletes a history event.",
           adminOnly: true,
-        },
-        {
-          path: "/auth",
-          method: "GET",
-          description: "Retrieves info about the logged-in Steam user.",
         },
       ],
-
-      location: null,
     };
   },
   head() {

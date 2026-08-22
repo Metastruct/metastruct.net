@@ -3,6 +3,7 @@
   section.section
     .container
       h1.title History of Meta Construct
+      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
       client-only
         HistoryEventEditModal(
           ref="modal",
@@ -53,14 +54,12 @@ export default {
     HistoryTimeLine,
     HistoryEventEditModal,
   },
-  async asyncData({ $axios }) {
-    const history = (await $axios.get("/api/v1/history").catch(console.error)).data;
-
-    for (const event of history) {
-      event.date = new Date(event.date);
-    }
-
-    return { history };
+  data() {
+    return { history: [], error: null };
+  },
+  fetchOnServer: false,
+  async fetch() {
+    await this.loadHistory();
   },
   head() {
     return {
@@ -68,15 +67,24 @@ export default {
     };
   },
   methods: {
+    async loadHistory(bustCache) {
+      try {
+        const url = bustCache
+          ? `${this.$config.historyUrl}?t=${Date.now()}`
+          : this.$config.historyUrl;
+        const { data } = await this.$axios.get(url, { withCredentials: false, progress: false });
+        this.history = data.map(event => ({
+          ...event,
+          date: new Date(`${event.date}T00:00:00`),
+        }));
+        this.error = null;
+      } catch (err) {
+        console.error(err);
+        this.error = "The history is unavailable right now.";
+      }
+    },
     async refreshHistory(year) {
-      const history = (await this.$axios.get("/api/v1/history").catch(console.error)).data;
-
-      history.forEach(event => {
-        event.date = new Date(event.date);
-      });
-
-      this.history = history;
-
+      await this.loadHistory(true);
       if (year) this.$router.push({ hash: `#${year}` });
     },
   },

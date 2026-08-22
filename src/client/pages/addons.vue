@@ -203,17 +203,8 @@ const SOURCES = {
 };
 
 export default {
-  async asyncData({ app }) {
-    try {
-      const { data } = await app.$axios.get("/api/v1/addons");
-      return { servers: data.servers || [], error: null };
-    } catch (err) {
-      console.error(err);
-      return { servers: [], error: "The add-on list is unavailable right now." };
-    }
-  },
   data() {
-    return { servers: [], error: null, search: "" };
+    return { servers: [], error: null, search: "", loading: true };
   },
   head() {
     return {
@@ -246,6 +237,16 @@ export default {
     selectedKey() {
       this.search = "";
     },
+  },
+  async mounted() {
+    try {
+      const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/addons`);
+      this.servers = data.servers || [];
+    } catch (err) {
+      console.error(err);
+      this.error = "The add-on list is unavailable right now.";
+    }
+    this.loading = false;
   },
   methods: {
     serverKey(server) {

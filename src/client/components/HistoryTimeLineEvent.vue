@@ -25,7 +25,10 @@ export default {
   props: ["imageUrl", "name", "description", "url", "date", "timeline", "isLeft"],
   computed: {
     dateString() {
-      return this.date.toISOString().slice(0, 10);
+      const pad = n => String(n).padStart(2, "0");
+      return `${this.date.getFullYear()}-${pad(this.date.getMonth() + 1)}-${pad(
+        this.date.getDate()
+      )}`;
     },
   },
 };

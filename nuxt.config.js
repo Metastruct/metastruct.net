@@ -1,12 +1,26 @@
 const pkg = require("./package");
 
+const isProd = process.env.NODE_ENV === "production";
+const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
+const HISTORY_URL =
+  process.env.HISTORY_URL ||
+  "https://raw.githubusercontent.com/Metastruct/history/main/history.json";
+
 module.exports = {
-  // mode: "universal",
+  target: "static",
 
   server: {
-    port: 20080, // default: 3000
-    host: "0.0.0.0", // default: localhost
+    port: 20000,
+    host: "0.0.0.0",
   },
+
+  // in dev, metaconcord is reached through the nuxt proxy so its session cookie stays first-party
+  publicRuntimeConfig: {
+    metaconcordUrl: isProd ? METACONCORD_URL : "/mc",
+    historyUrl: HISTORY_URL,
+  },
+
+  proxy: isProd ? {} : { "/mc/": { target: METACONCORD_URL, pathRewrite: { "^/mc/": "/" } } },
 
   /*
    ** Headers of the page
@@ -56,7 +70,7 @@ module.exports = {
     "@/plugins/buefy.js",
     "@/plugins/vue-observe-visibility.js",
     "@/plugins/prototype-extensions.js",
-    { src: "@/plugins/axios-baseurl-location.js", ssr: false },
+    "@/plugins/auth.client.js",
   ],
 
   /*
@@ -65,6 +79,7 @@ module.exports = {
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
     "@nuxtjs/axios",
+    "@nuxtjs/proxy",
     // Doc: https://buefy.github.io/#/documentation
     // "nuxt-buefy"
     "@nuxtjs/style-resources",
@@ -74,15 +89,8 @@ module.exports = {
     scss: "@/assets/_variables.scss",
   },
 
-  /*
-   ** Axios module configuration
-   */
   axios: {
-    // See https://github.com/nuxt-community/axios-module#options
-    baseURL: `http://localhost:${
-      process.env.PORT || (process.env.NODE_ENV === "production" ? 20080 : 20000)
-    }`,
-    // browserBaseURL: "//metastruct.net/"
+    credentials: true,
   },
 
   /*

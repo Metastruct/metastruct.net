@@ -29,17 +29,22 @@
         b-field(label='URL (\"Read more\")')
           b-input(placeholder="(optional) https://google.com", v-model="editingEvent.url")
       .modal-card-foot.buttons.is-right
-        button.button(@click="discard")
+        button.button(@click="discard", :disabled="saving")
           span Close
-        button.button.is-danger(v-if="editing", @click="askDelete")
+        button.button.is-danger(v-if="editing", @click="askDelete", :disabled="saving")
           b-icon(icon="delete")
           span &nbsp;Delete
-        button.button.is-primary(type="submit", form="history-edit-modal")
+        button.button.is-primary(type="submit", form="history-edit-modal", :class="{ 'is-loading': saving }")
           b-icon(icon="check")
           span &nbsp;Confirm
 </template>
 
 <script>
+const toDateString = date => {
+  const pad = n => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
 export default {
   props: ["history"],
   data() {
@@ -47,6 +52,7 @@ export default {
       show: false,
       editing: false,
       adding: false,
+      saving: false,
       editingEvent: {
         date: new Date(),
       },
@@ -57,9 +63,10 @@ export default {
       this.show = true;
       if (evt) {
         this.editing = true;
-        this.editingEvent = evt;
+        this.editingEvent = { ...evt };
       } else {
         this.adding = true;
+        this.editingEvent = { date: new Date() };
       }
 
       this.$nextTick(() => {
@@ -72,34 +79,62 @@ export default {
       this.adding = false;
       this.editingEvent = {};
     },
+    payload() {
+      const { name, description, date, url, imageUrl } = this.editingEvent;
+      return { event: { name, description, date: toDateString(date), url, imageUrl } };
+    },
+    // one retry when someone else committed to history.json in the meantime
+    async request(method, path, body) {
+      const base = `${this.$config.metaconcordUrl}/history/events`;
+      const send = () => this.$axios.request({ method, url: `${base}${path}`, data: body });
+      try {
+        return await send();
+      } catch (err) {
+        if (err.response?.status === 409) return send();
+        throw err;
+      }
+    },
+    fail(err) {
+      console.error(err);
+      this.$buefy.toast.open({
+        type: "is-danger",
+        message: err.response?.data?.error || "Saving the event failed",
+        duration: 5000,
+      });
+    },
     askDelete() {
       this.$buefy.dialog.confirm({
         message: "Are you sure you want to delete this event?",
         onConfirm: async () => {
-          await this.$axios
-            .delete("/api/v1/history", {
-              data: [this.editingEvent],
-            })
-            .catch(console.error);
-          this.discard();
-          this.$emit("refresh");
+          this.saving = true;
+          try {
+            await this.request("delete", `/${this.editingEvent.id}`);
+            this.discard();
+            this.$emit("refresh");
+          } catch (err) {
+            this.fail(err);
+          }
+          this.saving = false;
         },
       });
     },
     async confirm() {
-      let res;
-      if (this.adding) {
-        res = await this.$axios.post("/api/v1/history", [this.editingEvent]).catch(console.error);
-      } else if (this.editing) {
-        res = await this.$axios.patch("/api/v1/history", [this.editingEvent]).catch(console.error);
+      if (!this.editingEvent.date) return;
+      this.saving = true;
+      try {
+        let res;
+        if (this.adding) {
+          res = await this.request("post", "", this.payload());
+        } else {
+          res = await this.request("put", `/${this.editingEvent.id}`, this.payload());
+        }
+        const year = Number(res.data.event.date.slice(0, 4));
+        this.discard();
+        this.$emit("refresh", year);
+      } catch (err) {
+        this.fail(err);
       }
-
-      this.show = false;
-      this.editing = false;
-      this.adding = false;
-      this.editingEvent = {};
-      const year = new Date(res.data.entries[0].date).getFullYear();
-      this.$emit("refresh", year);
+      this.saving = false;
     },
   },
 };

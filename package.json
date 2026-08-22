@@ -5,33 +5,20 @@
   "author": "Tenri",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider nodemon --unhandled-rejections=warn src/server/index.js --watch src/server",
-    "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production node src/server/index.js",
-    "generate": "nuxt generate"
+    "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
+    "generate": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
+    "start": "npx serve -s dist -l 20080"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.9.5",
+    "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/style-resources": "^1.0.0",
-    "body-parser": "^1.19.0",
     "bulma": "^0.9.3",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.3",
-    "express-session": "^1.17.0",
-    "js-cookie": "^2.2.1",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^2.15.8",
-    "passport": "^0.6.0",
-    "passport-saml": "^3.2.4",
-    "pg": "^8.7.1",
-    "pg-hstore": "^2.3.4",
     "pug": "^3.0.1",
-    "request": "^2.88.2",
-    "request-promise-native": "^1.0.8",
-    "sequelize": "^6.29.0",
-    "steamapi": "^2.0.7",
-    "vue-tweet-embed": "^2.4.0",
-    "xml-js": "^1.6.11"
+    "vue-tweet-embed": "^2.4.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
@@ -43,7 +30,6 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^7.9.0",
-    "nodemon": "^2.0.15",
     "nuxt-buefy": "^0.4.21",
     "prettier": "^2.0.5",
     "pug-plain-loader": "^1.0.0",

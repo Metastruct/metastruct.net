@@ -51,32 +51,18 @@
           nuxt-link.navbar-item(to="/api/v1/docs")
             b-icon(icon="application")
             span &nbsp;API
-          .navbar-item(v-if="$store.state.user.steamId")
-            b-icon(icon="account")
-            span &nbsp;{{ $store.state.user.nickname }}
-          .navbar-item.has-dropdown.is-hoverable(
-            v-if="!$store.state.user.steamId"
+          .navbar-item(v-if="$store.state.user.login")
+            img.avatar(:src="$store.state.user.avatarUrl", :alt="$store.state.user.login")
+            span &nbsp;{{ $store.state.user.login }}
+          a.navbar-item(
+            v-if="!$store.state.user.login",
+            :href="`${$config.metaconcordUrl}/auth/github?redirect=${encodeURIComponent($route.fullPath)}`"
           )
-            a.navbar-link
-              b-icon(icon="login")
-              span &nbsp;Log in
-            .navbar-dropdown
-              a.navbar-item(
-                v-if="!$store.state.user.steamId",
-                :href="`/auth?redirect=${$route.name}`"
-              )
-                b-icon(icon="steam")
-                span &nbsp;Steam
-          .navbar-item.has-dropdown.is-hoverable(
-            v-if="$store.state.user.steamId"
-          )
-            a.navbar-link
-              b-icon(icon="logout")
-              span &nbsp;Log out
-            .navbar-dropdown
-              a.navbar-item(v-if="$store.state.user.steamId", :href="`/auth/logout`")
-                b-icon(icon="steam")
-                span &nbsp;Steam
+            b-icon(icon="github")
+            span &nbsp;Log in
+          a.navbar-item(v-if="$store.state.user.login", @click="$store.dispatch('logout')")
+            b-icon(icon="logout")
+            span &nbsp;Log out
 
   .hero.is-dark
     CyclingBackground(:images="backgrounds")
@@ -142,6 +128,12 @@
       padding-top: 0;
       padding-bottom: 0;
     }
+  }
+
+  .avatar {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
   }
 }
 

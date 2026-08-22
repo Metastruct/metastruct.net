@@ -9,9 +9,20 @@ export const mutations = {
 };
 
 export const actions = {
-  nuxtServerInit(store, { req }) {
-    if (req.user) {
-      store.commit("user", req.user);
+  async fetchUser({ commit }) {
+    try {
+      const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/auth/me`, {
+        progress: false,
+      });
+      commit("user", data);
+    } catch (err) {
+      commit("user", {});
     }
+  },
+  async logout({ dispatch }) {
+    await this.$axios
+      .post(`${this.$config.metaconcordUrl}/auth/logout`, null, { progress: false })
+      .catch(console.error);
+    await dispatch("fetchUser");
   },
 };

@@ -70,19 +70,10 @@ export default {
     CardTile,
     // Timeline,
   },
-  async asyncData({ app }) {
-    const { data: servers } = await app.$axios.get("/api/v1/servers").catch(err => {
-      console.error(err);
-      return { data: { games: [] } };
-    });
-    const { data: discordData } = await app.$axios.get(WIDGET_URL).catch(err => {
-      console.error(err);
-      return {};
-    });
-
+  data() {
     return {
-      games: (servers && servers.games) || [],
-      discordData,
+      games: [],
+      discordData: {},
       middle: [
         {
           path: "/addons",
@@ -109,20 +100,6 @@ export default {
           icon: "minus-circle",
         },
       ],
-      right: [
-        {
-          path: "https://steamcommunity.com/groups/metastruct",
-          title: "Steam",
-          subtitle: "Become a member and participate to various forum discussions!",
-          icon: "steam",
-        },
-        {
-          path: discordData?.instant_invite || "https://discord.gg/CHuxFSd",
-          title: "Discord",
-          subtitle: getDiscordStats(discordData),
-          icon: "discord",
-        },
-      ],
     };
   },
   head() {
@@ -134,8 +111,25 @@ export default {
     discordStats() {
       return getDiscordStats(this.discordData);
     },
+    right() {
+      return [
+        {
+          path: "https://steamcommunity.com/groups/metastruct",
+          title: "Steam",
+          subtitle: "Become a member and participate to various forum discussions!",
+          icon: "steam",
+        },
+        {
+          path: this.discordData?.instant_invite || "https://discord.gg/CHuxFSd",
+          title: "Discord",
+          subtitle: getDiscordStats(this.discordData),
+          icon: "discord",
+        },
+      ];
+    },
   },
   mounted() {
+    this.refreshData();
     this.refreshTimer = setInterval(() => {
       this.refreshData();
     }, 20000);
@@ -146,7 +140,7 @@ export default {
   methods: {
     async refreshData() {
       try {
-        const { data: servers } = await this.$axios.get("/api/v1/servers", {
+        const { data: servers } = await this.$axios.get(`${this.$config.metaconcordUrl}/servers`, {
           progress: false,
         });
 

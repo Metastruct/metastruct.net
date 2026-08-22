@@ -2,7 +2,9 @@
 
 ![](https://tenrys.pw/ShareX/2019/Jan/3AkJ.png)
 
-> New website for the Meta Construct community
+> Website for the Meta Construct community
+
+Static Nuxt 2 site. Everything dynamic (server list, add-ons, GitHub login, history editing, `/join` and short links) is served by [node-metaconcord](https://github.com/Metastruct/node-metaconcord). The history timeline is read from `history.json` in the [Metastruct/history](https://github.com/Metastruct/history) repo.
 
 ## Build Setup
 
@@ -10,25 +12,18 @@
 # install dependencies
 $ yarn install
 
-# serve with hot reload at localhost:3000
-$ yarn run dev
+# dev server at localhost:20000, proxies /mc/* to metaconcord so login cookies work locally
+$ yarn dev
 
-# build for production and launch server
-$ yarn run build
-$ yarn start
-
-# generate static project
-$ yarn run generate
+# generate the static site into dist/
+$ yarn build
 ```
 
 ## Config
 
-`config.json` at the repo root (gitignored). Besides `secret`, `postgres`, `steam`, `saml` and `gameservers`, the add-ons page needs:
+Environment variables, read at build time (see `.env.example`):
 
-```json
-"metaconcord": { "url": "https://metaconcord.metastruct.net" }
-```
+- `METACONCORD_URL`: metaconcord base URL, default `https://metaconcord.metastruct.net`
+- `HISTORY_URL`: raw URL of `history.json`, default the `Metastruct/history` main branch
 
-`/api/v1/addons` and `/api/v1/servers` proxy `<url>/addons` and `<url>/servers` from node-metaconcord. `gameservers` is still needed for the `/join/<name>` redirects.
-
-For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
+The Dockerfile builds the site and serves `dist/` with nginx on port 20080.
