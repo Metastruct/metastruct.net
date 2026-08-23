@@ -230,6 +230,7 @@
     flex: 1;
     min-height: 0;
     display: flex;
+    overflow: hidden;
   }
 
   .terminal {
@@ -425,6 +426,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.fit);
+    if (this.resizeObserver) this.resizeObserver.disconnect();
     clearInterval(this.statusTimer);
     this.disconnect();
     this.term?.dispose();
@@ -494,6 +496,12 @@ export default {
       }
       this.term.reset();
       this.fit();
+      // the graphs row shows up after the first status poll and shrinks the
+      // terminal area, so refit whenever the wrapper changes size
+      if (!this.resizeObserver && typeof ResizeObserver !== "undefined") {
+        this.resizeObserver = new ResizeObserver(() => this.fit());
+        this.resizeObserver.observe(el.parentElement);
+      }
       this.state = "connecting";
 
       const base = this.$config.metaconcordUrl;
