@@ -63,13 +63,13 @@
                 @click="runGserv(action)"
               ) {{ action }}
             form.input-bar(:data-state="state", autocomplete="off", @submit.prevent="submit")
-              span.segment {{ current.game === 'minecraft' ? 'CMD' : 'RCON' }}
+              span.segment RCON
               input(
                 ref="input",
                 v-model="input",
                 type="text",
                 spellcheck="false",
-                :placeholder="current.game === 'minecraft' ? 'server command' : 'console command'",
+                placeholder="console command",
                 @keydown="onKey"
               )
           .main.placeholder(v-else) Select a server.
