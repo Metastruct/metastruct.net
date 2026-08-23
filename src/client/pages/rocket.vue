@@ -528,17 +528,35 @@ export default {
         else if (msg.type === "meta" || msg.type === "exit")
           this.term.writeln(`\r\n\x1B[3;90m--- ${msg.text || msg.reason} ---\x1B[0m`);
       };
-      ws.onclose = ev => {
+      ws.onclose = async ev => {
         if (this.ws !== ws) return;
         this.ws = null;
         this.wsServerId = null;
         this.state = "closed";
         this.gservBusy = false;
-        const reason =
-          ev.code === 1006 ? "connection refused (not logged in, or no access)" : "disconnected";
+        // 1006 covers every abnormal close, so probe the API for the real cause
+        const reason = ev.code === 1006 ? await this.diagnoseRefusal(serverId) : "disconnected";
         this.term.writeln(`\r\n\x1B[3;90m--- ${reason} ---\x1B[0m`);
       };
       this.$nextTick(() => this.focusInput());
+    },
+
+    async diagnoseRefusal(key) {
+      try {
+        await this.$axios.get(
+          `${this.$config.metaconcordUrl}/console/status/${encodeURIComponent(key)}`,
+          { progress: false }
+        );
+        return "console refused (session limit reached, or rejected by the server)";
+      } catch (err) {
+        const code = err.response && err.response.status;
+        if (code === 401 || code === 403) {
+          this.$store.dispatch("fetchUser");
+          return "session expired, log in again";
+        }
+        if (code === 404) return "unknown server, the site and metaconcord are out of sync";
+        return "metaconcord is unreachable (down or restarting)";
+      }
     },
 
     disconnect() {
