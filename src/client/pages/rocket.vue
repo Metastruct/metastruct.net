@@ -565,8 +565,11 @@ export default {
             }
           );
           if (this.current && this.current.key === key) this.status = data;
-        } catch {
-          // keep the last known status
+        } catch (err) {
+          // session expired: refresh the user so the login gate replaces the page
+          const code = err.response && err.response.status;
+          if (code === 401 || code === 403) this.$store.dispatch("fetchUser");
+          // otherwise keep the last known status
         }
       };
       tick();
