@@ -448,7 +448,8 @@ export default {
     },
 
     select(server) {
-      if (this.current && this.current.key === server.key) return;
+      // re-selecting the current server reconnects it when its socket is gone
+      if (this.current && this.current.key === server.key && this.state !== "closed") return;
       this.current = server;
       this.status = null;
       this.$nextTick(() => this.connect());
@@ -481,7 +482,7 @@ export default {
     async connect() {
       if (!this.current) return;
       const serverId = this.current.key;
-      if (this.wsServerId === serverId) return;
+      if (this.wsServerId === serverId && this.ws && this.ws.readyState <= WebSocket.OPEN) return;
       this.disconnect();
       this.wsServerId = serverId;
       await this.ensureTerminal();
@@ -529,6 +530,8 @@ export default {
       };
       ws.onclose = ev => {
         if (this.ws !== ws) return;
+        this.ws = null;
+        this.wsServerId = null;
         this.state = "closed";
         this.gservBusy = false;
         const reason =
@@ -577,7 +580,11 @@ export default {
     },
 
     fit() {
-      if (this.fitAddon && this.term && this.term.element) this.fitAddon.fit();
+      if (!this.fitAddon || !this.term || !this.term.element) return;
+      // proposeDimensions can yield 0/NaN while the layout is in flux, and
+      // resizing xterm with those breaks all further output
+      const dims = this.fitAddon.proposeDimensions();
+      if (dims && dims.cols > 0 && dims.rows > 0) this.term.resize(dims.cols, dims.rows);
     },
 
     formatPercent(v) {
