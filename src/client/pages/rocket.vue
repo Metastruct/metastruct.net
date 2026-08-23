@@ -14,12 +14,13 @@
             ul.server-list
               li(
                 v-for="server in servers",
-                :key="server.id",
-                :class="{ 'is-active': current && current.id === server.id }",
+                :key="server.key",
+                :class="{ 'is-active': current && current.key === server.key }",
                 @click="select(server)"
               )
                 span.dot(:class="{ 'is-online': server.connected }")
                 span.name {{ server.name }}
+                img.game(:src="`/img/games/${server.game}.png`", :alt="server.game")
               li.empty(v-if="!servers.length") No hosted servers.
           .main(v-if="current")
             .status-bar
@@ -30,17 +31,31 @@
                   span &nbsp;{{ status.players }}{{ status.max ? '/' + status.max : '' }}
                 span.stat
                   b-icon(icon="speedometer", size="is-small")
-                  span &nbsp;{{ status.fps != null ? status.fps + ' fps' : '-' }}
+                  span &nbsp;{{ tickLabel }}
                 span.stat.map(v-if="status.map")
                   b-icon(icon="map", size="is-small")
                   span &nbsp;{{ status.map }}
               span.stat.offline(v-else) offline
+            .graphs(v-if="charts")
+              stat-chart(
+                title="CPU",
+                :series="charts.cpu",
+                :max="charts.cpuMax",
+                :format="formatPercent"
+              )
+              stat-chart(
+                title="Memory",
+                :series="charts.memory",
+                :max="charts.memoryMax",
+                :format="formatBytes"
+              )
+              stat-chart(title="Network", :series="charts.network", :format="formatRate")
             .terminal-wrap
               .terminal(ref="terminal", @click="focusInput")
               .term-loader(v-if="state === 'connecting'")
                 .spinner
                 span attaching to {{ current.name }}…
-            .actions
+            .actions(v-if="current.gserv")
               button.button.is-small(
                 v-for="action in gservActions",
                 :key="action",
@@ -48,13 +63,13 @@
                 @click="runGserv(action)"
               ) {{ action }}
             form.input-bar(:data-state="state", autocomplete="off", @submit.prevent="submit")
-              span.segment RCON
+              span.segment {{ current.game === 'minecraft' ? 'CMD' : 'RCON' }}
               input(
                 ref="input",
                 v-model="input",
                 type="text",
                 spellcheck="false",
-                placeholder="console command",
+                :placeholder="current.game === 'minecraft' ? 'server command' : 'console command'",
                 @keydown="onKey"
               )
           .main.placeholder(v-else) Select a server.
@@ -112,6 +127,10 @@
 
         &.is-active {
           background: $secondary-dark;
+
+          .game {
+            opacity: 1;
+          }
         }
 
         &.empty {
@@ -120,9 +139,19 @@
         }
 
         .name {
+          flex: 1;
+          min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+        }
+
+        .game {
+          flex: none;
+          width: 1.2em;
+          height: 1.2em;
+          border-radius: 3px;
+          opacity: 0.7;
         }
       }
     }
@@ -181,6 +210,18 @@
       &.offline {
         color: $danger;
       }
+    }
+  }
+
+  .graphs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: $grey-dark;
+    border-bottom: 1px solid $grey-dark;
+
+    @media (max-width: 900px) {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
@@ -315,10 +356,16 @@
 
 <script>
 import "@xterm/xterm/css/xterm.css";
+import StatChart from "~/components/StatChart.vue";
 
 const HISTORY_KEY = "rocket.history";
+const HISTORY_POINTS = 120;
+
+const CPU_COLOR = "#0ce3ac";
+const TX_COLOR = "#b06cb3";
 
 export default {
+  components: { StatChart },
   data() {
     return {
       servers: [],
@@ -335,6 +382,32 @@ export default {
     };
   },
   head: { title: "Rocket" },
+  computed: {
+    tickLabel() {
+      const tick = this.status && this.status.tick;
+      if (!tick || tick.value == null) return "-";
+      const value = tick.label === "tps" ? tick.value.toFixed(1) : tick.value;
+      const mspt = this.status.mspt != null ? ` (${this.status.mspt.toFixed(1)} ms)` : "";
+      return `${value} ${tick.label}${mspt}`;
+    },
+    charts() {
+      const stats = this.status && this.status.stats;
+      if (!stats || !stats.history || !stats.history.length) return null;
+      const history = stats.history.slice(-HISTORY_POINTS);
+      const pick = key => history.map(s => s[key] || 0);
+      const current = stats.current || history[history.length - 1];
+      return {
+        cpu: [{ label: "", values: pick("cpu"), color: CPU_COLOR }],
+        cpuMax: 100,
+        memory: [{ label: "", values: pick("memUsed"), color: CPU_COLOR }],
+        memoryMax: current.memMax || null,
+        network: [
+          { label: "rx", values: pick("netRx"), color: CPU_COLOR },
+          { label: "tx", values: pick("netTx"), color: TX_COLOR },
+        ],
+      };
+    },
+  },
   watch: {
     "$store.state.user.isAdmin"(isAdmin) {
       if (isAdmin) this.loadServers();
@@ -363,15 +436,19 @@ export default {
           progress: false,
         });
         this.servers = data;
-        if (!this.current && data.length) this.select(data[0]);
+        if (this.current || !data.length) return;
+        // ?server=<key> deep-links a server, e.g. /rocket?server=minecraft:11
+        const wanted = data.find(s => s.key === this.$route.query.server);
+        this.select(wanted || data[0]);
       } catch (err) {
         this.error = `Could not list the servers: ${err.message}`;
       }
     },
 
     select(server) {
-      if (this.current && this.current.id === server.id) return;
+      if (this.current && this.current.key === server.key) return;
       this.current = server;
+      this.status = null;
       this.$nextTick(() => this.connect());
       this.pollStatus();
     },
@@ -401,7 +478,7 @@ export default {
 
     async connect() {
       if (!this.current) return;
-      const serverId = this.current.id;
+      const serverId = this.current.key;
       if (this.wsServerId === serverId) return;
       this.disconnect();
       this.wsServerId = serverId;
@@ -425,7 +502,7 @@ export default {
       const url = `${proto}//${http.host}${http.pathname.replace(
         /\/$/,
         ""
-      )}/console/ws?server=${serverId}`;
+      )}/console/ws?server=${encodeURIComponent(serverId)}`;
       const ws = new WebSocket(url);
       this.ws = ws;
       // stay in "connecting" until the bridge reports the console is attached (ready)
@@ -440,7 +517,7 @@ export default {
         else if (msg.type === "data") this.term.write(msg.data);
         else if (msg.type === "gserv-done") this.gservBusy = false;
         else if (msg.type === "meta" || msg.type === "exit")
-          this.term.writeln(`\r\n\x1b[3;90m--- ${msg.text || msg.reason} ---\x1b[0m`);
+          this.term.writeln(`\r\n\x1B[3;90m--- ${msg.text || msg.reason} ---\x1B[0m`);
       };
       ws.onclose = ev => {
         if (this.ws !== ws) return;
@@ -448,7 +525,7 @@ export default {
         this.gservBusy = false;
         const reason =
           ev.code === 1006 ? "connection refused (not logged in, or no access)" : "disconnected";
-        this.term.writeln(`\r\n\x1b[3;90m--- ${reason} ---\x1b[0m`);
+        this.term.writeln(`\r\n\x1B[3;90m--- ${reason} ---\x1B[0m`);
       };
       this.$nextTick(() => this.focusInput());
     },
@@ -468,15 +545,15 @@ export default {
       clearInterval(this.statusTimer);
       const tick = async () => {
         if (!this.current) return;
-        const id = this.current.id;
+        const key = this.current.key;
         try {
           const { data } = await this.$axios.get(
-            `${this.$config.metaconcordUrl}/console/status/${id}`,
+            `${this.$config.metaconcordUrl}/console/status/${encodeURIComponent(key)}`,
             {
               progress: false,
             }
           );
-          if (this.current && this.current.id === id) this.status = data;
+          if (this.current && this.current.key === key) this.status = data;
         } catch {
           // keep the last known status
         }
@@ -495,6 +572,25 @@ export default {
       if (this.fitAddon && this.term && this.term.element) this.fitAddon.fit();
     },
 
+    formatPercent(v) {
+      return `${Number(v).toFixed(1)}%`;
+    },
+
+    formatBytes(v) {
+      const units = ["B", "KiB", "MiB", "GiB", "TiB"];
+      let n = Number(v) || 0;
+      let i = 0;
+      while (n >= 1024 && i < units.length - 1) {
+        n /= 1024;
+        i++;
+      }
+      return `${n.toFixed(i >= 2 ? 2 : 0)} ${units[i]}`;
+    },
+
+    formatRate(v) {
+      return `${this.formatBytes(v)}/s`;
+    },
+
     focusInput() {
       if (!getSelection().toString() && this.$refs.input) this.$refs.input.focus();
     },
@@ -503,11 +599,11 @@ export default {
       const line = this.input;
       if (!line.trim()) return;
       if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-        this.term.writeln("\x1b[31mnot connected\x1b[0m");
+        this.term.writeln("\x1B[31mnot connected\x1B[0m");
         return;
       }
       this.ws.send(JSON.stringify({ type: "input", line }));
-      this.term.writeln(`\x1b[1;36m> ${line}\x1b[0m`);
+      this.term.writeln(`\x1B[1;36m> ${line}\x1B[0m`);
       if (this.history[this.history.length - 1] !== line) this.history.push(line);
       if (this.history.length > 200) this.history.shift();
       this.historyIndex = this.history.length;
