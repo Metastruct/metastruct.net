@@ -670,7 +670,8 @@ export default {
         if (this.current || !data.length) return;
         // ?server=<key> deep-links a server, e.g. /rocket?server=minecraft:11
         const wanted = data.find(s => s.key === this.$route.query.server);
-        this.select(wanted || data[0]);
+        // default to the first server whose bridge is up, dead ones stay clickable
+        this.select(wanted || data.find(s => s.connected) || data[0]);
       } catch (err) {
         this.error = `Could not list the servers: ${err.message}`;
       }
