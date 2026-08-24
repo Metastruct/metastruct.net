@@ -8,8 +8,14 @@
           | The server console is for the Metastruct administrators and developers.&nbsp;
           a(:href="`${$config.metaconcordUrl}/auth/github?redirect=${encodeURIComponent($route.fullPath)}`") Log in with GitHub
         .rocket(v-else)
-          aside.sidebar
-            .sidebar-head Servers
+          aside.sidebar(:class="{ 'is-open': sidebarOpen }")
+            .sidebar-head
+              span Servers
+              button.sidebar-close(
+                type="button",
+                aria-label="Close server list",
+                @click="sidebarOpen = false"
+              ) ×
             b-message(v-if="error", type="is-warning", size="is-small") {{ error }}
             ul.server-list
               li(
@@ -24,6 +30,12 @@
               li.empty(v-if="!servers.length") No hosted servers.
           .main(v-if="current")
             .status-bar
+              button.servers-toggle(
+                type="button",
+                aria-label="Server list",
+                @click="sidebarOpen = true"
+              )
+                b-icon(icon="menu", size="is-small")
               span.server {{ current.name }}
               template(v-if="status && status.connected")
                 span.stat
@@ -45,7 +57,13 @@
                   :data-level="lvl",
                   @click="toggleLevel(lvl)"
                 ) {{ lvl }}
-            .graphs(v-if="charts")
+            button.graphs-toggle(
+              v-if="charts",
+              type="button",
+              :class="{ 'is-open': graphsOpen }",
+              @click="graphsOpen = !graphsOpen"
+            ) Stats
+            .graphs(v-if="charts", :class="{ 'is-open': graphsOpen }")
               stat-chart(
                 title="CPU",
                 :series="charts.cpu",
@@ -81,11 +99,13 @@
                 placeholder="console command",
                 @keydown="onKey"
               )
-          .main.placeholder(v-else) Select a server.
+          .main.placeholder(v-else, @click="sidebarOpen = true") Select a server.
 </template>
 
 <style lang="scss">
 #rocket {
+  scrollbar-color: $grey-light $grey-darker;
+
   .section {
     padding-top: 1.5rem;
   }
@@ -109,11 +129,31 @@
     overflow-y: auto;
 
     .sidebar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: $grey-lighter;
       padding: 0.25rem 0.5rem;
+    }
+
+    // mobile only
+    .sidebar-close {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 1.8rem;
+      height: 1.8rem;
+      background: none;
+      border: 1px solid $grey-light;
+      border-radius: 3px;
+      color: $white-ter;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0;
+      cursor: pointer;
     }
 
     .server-list {
@@ -207,6 +247,19 @@
       font-weight: 700;
     }
 
+    // mobile only
+    .servers-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid $grey-light;
+      border-radius: 3px;
+      color: $white-ter;
+      padding: 0.15rem 0.3rem;
+      cursor: pointer;
+    }
+
     .stat {
       display: inline-flex;
       align-items: center;
@@ -263,6 +316,36 @@
     }
   }
 
+  // mobile only: accordion header for the graphs, collapsed by default
+  .graphs-toggle {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.4rem 0.9rem;
+    background: $grey-darker;
+    border: none;
+    border-bottom: 1px solid $grey-dark;
+    color: $grey-lighter;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 0;
+      height: 0;
+      border: 4px solid transparent;
+      border-left: 5px solid $grey-lighter;
+      transition: transform 0.1s ease-out;
+    }
+
+    &.is-open::before {
+      transform: rotate(90deg);
+    }
+  }
+
   .graphs {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -285,8 +368,16 @@
 
   .terminal {
     flex: 1;
+    // without min-width: 0 the xterm content props this flex item open, fit()
+    // then measures the inflated width and the text clips instead of wrapping
+    min-width: 0;
     min-height: 0;
+    overflow: hidden;
     padding: 0.5rem 0 0 0.75rem;
+
+    .xterm-viewport {
+      scrollbar-color: #353535 #0d0d0d;
+    }
   }
 
   .term-loader {
@@ -402,6 +493,74 @@
       }
     }
   }
+
+  // phones: console edge to edge under the navbar, server list as a full-page
+  // slide-in drawer (tablets keep the two-pane layout)
+  @media (max-width: 768px) {
+    .section {
+      padding: 0;
+    }
+
+    .rocket {
+      height: calc(100dvh - 3.25rem);
+      min-height: 0;
+      gap: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 3.25rem;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      z-index: 30;
+      border-radius: 0;
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition: transform 0.2s ease-out, visibility 0s linear 0.2s;
+
+      &.is-open {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.2s ease-out;
+      }
+    }
+
+    .sidebar .sidebar-close,
+    .status-bar .servers-toggle {
+      display: inline-flex;
+    }
+
+    .main {
+      border: none;
+      border-radius: 0;
+    }
+
+    .status-bar {
+      flex-wrap: wrap;
+      gap: 0.4rem 1rem;
+    }
+
+    .main .graphs-toggle {
+      display: flex;
+    }
+
+    .graphs:not(.is-open) {
+      display: none;
+    }
+
+    .input-bar {
+      padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+// the footer under the full-screen console would only get in the way on phones
+@media (max-width: 768px) {
+  body.rocket-page footer.footer {
+    display: none;
+  }
 }
 </style>
 
@@ -434,6 +593,8 @@ export default {
       error: null,
       state: "closed",
       input: "",
+      sidebarOpen: false,
+      graphsOpen: false,
       gservBusy: false,
       gservActions: ["rehash", "merge_repos", "rehashskeleton", "update_repos"],
       history: [],
@@ -443,7 +604,8 @@ export default {
       levels: { DEBUG: false, INFO: true, WARN: true, ERROR: true },
     };
   },
-  head: { title: "Rocket" },
+  // rocket-page lets global CSS hide the footer while the console fills the phone screen
+  head: { title: "Rocket", bodyAttrs: { class: "rocket-page" } },
   computed: {
     tickLabel() {
       const tick = this.status && this.status.tick;
@@ -515,6 +677,7 @@ export default {
     },
 
     select(server) {
+      this.sidebarOpen = false;
       // re-selecting the current server reconnects it when its socket is gone
       if (this.current && this.current.key === server.key && this.state !== "closed") return;
       this.current = server;
@@ -751,6 +914,8 @@ export default {
     },
 
     focusInput() {
+      // on touch screens tapping the terminal to scroll should not pop the keyboard
+      if (matchMedia("(pointer: coarse)").matches) return;
       if (!getSelection().toString() && this.$refs.input) this.$refs.input.focus();
     },
 
