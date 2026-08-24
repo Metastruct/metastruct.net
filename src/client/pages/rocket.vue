@@ -629,7 +629,10 @@ export default {
     },
 
     renderLine(line) {
-      const color = LEVEL_COLORS[this.levelGroup(line.level)];
+      // rcon traceability lines stand out in red whatever their level
+      const color = line.text.includes("[RCON]")
+        ? "\x1B[31m"
+        : LEVEL_COLORS[this.levelGroup(line.level)];
       return color ? `${color}${line.text}\x1B[0m` : line.text;
     },
 
