@@ -557,8 +557,11 @@ export default {
       const el = this.$refs.terminal;
       if (!el) return;
       if (this.term.element && this.term.element.parentElement !== el) {
+        // Vue recreates the terminal node when switching between games (the
+        // graphs/gserv v-ifs change the siblings); xterm only supports one
+        // open(), so move its existing element instead
         el.textContent = "";
-        this.term.open(el);
+        el.appendChild(this.term.element);
       } else if (!this.term.element) {
         this.term.open(el);
       }
