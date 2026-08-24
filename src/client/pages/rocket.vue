@@ -36,6 +36,15 @@
                   b-icon(icon="map", size="is-small")
                   span &nbsp;{{ status.map }}
               span.stat.offline(v-else) offline
+              .levels(v-if="current.game === 'minecraft'")
+                button.lvl(
+                  v-for="lvl in levelNames",
+                  :key="lvl",
+                  type="button",
+                  :class="{ 'is-off': !levels[lvl] }",
+                  :data-level="lvl",
+                  @click="toggleLevel(lvl)"
+                ) {{ lvl }}
             .graphs(v-if="charts")
               stat-chart(
                 title="CPU",
@@ -211,6 +220,47 @@
         color: $danger;
       }
     }
+
+    .levels {
+      margin-left: auto;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.3rem;
+
+      .lvl {
+        flex: none;
+        white-space: nowrap;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+        background: none;
+        border: 1px solid $grey-light;
+        border-radius: 3px;
+        padding: 0.1rem 0.4rem;
+        cursor: pointer;
+
+        &[data-level="DEBUG"] {
+          color: $grey-lighter;
+        }
+
+        &[data-level="INFO"] {
+          color: $white-ter;
+        }
+
+        &[data-level="WARN"] {
+          color: #e9d682;
+        }
+
+        &[data-level="ERROR"] {
+          color: $danger;
+        }
+
+        &.is-off {
+          opacity: 0.35;
+          text-decoration: line-through;
+        }
+      }
+    }
   }
 
   .graphs {
@@ -360,6 +410,15 @@ import "@xterm/xterm/css/xterm.css";
 import StatChart from "~/components/StatChart.vue";
 
 const HISTORY_KEY = "rocket.history";
+const LEVELS_KEY = "rocket.levels";
+// TRACE folds into DEBUG, FATAL into ERROR
+const LEVEL_NAMES = ["DEBUG", "INFO", "WARN", "ERROR"];
+const LEVEL_COLORS = {
+  DEBUG: "\x1B[90m",
+  WARN: "\x1B[33m",
+  ERROR: "\x1B[31m",
+};
+const LOG_BUFFER_MAX = 3000;
 const HISTORY_POINTS = 120;
 
 const CPU_COLOR = "#0ce3ac";
@@ -380,6 +439,8 @@ export default {
       history: [],
       historyIndex: 0,
       draft: "",
+      levelNames: LEVEL_NAMES,
+      levels: { DEBUG: false, INFO: true, WARN: true, ERROR: true },
     };
   },
   head: { title: "Rocket" },
@@ -421,6 +482,12 @@ export default {
       this.history = [];
     }
     this.historyIndex = this.history.length;
+    try {
+      this.levels = { ...this.levels, ...JSON.parse(localStorage.getItem(LEVELS_KEY) || "{}") };
+    } catch {
+      // defaults stay
+    }
+    this.logLines = [];
     if (this.$store.state.user.isAdmin) this.loadServers();
     window.addEventListener("resize", this.fit);
   },
@@ -496,6 +563,7 @@ export default {
         this.term.open(el);
       }
       this.term.reset();
+      this.logLines = [];
       this.fit();
       // the graphs row shows up after the first status poll and shrinks the
       // terminal area, so refit whenever the wrapper changes size
@@ -524,6 +592,7 @@ export default {
         }
         if (msg.type === "ready") this.state = "open";
         else if (msg.type === "data") this.term.write(msg.data);
+        else if (msg.type === "log") this.writeLog(msg.lines);
         else if (msg.type === "gserv-done") this.gservBusy = false;
         else if (msg.type === "meta" || msg.type === "exit")
           this.term.writeln(`\r\n\x1B[3;90m--- ${msg.text || msg.reason} ---\x1B[0m`);
@@ -548,6 +617,43 @@ export default {
         this.term.writeln(`\r\n\x1B[3;90m--- ${reason} ---\x1B[0m`);
       };
       this.$nextTick(() => this.focusInput());
+    },
+
+    levelGroup(level) {
+      if (level === "TRACE") return "DEBUG";
+      if (level === "FATAL") return "ERROR";
+      return LEVEL_NAMES.includes(level) ? level : "INFO";
+    },
+
+    renderLine(line) {
+      const color = LEVEL_COLORS[this.levelGroup(line.level)];
+      return color ? `${color}${line.text}\x1B[0m` : line.text;
+    },
+
+    writeLog(lines) {
+      this.logLines.push(...lines);
+      if (this.logLines.length > LOG_BUFFER_MAX) {
+        this.logLines.splice(0, this.logLines.length - LOG_BUFFER_MAX);
+      }
+      const visible = lines.filter(line => this.levels[this.levelGroup(line.level)]);
+      if (visible.length) {
+        this.term.write(visible.map(line => this.renderLine(line)).join("\r\n") + "\r\n");
+      }
+    },
+
+    toggleLevel(lvl) {
+      this.levels = { ...this.levels, [lvl]: !this.levels[lvl] };
+      try {
+        localStorage.setItem(LEVELS_KEY, JSON.stringify(this.levels));
+      } catch {
+        // storage unavailable, the choice lasts for this page only
+      }
+      // repaint the buffered log with the new filter
+      this.term.reset();
+      const visible = this.logLines.filter(line => this.levels[this.levelGroup(line.level)]);
+      if (visible.length) {
+        this.term.write(visible.map(line => this.renderLine(line)).join("\r\n") + "\r\n");
+      }
     },
 
     async diagnoseRefusal(key) {
