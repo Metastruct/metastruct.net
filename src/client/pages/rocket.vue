@@ -569,9 +569,11 @@ export default {
       this.logLines = [];
       this.fit();
       // the graphs row shows up after the first status poll and shrinks the
-      // terminal area, so refit whenever the wrapper changes size
-      if (!this.resizeObserver && typeof ResizeObserver !== "undefined") {
-        this.resizeObserver = new ResizeObserver(() => this.fit());
+      // terminal area, so refit whenever the wrapper changes size; re-observe
+      // every connect since Vue recreates the wrapper on cross-game switches
+      if (typeof ResizeObserver !== "undefined") {
+        if (!this.resizeObserver) this.resizeObserver = new ResizeObserver(() => this.fit());
+        this.resizeObserver.disconnect();
         this.resizeObserver.observe(el.parentElement);
       }
       this.state = "connecting";
