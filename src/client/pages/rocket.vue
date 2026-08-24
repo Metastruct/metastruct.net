@@ -605,7 +605,7 @@ export default {
     };
   },
   // rocket-page lets global CSS hide the footer while the console fills the phone screen
-  head: { title: "Rocket", bodyAttrs: { class: "rocket-page" } },
+  head: { title: "Rocket - Meta Construct", bodyAttrs: { class: "rocket-page" } },
   computed: {
     tickLabel() {
       const tick = this.status && this.status.tick;
