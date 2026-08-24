@@ -534,8 +534,17 @@ export default {
         this.wsServerId = null;
         this.state = "closed";
         this.gservBusy = false;
-        // 1006 covers every abnormal close, so probe the API for the real cause
-        const reason = ev.code === 1006 ? await this.diagnoseRefusal(serverId) : "disconnected";
+        let reason;
+        if (ev.code === 4001) {
+          // server closed the socket because the session expired
+          this.$store.dispatch("fetchUser");
+          reason = "session expired, log in again";
+        } else if (ev.code === 1006) {
+          // 1006 covers every abnormal close, so probe the API for the real cause
+          reason = await this.diagnoseRefusal(serverId);
+        } else {
+          reason = "disconnected";
+        }
         this.term.writeln(`\r\n\x1B[3;90m--- ${reason} ---\x1B[0m`);
       };
       this.$nextTick(() => this.focusInput());
