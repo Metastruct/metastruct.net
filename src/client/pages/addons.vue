@@ -6,7 +6,7 @@
       p.subtitle.is-6.muted
         | Everything running on our servers right now, straight from the servers themselves.
       b-message(v-if="error", type="is-warning", has-icon) {{ error }}
-      b-message(v-else-if="!servers.length", type="is-info", has-icon)
+      b-message(v-else-if="!loading && !servers.length", type="is-info", has-icon)
         | No server has published its add-on list yet.
 
       .tabs.is-toggle.toggle-tabs.server-tabs(v-if="servers.length > 1")
@@ -63,9 +63,10 @@
                     span.addon-name(v-else) {{ addon.name }}
                     .tags
                       b-tag(size="is-small", :class="sourceClass(addon)") {{ sourceLabel(addon) }}
+                      b-tag(v-if="branchOf(addon)", size="is-small") {{ branchOf(addon) }}
                       b-tag(v-if="addon.version", size="is-small") {{ addon.version }}
                 p.addon-description(v-if="addon.description") {{ short(addon.description) }}
-                p.addon-description.muted(v-else-if="addon.private") Private, no public source.
+                p.addon-description.muted(v-else-if="addon.private && !addonUrl(addon)") Private, no public source.
                 a.is-size-7.repo-link(
                   v-if="repoUrl(addon)",
                   :href="repoUrl(addon)",
@@ -225,7 +226,13 @@ export default {
       const terms = this.search.toLowerCase().split(/\s+/).filter(Boolean);
       if (!terms.length) return this.server.addons;
       return this.server.addons.filter(addon => {
-        const haystack = [addon.name, addon.description, addon.version, this.sourceLabel(addon)]
+        const haystack = [
+          addon.name,
+          addon.description,
+          addon.version,
+          this.branchOf(addon),
+          this.sourceLabel(addon),
+        ]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
@@ -237,18 +244,26 @@ export default {
     selectedKey() {
       this.search = "";
     },
+    // The sources of private repos only come back for a logged in team member, so
+    // the request waits until /auth/me has said whether there is a session.
+    "$store.state.userLoaded"(loaded) {
+      if (loaded) this.load();
+    },
   },
-  async mounted() {
-    try {
-      const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/addons`);
-      this.servers = data.servers || [];
-    } catch (err) {
-      console.error(err);
-      this.error = "The add-on list is unavailable right now.";
-    }
-    this.loading = false;
+  mounted() {
+    if (this.$store.state.userLoaded) this.load();
   },
   methods: {
+    async load() {
+      try {
+        const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/addons`);
+        this.servers = data.servers || [];
+      } catch (err) {
+        console.error(err);
+        this.error = "The add-on list is unavailable right now.";
+      }
+      this.loading = false;
+    },
     serverKey(server) {
       return `${server.game}-${server.serverId}`;
     },
@@ -264,7 +279,8 @@ export default {
       return (GAMES[game] || { logo: "/img/logo.png" }).logo;
     },
     sourceKey(addon) {
-      if (addon.private) return "private";
+      // A private addon whose source came back (team members only) shows its real host.
+      if (addon.private && !addon.source.url) return "private";
       const { source } = addon;
       if (source.kind === "git") return SOURCES[source.host] ? source.host : "git";
       return SOURCES[source.kind] ? source.kind : "unknown";
@@ -276,11 +292,14 @@ export default {
       return SOURCES[this.sourceKey(addon)].class;
     },
     sourceIcon(addon) {
-      return SOURCES[this.sourceKey(addon)].icon;
+      // The thumbnail keeps the lock even once the host chip replaced the private one.
+      return addon.private ? "lock" : SOURCES[this.sourceKey(addon)].icon;
     },
     addonUrl(addon) {
-      if (addon.private) return null;
       return addon.source.url || null;
+    },
+    branchOf(addon) {
+      return addon.source.kind === "git" ? addon.source.branch || null : null;
     },
     repoUrl(addon) {
       return addon.source.kind === "workshop" ? addon.source.repoUrl || null : null;
