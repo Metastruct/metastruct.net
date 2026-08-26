@@ -50,9 +50,17 @@
                 .media
                   .media-left
                     figure.image.is-48x48
-                      img(v-if="addon.thumbnail", :src="addon.thumbnail", loading="lazy", alt="")
+                      img(
+                        v-if="thumbnail(addon)",
+                        :src="thumbnail(addon)",
+                        loading="lazy",
+                        alt="",
+                        @error="dropThumbnail(addon)"
+                      )
                       .placeholder(v-else)
                         b-icon(:icon="sourceIcon(addon)")
+                      .lock-badge(v-if="addon.private && thumbnail(addon)", title="Private")
+                        b-icon(icon="lock", size="is-small")
                   .media-content
                     a.addon-name.has-text-primary(
                       v-if="addonUrl(addon)",
@@ -145,12 +153,38 @@
       margin-bottom: 0.5em;
     }
 
+    .image {
+      position: relative;
+    }
+
     .image img,
     .placeholder {
       border-radius: 6px;
       object-fit: cover;
       width: 48px;
       height: 48px;
+    }
+
+    // private add-ons keep the lock even when they have a picture to show
+    .lock-badge {
+      position: absolute;
+      right: -3px;
+      bottom: -3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.85);
+
+      .icon {
+        width: 12px;
+        height: 12px;
+        font-size: 12px;
+      }
     }
 
     .placeholder {
@@ -205,7 +239,7 @@ const SOURCES = {
 
 export default {
   data() {
-    return { servers: [], error: null, search: "", loading: true };
+    return { servers: [], error: null, search: "", loading: true, brokenThumbnails: [] };
   },
   head() {
     return {
@@ -297,6 +331,16 @@ export default {
     },
     addonUrl(addon) {
       return addon.source.url || null;
+    },
+    // a private repo avatar can be unreadable to the browser even when the API served it
+    thumbnail(addon) {
+      if (!addon.thumbnail) return null;
+      return this.brokenThumbnails.includes(addon.thumbnail) ? null : addon.thumbnail;
+    },
+    dropThumbnail(addon) {
+      if (addon.thumbnail && !this.brokenThumbnails.includes(addon.thumbnail)) {
+        this.brokenThumbnails.push(addon.thumbnail);
+      }
     },
     branchOf(addon) {
       return addon.source.kind === "git" ? addon.source.branch || null : null;
