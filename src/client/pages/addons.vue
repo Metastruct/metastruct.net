@@ -75,6 +75,7 @@
                       b-tag(v-if="addon.version", size="is-small") {{ addon.version }}
                 p.addon-description(v-if="addon.description") {{ short(addon.description) }}
                 p.addon-description.muted(v-else-if="addon.private && !addonUrl(addon)") Private, no public source.
+                p.addon-description.muted(v-else) No description provided.
                 a.is-size-7.repo-link(
                   v-if="repoUrl(addon)",
                   :href="repoUrl(addon)",
