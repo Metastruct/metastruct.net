@@ -45,6 +45,9 @@
               nuxt-link.navbar-item(to="/rocket")
                 b-icon(icon="rocket")
                 span &nbsp;Rocket
+              nuxt-link.navbar-item(to="/bans")
+                b-icon(icon="minus-circle")
+                span &nbsp;Bans
               a.navbar-item(
                 v-if="($store.state.user.teams || []).includes('administrators')",
                 :href="$config.metaconcordUrl",
