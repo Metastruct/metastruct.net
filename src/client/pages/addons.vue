@@ -316,8 +316,10 @@ const SOURCES = {
 };
 
 // Half-Life 2, its episodes and Counter-Strike: Source ship their assets with the
-// base game now, so listing them tells nobody anything they need to act on.
-const CONTENT_HIDDEN = ["garrysmod", "episodic", "ep2", "cstrike"];
+// base game now, so listing them tells nobody anything they need to act on. The
+// servers report the first three as one "hl2" mount, the older folders are kept
+// here in case a server still mounts them separately.
+const CONTENT_HIDDEN = ["garrysmod", "hl2", "episodic", "ep2", "cstrike"];
 
 export default {
   data() {
