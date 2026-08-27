@@ -19,19 +19,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
         env:
           NODE_ENV: production
           METACONCORD_URL: https://metaconcord.metastruct.net
-      - run: cp dist/200.html dist/404.html
+      # nuxt generate emits 404.html itself, this only covers it going missing
+      - run: test -f .output/public/404.html || cp .output/public/200.html .output/public/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: .output/public
 
   deploy:
     needs: build

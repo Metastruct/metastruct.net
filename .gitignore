@@ -71,6 +71,7 @@ _nuxt
 
 # Nuxt generate
 dist
+.output
 
 # vuepress build output
 .vuepress/dist
@@ -86,7 +87,7 @@ config*.json
 ecosystem.config.js
 
 # Google verification
-src/client/static/google934edf4e65e4e186.html
+public/google934edf4e65e4e186.html
 
 # VSCode
 .devcontainer

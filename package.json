@@ -5,38 +5,28 @@
   "author": "Tenri",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt",
-    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
-    "generate": "cross-env NODE_OPTIONS=--openssl-legacy-provider nuxt generate",
-    "start": "npx serve -s dist -l 20080"
+    "dev": "nuxt dev",
+    "build": "nuxt generate",
+    "generate": "nuxt generate",
+    "start": "npx serve .output/public -l 20080",
+    "lint": "eslint .",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.9.5",
-    "@nuxtjs/proxy": "^2.1.0",
-    "@nuxtjs/style-resources": "^1.0.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "bulma": "^0.9.3",
     "lodash.sortby": "^4.7.0",
-    "nuxt": "^2.15.8",
-    "pug": "^3.0.1",
-    "vue-tweet-embed": "^2.4.0"
+    "nuxt": "^4.5.2"
   },
+  "packageManager": "pnpm@11.24.0",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.17.0",
-    "@nuxtjs/eslint-config": "^5.0.0",
-    "@nuxtjs/eslint-module": "^3.0.2",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.3.0",
-    "eslint-config-prettier": "^7.1.0",
-    "eslint-plugin-nuxt": "^2.0.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-vue": "^7.9.0",
-    "nuxt-buefy": "^0.4.21",
-    "prettier": "^2.0.5",
-    "pug-plain-loader": "^1.0.0",
-    "sass": "^1.50.0",
-    "sass-loader": "^10.1.0",
-    "vue-observe-visibility": "^1.0.0"
+    "@nuxt/eslint": "^1.17.0",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-prettier": "^5.2.0",
+    "prettier": "^3.9.6",
+    "sass": "^1.103.1",
+    "typescript": "^5.9.0"
   }
 }
