@@ -39,11 +39,11 @@
             icon-right-clickable,
             @icon-right-click="search = ''"
           )
-        .card.mounted-games(v-if="mountedGames.length")
+        .card.server-facts(v-if="mountedGames.length")
           .card-content
             h3.is-size-6.has-text-weight-semibold Mounted games
-            .games
-              a.game(
+            .facts
+              a.fact(
                 v-for="game in mountedGames",
                 :key="game.folder",
                 :href="game.url || null",
@@ -59,7 +59,28 @@
                 )
                 .capsule.placeholder(v-else)
                   b-icon(icon="steam", size="is-small")
-                span.game-title {{ game.label }}
+                span.fact-label {{ game.label }}
+        .card.server-facts(v-if="minecraftRuntime.length")
+          .card-content
+            h3.is-size-6.has-text-weight-semibold Runs on
+            .facts
+              a.fact(
+                v-for="part in minecraftRuntime",
+                :key="part.id",
+                :href="part.url || null",
+                :target="part.url ? '_blank' : null",
+                rel="noopener"
+              )
+                img.badge(
+                  v-if="!brokenThumbnails.includes(part.icon)",
+                  :src="part.icon",
+                  loading="lazy",
+                  alt="",
+                  @error="brokenThumbnails.push(part.icon)"
+                )
+                .badge.placeholder(v-else)
+                  b-icon(icon="package-variant", size="is-small")
+                span.fact-label {{ part.label }}
         p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
         .columns.is-multiline
           .column.is-one-quarter-desktop.is-half-tablet(
@@ -148,7 +169,8 @@
     }
   }
 
-  .card.mounted-games {
+  // what a server needs to be played: mounted games on gmod, version and loader on minecraft
+  .card.server-facts {
     margin-bottom: 1.5rem;
 
     .card-content {
@@ -159,13 +181,13 @@
       margin-bottom: 0.6em;
     }
 
-    .games {
+    .facts {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
       gap: 0.15rem 0.75rem;
     }
 
-    .game {
+    .fact {
       display: flex;
       align-items: center;
       gap: 0.6em;
@@ -176,21 +198,31 @@
       &[href]:hover {
         background: rgba(255, 255, 255, 0.07);
 
-        .game-title {
+        .fact-label {
           text-decoration: underline;
         }
       }
     }
 
-    .capsule {
-      width: 72px;
-      height: 27px;
+    // steam capsules are wide banners, everything else is a square logo
+    .capsule,
+    .badge {
       border-radius: 3px;
       object-fit: cover;
       flex: none;
     }
 
-    .capsule.placeholder {
+    .capsule {
+      width: 72px;
+      height: 27px;
+    }
+
+    .badge {
+      width: 28px;
+      height: 28px;
+    }
+
+    .placeholder {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -198,7 +230,7 @@
       color: rgba(255, 255, 255, 0.5);
     }
 
-    .game-title {
+    .fact-label {
       font-size: 0.9rem;
       overflow-wrap: anywhere;
     }
@@ -321,6 +353,14 @@ const SOURCES = {
 // here in case a server still mounts them separately.
 const CONTENT_HIDDEN = ["garrysmod", "hl2", "episodic", "ep2", "cstrike"];
 
+// where to go to install a mod loader; the game itself has nowhere useful to link
+const LOADER_SITES = {
+  neoforge: "https://neoforged.net",
+  forge: "https://files.minecraftforge.net",
+  fabricloader: "https://fabricmc.net",
+  quilt_loader: "https://quiltmc.org",
+};
+
 export default {
   data() {
     return { servers: [], error: null, search: "", loading: true, brokenThumbnails: [] };
@@ -353,6 +393,16 @@ export default {
           url: g.depot && `https://store.steampowered.com/app/${g.depot}`,
         }))
         .sort((a, b) => a.label.localeCompare(b.label));
+    },
+    minecraftRuntime() {
+      if (!this.server || !this.server.runtime) return [];
+      return this.server.runtime.map(part => ({
+        id: part.id,
+        label: `${part.name} ${part.version}`,
+        // only the loaders we ship a logo for resolve; the rest fall back to the placeholder
+        icon: part.id === "minecraft" ? "/img/games/minecraft.png" : `/img/loaders/${part.id}.png`,
+        url: LOADER_SITES[part.id] || null,
+      }));
     },
     filteredAddons() {
       if (!this.server) return [];
