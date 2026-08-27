@@ -19,6 +19,7 @@
     "lodash.sortby": "^4.7.0",
     "nuxt": "^4.5.2"
   },
+  "packageManager": "pnpm@11.24.0",
   "devDependencies": {
     "@nuxt/eslint": "^1.17.0",
     "eslint": "^9.37.0",
