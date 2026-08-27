@@ -107,7 +107,13 @@
           b-table-column(v-slot="props", field="bannedAt", label="Banned", sortable)
             span(:title="absolute(props.row.bannedAt)") {{ day(props.row.bannedAt) }}
 
-          b-table-column(v-slot="props", field="unbanAt", label="Expires", sortable)
+          b-table-column(
+            v-slot="props",
+            field="unbanAt",
+            label="Expires",
+            sortable,
+            :custom-sort="sortExpires"
+          )
             span.permanent(v-if="props.row.permanent") permanent
             span(v-else, :title="absolute(props.row.unbanAt)") {{ until(props.row.unbanAt) }}
 
@@ -454,6 +460,18 @@ export default {
       if (!ban.permanent && ban.unbanAt * 1000 < Date.now())
         return { key: "expired", label: "Expired", type: "is-warning" };
       return { key: "active", label: "Banned", type: "is-danger" };
+    },
+    // permanent bans do not share one timestamp: the sentinel is 1900000000 but hardbans
+    // carry arbitrary far future dates that overlap real expiries, so sorting on the raw
+    // value interleaves rows that all read "permanent". Group them at the far end instead.
+    sortExpires(a, b, isAsc) {
+      const rank = ban => (ban.permanent ? Infinity : ban.unbanAt);
+      const av = rank(a);
+      const bv = rank(b);
+      // both permanent, order by when the ban was issued so the grouping stays stable
+      const [x, y] = av === bv ? [a.bannedAt, b.bannedAt] : [av, bv];
+      if (x === y) return 0;
+      return (x < y ? -1 : 1) * (isAsc ? 1 : -1);
     },
     rowClass(row) {
       const key = this.statusOf(row).key;
