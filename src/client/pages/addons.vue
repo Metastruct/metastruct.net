@@ -42,16 +42,24 @@
         .card.mounted-games(v-if="mountedGames.length")
           .card-content
             h3.is-size-6.has-text-weight-semibold Mounted games
-
-            .tags
-              b-tag(
+            .games
+              a.game(
                 v-for="game in mountedGames",
                 :key="game.folder",
-                size="is-small",
-                :class="game.required ? 'is-warning' : ''"
+                :href="game.url || null",
+                :target="game.url ? '_blank' : null",
+                rel="noopener"
               )
-                | {{ game.label }}
-                span.required-note(v-if="game.required")  &middot; required
+                img.capsule(
+                  v-if="game.icon && !brokenThumbnails.includes(game.icon)",
+                  :src="game.icon",
+                  loading="lazy",
+                  alt="",
+                  @error="brokenThumbnails.push(game.icon)"
+                )
+                .capsule.placeholder(v-else)
+                  b-icon(icon="steam", size="is-small")
+                span.game-title {{ game.label }}
         p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
         .columns.is-multiline
           .column.is-one-quarter-desktop.is-half-tablet(
@@ -147,16 +155,52 @@
       padding: 0.9em 1em;
     }
 
-    p {
+    h3 {
       margin-bottom: 0.6em;
     }
 
-    .tags {
-      margin-bottom: 0;
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+      gap: 0.15rem 0.75rem;
     }
 
-    .required-note {
-      opacity: 0.75;
+    .game {
+      display: flex;
+      align-items: center;
+      gap: 0.6em;
+      padding: 0.3em 0.4em;
+      border-radius: 4px;
+      color: inherit;
+
+      &[href]:hover {
+        background: rgba(255, 255, 255, 0.07);
+
+        .game-title {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .capsule {
+      width: 72px;
+      height: 27px;
+      border-radius: 3px;
+      object-fit: cover;
+      flex: none;
+    }
+
+    .capsule.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .game-title {
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
     }
   }
 
@@ -274,8 +318,6 @@ const SOURCES = {
 // Half-Life 2, its episodes and Counter-Strike: Source ship their assets with the
 // base game now, so listing them tells nobody anything they need to act on.
 const CONTENT_HIDDEN = ["garrysmod", "episodic", "ep2", "cstrike"];
-// listed whether or not a server reports it, so this one carries its own name
-const CONTENT_REQUIRED = [{ folder: "tf", title: "Team Fortress 2" }];
 
 export default {
   data() {
@@ -297,17 +339,18 @@ export default {
     },
     mountedGames() {
       if (!this.server || !this.server.games) return [];
-      const shown = this.server.games.filter(g => !CONTENT_HIDDEN.includes(g.folder));
-      for (const game of CONTENT_REQUIRED) {
-        if (!shown.some(g => g.folder === game.folder)) shown.push(game);
-      }
-      return shown
+      return this.server.games
+        .filter(g => !CONTENT_HIDDEN.includes(g.folder))
         .map(g => ({
           folder: g.folder,
           label: g.title || g.folder,
-          required: CONTENT_REQUIRED.some(r => r.folder === g.folder),
+          // depot is the steam app id, so both of these come straight from the game
+          icon:
+            g.depot &&
+            `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.depot}/capsule_184x69.jpg`,
+          url: g.depot && `https://store.steampowered.com/app/${g.depot}`,
         }))
-        .sort((a, b) => b.required - a.required || a.label.localeCompare(b.label));
+        .sort((a, b) => a.label.localeCompare(b.label));
     },
     filteredAddons() {
       if (!this.server) return [];
