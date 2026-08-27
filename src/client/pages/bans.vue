@@ -1,0 +1,540 @@
+<template lang="pug">
+#bans
+  section.section
+    .container
+      h1.title Bans
+      p.subtitle.is-6.muted
+        | Our records of naughty people for our Garry's Mod servers.
+
+      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
+      b-message(v-else-if="stale", type="is-warning", has-icon)
+        | This list may be out of date.
+
+      .bans-header(v-if="!error")
+        .tabs.is-toggle.toggle-tabs.status-tabs
+          ul
+            li(v-for="s in STATUSES", :key="s.key", :class="{ 'is-active': s.key === status }")
+              a(:href="'?status=' + s.key", @click.prevent="setQuery({ status: s.key })")
+                span {{ s.label }}
+                span.count(v-if="loaded") &nbsp;{{ counts[s.key] }}
+
+        b-select.gamemode(v-model="gamemodeFilter")
+          option(value="any") Any gamemode
+          option(value="global") Global only
+          option(v-for="g in gamemodes", :key="g", :value="g") {{ g }}
+
+        b-input.search(
+          v-model="search",
+          type="search",
+          icon="magnify",
+          placeholder="Search name, SteamID, reason",
+          icon-right="close-circle",
+          icon-right-clickable,
+          @icon-right-click="search = ''"
+        )
+
+        client-only
+          button.button.is-danger.is-small.new-ban(v-if="canModerate", @click="openBan()")
+            b-icon(icon="gavel", size="is-small")
+            span &nbsp;New ban
+
+      p.is-size-7.muted.updated(v-if="!error && loaded")
+        span Updated {{ relative(updatedAt) }}
+        button.button.is-small.is-text.refresh(
+          @click="load(true)",
+          :class="{ 'is-loading': loading }",
+          :disabled="loading"
+        ) refresh
+
+      b-message(v-if="!loading && !error && !bans.length", type="is-info", has-icon)
+        | No bans have been recorded yet.
+
+      .table-wrap
+        b-loading(:is-full-page="false", :active="loading")
+        b-table.ban-table(
+          v-if="bans.length",
+          :data="filteredBans",
+          :loading="loading",
+          :row-class="rowClass",
+          :default-sort="[sortField, sortDirection]",
+          @sort="(field, dir) => setQuery({ sort: field + ':' + dir })"
+        )
+          b-table-column(v-slot="props", field="name", label="Player", sortable)
+            .player
+              img.avatar(
+                v-if="avatarOf(props.row) && !broken.includes(avatarOf(props.row))",
+                :src="avatarOf(props.row)",
+                loading="lazy",
+                alt="",
+                @error="broken.push(avatarOf(props.row))"
+              )
+              .avatar.placeholder(v-else)
+                b-icon(icon="account", size="is-small")
+              .names
+                span.nick {{ props.row.name || "???" }}
+                span.persona(v-if="personaOf(props.row)") {{ personaOf(props.row) }}
+
+          b-table-column(v-slot="props", field="steamId", label="SteamID", sortable)
+            a.steamid(
+              v-if="props.row.steamId64",
+              :href="'https://steamcommunity.com/profiles/' + props.row.steamId64",
+              target="_blank",
+              rel="noopener"
+            ) {{ props.row.steamId }}
+            span.steamid(v-else) {{ props.row.steamId }}
+
+          b-table-column(v-slot="props", label="Status")
+            b-tag(:type="statusOf(props.row).type") {{ statusOf(props.row).label }}
+
+          b-table-column(v-slot="props", field="reason", label="Reason", sortable)
+            span.reason(:title="props.row.reason") {{ props.row.reason || "no reason given" }}
+
+          b-table-column(v-slot="props", field="gamemode", label="Gamemode", sortable)
+            b-tag(v-if="props.row.gamemode", type="is-dark") {{ props.row.gamemode }}
+            b-tag(v-else, type="is-dark") GLOBAL
+
+          b-table-column(v-slot="props", label="By")
+            .actor
+              b-icon.platform(:icon="actorInfo(props.row.bannedBy).icon", size="is-small")
+              a(
+                v-if="actorInfo(props.row.bannedBy).url",
+                :href="actorInfo(props.row.bannedBy).url",
+                target="_blank",
+                rel="noopener"
+              ) {{ actorInfo(props.row.bannedBy).label }}
+              span(v-else) {{ actorInfo(props.row.bannedBy).label }}
+
+          b-table-column(v-slot="props", field="bannedAt", label="Banned", sortable)
+            span(:title="absolute(props.row.bannedAt)") {{ day(props.row.bannedAt) }}
+
+          b-table-column(v-slot="props", field="unbanAt", label="Expires", sortable)
+            span.permanent(v-if="props.row.permanent") permanent
+            span(v-else, :title="absolute(props.row.unbanAt)") {{ until(props.row.unbanAt) }}
+
+          b-table-column(v-slot="props", label="", cell-class="actions-cell")
+            client-only
+              button.button.is-small(
+                v-if="canModerate && props.row.active && !props.row.permanent",
+                @click="openEdit(props.row)"
+              )
+                b-icon(icon="pencil", size="is-small")
+                span &nbsp;Edit
+
+          template(#empty)
+            .empty
+              span(v-if="search") Nothing matches "{{ search }}"
+              span(v-else) No bans match these filters.
+
+  client-only
+    BanCreateModal(ref="createModal", @saved="applyBan")
+    BanEditModal(ref="editModal", @saved="applyBan")
+</template>
+
+<style lang="scss">
+#bans {
+  .bans-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+
+    .tabs {
+      margin-bottom: 0 !important;
+
+      .count {
+        opacity: 0.5;
+      }
+    }
+
+    .search {
+      margin-left: auto;
+      width: 18rem;
+      max-width: 100%;
+    }
+  }
+
+  .updated {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+
+    .refresh {
+      height: auto;
+      padding: 0 0.25rem;
+      font-size: inherit;
+      color: $primary;
+      text-decoration: none;
+    }
+  }
+
+  // b-loading positions against the nearest positioned ancestor, and needs somewhere to
+  // show before the table exists on the very first load
+  .table-wrap {
+    position: relative;
+    min-height: 8rem;
+
+    // Buefy's scrim is a white 50% wash, which is backwards on the dark theme
+    .loading-overlay .loading-background {
+      background: rgba($grey-darker, 0.7);
+    }
+
+    .loading-icon::after {
+      border-color: transparent transparent $primary $primary !important;
+    }
+  }
+
+  .ban-table {
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 3px;
+      flex: none;
+      object-fit: cover;
+
+      &.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $grey-dark;
+        opacity: 0.6;
+      }
+    }
+
+    .names {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      min-width: 0;
+
+      .nick {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 12rem;
+      }
+
+      .persona {
+        font-size: 0.75rem;
+        opacity: 0.55;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 12rem;
+      }
+    }
+
+    .steamid {
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+
+    .reason {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 22rem;
+    }
+
+    .actor {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      white-space: nowrap;
+
+      .platform {
+        opacity: 0.5;
+        flex: none;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: underline dotted;
+      }
+    }
+
+    .actions-cell {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    // the status tag carries the state, this only dims what is no longer in force
+    tr.is-expired td,
+    tr.is-unbanned td {
+      opacity: 0.65;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 2rem 0;
+      opacity: 0.7;
+    }
+
+    .permanent {
+      color: $danger;
+    }
+  }
+}
+</style>
+
+<script>
+import BanCreateModal from "@/components/BanCreateModal.vue";
+import BanEditModal from "@/components/BanEditModal.vue";
+
+const STATUSES = [
+  { key: "all", label: "All" },
+  { key: "active", label: "Active" },
+  { key: "expired", label: "Expired" },
+  { key: "unbanned", label: "Unbanned" },
+];
+const SORT_FIELDS = ["name", "steamId", "reason", "gamemode", "bannedAt", "unbanAt"];
+
+export default {
+  components: { BanCreateModal, BanEditModal },
+  data() {
+    return {
+      STATUSES,
+      bans: [],
+      profiles: {},
+      updatedAt: 0,
+      stale: false,
+      error: null,
+      loading: true,
+      loaded: false,
+      search: this.$route.query.q || "",
+      broken: [],
+    };
+  },
+  head() {
+    return { title: "Bans - Meta Construct" };
+  },
+  computed: {
+    canModerate() {
+      return (this.$store.state.user.teams || []).length > 0;
+    },
+    status() {
+      const wanted = this.$route.query.status;
+      return STATUSES.some(s => s.key === wanted) ? wanted : "active";
+    },
+    gamemode() {
+      return this.$route.query.gamemode || "any";
+    },
+    // a plain v-model would fight the route, this keeps the URL the single source of truth
+    gamemodeFilter: {
+      get() {
+        return this.gamemode;
+      },
+      set(value) {
+        this.setQuery({ gamemode: value });
+      },
+    },
+    sortField() {
+      const [field] = (this.$route.query.sort || "").split(":");
+      return SORT_FIELDS.includes(field) ? field : "bannedAt";
+    },
+    sortDirection() {
+      const [, dir] = (this.$route.query.sort || "").split(":");
+      return dir === "asc" ? "asc" : "desc";
+    },
+    gamemodes() {
+      const found = new Set();
+      for (const ban of this.bans) if (ban.gamemode) found.add(ban.gamemode);
+      return [...found].sort();
+    },
+    // built once per data load rather than once per keystroke
+    haystacks() {
+      const map = {};
+      for (const ban of this.bans) {
+        map[ban.id] = [
+          ban.steamId,
+          ban.steamId64,
+          ban.name,
+          this.personaOf(ban),
+          ban.reason,
+          ban.unbanReason,
+          this.actorText(ban.bannedBy),
+          this.actorText(ban.unbannedBy),
+          ban.gamemode || "global",
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+      }
+      return map;
+    },
+    counts() {
+      const out = { all: this.bans.length, active: 0, expired: 0, unbanned: 0 };
+      for (const ban of this.bans) out[this.statusOf(ban).key]++;
+      return out;
+    },
+    filteredBans() {
+      const terms = this.search.toLowerCase().split(/\s+/).filter(Boolean);
+      return this.bans.filter(ban => {
+        if (this.status !== "all" && this.statusOf(ban).key !== this.status) return false;
+        if (this.gamemode === "global" && ban.gamemode) return false;
+        if (this.gamemode !== "any" && this.gamemode !== "global" && ban.gamemode !== this.gamemode)
+          return false;
+        if (!terms.length) return true;
+        const haystack = this.haystacks[ban.id] || "";
+        return terms.every(term => haystack.includes(term));
+      });
+    },
+  },
+  watch: {
+    search(value) {
+      clearTimeout(this._searchTimer);
+      this._searchTimer = setTimeout(() => {
+        this.setQuery({ q: value || undefined });
+      }, 300);
+    },
+    "$route.query.q"(value) {
+      if ((value || "") !== this.search) this.search = value || "";
+    },
+  },
+  mounted() {
+    // the list is the same for everyone, so it does not wait on /auth/me
+    this.load();
+  },
+  beforeDestroy() {
+    clearTimeout(this._searchTimer);
+  },
+  methods: {
+    async load(manual = false) {
+      if (manual) this.loading = true;
+      try {
+        const { data } = await this.$axios.get(`${this.$config.metaconcordUrl}/bans`, {
+          progress: manual,
+        });
+        this.bans = data.bans || [];
+        this.profiles = data.profiles || {};
+        this.updatedAt = data.updatedAt || 0;
+        this.stale = !!data.stale;
+        this.error = null;
+        this.loaded = true;
+      } catch (err) {
+        console.error(err);
+        this.error = "The ban list is unavailable right now.";
+      }
+      this.loading = false;
+    },
+    // vue-router 3 rejects on a duplicate navigation
+    setQuery(patch) {
+      const query = { ...this.$route.query, ...patch };
+      for (const key of Object.keys(query)) {
+        if (query[key] === undefined || query[key] === "" || query[key] === null) delete query[key];
+      }
+      if (query.status === "active") delete query.status;
+      if (query.gamemode === "any") delete query.gamemode;
+      this.$router.replace({ query }).catch(() => {});
+    },
+    profileOf(ban) {
+      return ban.steamId64 ? this.profiles[ban.steamId64] : undefined;
+    },
+    avatarOf(ban) {
+      return this.profileOf(ban)?.avatar;
+    },
+    // only worth a second line when they actually renamed, not on case or spacing
+    personaOf(ban) {
+      const persona = this.profileOf(ban)?.name;
+      if (!persona) return null;
+      const same = (a, b) => (a || "").trim().toLowerCase() === (b || "").trim().toLowerCase();
+      return same(persona, ban.name) ? null : persona;
+    },
+    // the key matches the filter tabs, the label is what the tag shows
+    statusOf(ban) {
+      if (!ban.active) return { key: "unbanned", label: "Unbanned", type: "is-success" };
+      if (!ban.permanent && ban.unbanAt * 1000 < Date.now())
+        return { key: "expired", label: "Expired", type: "is-warning" };
+      return { key: "active", label: "Banned", type: "is-danger" };
+    },
+    rowClass(row) {
+      const key = this.statusOf(row).key;
+      return key === "active" ? "is-banned" : `is-${key}`;
+    },
+    actorText(actor) {
+      if (!actor) return "";
+      if (actor.kind === "discord") return actor.name;
+      if (actor.kind === "github") return actor.login;
+      if (actor.kind === "steam") return actor.steamId;
+      if (actor.kind === "system") return actor.name;
+      return actor.raw;
+    },
+    // one place deciding how a banner is shown: platform icon, best available name, link
+    actorInfo(actor) {
+      if (!actor) return { icon: "help-circle-outline", label: "unknown", url: null };
+      switch (actor.kind) {
+        case "steam":
+          return {
+            icon: "steam",
+            // the current persona when we resolved it, the raw id otherwise
+            label: this.profiles[actor.steamId64]?.name || actor.steamId,
+            url: actor.steamId64 ? `https://steamcommunity.com/profiles/${actor.steamId64}` : null,
+          };
+        case "github":
+          // the site pins MDI 3.2.89, where the plain "github" icon does not exist yet
+          return {
+            icon: "github-circle",
+            label: actor.login,
+            url: `https://github.com/${actor.login}`,
+          };
+        case "discord":
+          return { icon: "discord", label: actor.name, url: null };
+        case "system":
+          return { icon: "robot", label: actor.name, url: null };
+        default:
+          return { icon: "help-circle-outline", label: actor.raw, url: null };
+      }
+    },
+    openBan() {
+      this.$refs.createModal?.start();
+    },
+    openEdit(ban) {
+      this.$refs.editModal?.start(ban, this.profileOf(ban));
+    },
+    // the write endpoints answer with the authoritative record, so no refetch
+    applyBan({ ban, profiles }) {
+      if (profiles) this.profiles = { ...this.profiles, ...profiles };
+      const index = this.bans.findIndex(b => b.id === ban.id);
+      if (index === -1) this.bans = [ban, ...this.bans];
+      else this.bans.splice(index, 1, ban);
+    },
+    day(ts) {
+      if (!ts) return "-";
+      return new Date(ts * 1000).toISOString().slice(0, 10);
+    },
+    absolute(ts) {
+      if (!ts) return "-";
+      return new Date(ts * 1000).toLocaleString();
+    },
+    until(ts) {
+      if (!ts) return "-";
+      const diff = ts * 1000 - Date.now();
+      const days = Math.round(Math.abs(diff) / 86400000);
+      const label =
+        days >= 365
+          ? `${Math.round(days / 365)} y`
+          : days >= 1
+          ? `${days} d`
+          : `${Math.max(1, Math.round(Math.abs(diff) / 3600000))} h`;
+      return diff > 0 ? `in ${label}` : `${label} ago`;
+    },
+    relative(ts) {
+      if (!ts) return "never";
+      const minutes = Math.round((Date.now() - ts) / 60000);
+      if (minutes < 1) return "just now";
+      if (minutes < 60) return `${minutes} min ago`;
+      const hours = Math.round(minutes / 60);
+      if (hours < 48) return `${hours} h ago`;
+      return `${Math.round(hours / 24)} days ago`;
+    },
+  },
+};
+</script>

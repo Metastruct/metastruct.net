@@ -92,6 +92,9 @@
             li: nuxt-link(to="/history")
               b-icon(icon="calendar-multiselect", size="is-small")
               span &nbsp;History
+            li: nuxt-link(to="/bans")
+              b-icon(icon="minus-circle", size="is-small")
+              span &nbsp;Bans
             li: a(href="https://www.metastruct.net/discord")
               b-icon(icon="discord", size="is-small")
               span &nbsp;Discord
@@ -103,9 +106,6 @@
             li: a(href="https://loadingscreen.metastruct.net", target="_blank")
               b-icon(icon="folder-image", size="is-small")
               span &nbsp;Gallery
-            li: a(href="https://banni.metastruct.net", target="_blank")
-              b-icon(icon="minus-circle", size="is-small")
-              span &nbsp;Bans
         .column.is-one-quarter
           p Copyright Metastruct © 2018-{{ new Date().getFullYear() }}
           p

@@ -23,6 +23,36 @@
   color: $grey-lighter !important;
 }
 
+// Bulma's select is only themed inside .datepicker further down, so a standalone one
+// keeps the light default. Match the .input treatment.
+.select {
+  select {
+    background: rgba($black-bis, 0.33);
+    border-color: $grey-dark;
+    color: $light;
+
+    &:hover {
+      border-color: $grey-light;
+    }
+
+    &:active,
+    &:focus {
+      border-color: $secondary-dark;
+      box-shadow: 0 0 0 0.125em rgba($secondary-dark, 0.5);
+    }
+
+    // the native popup inherits its colours from the element
+    option {
+      background: $grey-dark;
+      color: $light;
+    }
+  }
+
+  &:not(.is-multiple):not(.is-loading)::after {
+    border-color: $secondary;
+  }
+}
+
 .input,
 .textarea {
   background: rgba($black-bis, 0.33);

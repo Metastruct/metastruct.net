@@ -97,7 +97,7 @@ export default {
           icon: "calendar-multiselect",
         },
         {
-          path: "https://banni.metastruct.net",
+          path: "/bans",
           title: "Bans",
           subtitle: "Our records of naughty people.",
           icon: "minus-circle",
