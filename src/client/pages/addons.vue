@@ -84,8 +84,8 @@
         p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
         .columns.is-multiline
           .column.is-one-quarter-desktop.is-half-tablet(
-            v-for="addon in filteredAddons",
-            :key="addon.key || addon.name"
+            v-for="(addon, index) in filteredAddons",
+            :key="(addon.key || addon.name) + '#' + index"
           )
             .card.addon(:class="{ 'is-private': addon.private }")
               .card-content
