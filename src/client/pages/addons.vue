@@ -39,6 +39,19 @@
             icon-right-clickable,
             @icon-right-click="search = ''"
           )
+        .card.mounted-games(v-if="mountedGames.length")
+          .card-content
+            h3.is-size-6.has-text-weight-semibold Mounted games
+
+            .tags
+              b-tag(
+                v-for="game in mountedGames",
+                :key="game.folder",
+                size="is-small",
+                :class="game.required ? 'is-warning' : ''"
+              )
+                | {{ game.label }}
+                span.required-note(v-if="game.required")  &middot; required
         p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
         .columns.is-multiline
           .column.is-one-quarter-desktop.is-half-tablet(
@@ -124,6 +137,26 @@
         width: 16rem;
         max-width: 100%;
       }
+    }
+  }
+
+  .card.mounted-games {
+    margin-bottom: 1.5rem;
+
+    .card-content {
+      padding: 0.9em 1em;
+    }
+
+    p {
+      margin-bottom: 0.6em;
+    }
+
+    .tags {
+      margin-bottom: 0;
+    }
+
+    .required-note {
+      opacity: 0.75;
     }
   }
 
@@ -238,6 +271,12 @@ const SOURCES = {
   unknown: { label: "Unknown", icon: "help-circle-outline", class: "" },
 };
 
+// Half-Life 2, its episodes and Counter-Strike: Source ship their assets with the
+// base game now, so listing them tells nobody anything they need to act on.
+const CONTENT_HIDDEN = ["garrysmod", "episodic", "ep2", "cstrike"];
+// listed whether or not a server reports it, so this one carries its own name
+const CONTENT_REQUIRED = [{ folder: "tf", title: "Team Fortress 2" }];
+
 export default {
   data() {
     return { servers: [], error: null, search: "", loading: true, brokenThumbnails: [] };
@@ -255,6 +294,20 @@ export default {
     },
     server() {
       return this.servers.find(s => this.serverKey(s) === this.selectedKey) || null;
+    },
+    mountedGames() {
+      if (!this.server || !this.server.games) return [];
+      const shown = this.server.games.filter(g => !CONTENT_HIDDEN.includes(g.folder));
+      for (const game of CONTENT_REQUIRED) {
+        if (!shown.some(g => g.folder === game.folder)) shown.push(game);
+      }
+      return shown
+        .map(g => ({
+          folder: g.folder,
+          label: g.title || g.folder,
+          required: CONTENT_REQUIRED.some(r => r.folder === g.folder),
+        }))
+        .sort((a, b) => b.required - a.required || a.label.localeCompare(b.label));
     },
     filteredAddons() {
       if (!this.server) return [];
