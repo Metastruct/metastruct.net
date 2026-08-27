@@ -1,139 +1,194 @@
-<template lang="pug">
-#bans
-  section.section
-    .container
-      h1.title Bans
-      p.subtitle.is-6.muted
-        | Our records of naughty people for our Garry's Mod servers.
+<template>
+  <div id="bans">
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Bans</h1>
+        <p class="subtitle is-6 muted">
+          Our records of naughty people for our Garry's Mod servers.
+        </p>
 
-      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
-      b-message(v-else-if="stale", type="is-warning", has-icon)
-        | This list may be out of date.
+        <b-message v-if="error" type="is-warning" has-icon>{{ error }}</b-message>
+        <b-message v-else-if="stale" type="is-warning" has-icon>
+          This list may be out of date.
+        </b-message>
 
-      .bans-header(v-if="!error")
-        .tabs.is-toggle.toggle-tabs.status-tabs
-          ul
-            li(v-for="s in STATUSES", :key="s.key", :class="{ 'is-active': s.key === status }")
-              a(:href="'?status=' + s.key", @click.prevent="setQuery({ status: s.key })")
-                span {{ s.label }}
-                span.count(v-if="loaded") &nbsp;{{ counts[s.key] }}
+        <div v-if="!error" class="bans-header">
+          <div class="tabs is-toggle toggle-tabs status-tabs">
+            <ul>
+              <li v-for="s in STATUSES" :key="s.key" :class="{ 'is-active': s.key === status }">
+                <a :href="'?status=' + s.key" @click.prevent="setQuery({ status: s.key })">
+                  <span>{{ s.label }}</span>
+                  <span v-if="loaded" class="count">&nbsp;{{ counts[s.key] }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
 
-        b-select.gamemode(v-model="gamemodeFilter")
-          option(value="any") Any gamemode
-          option(value="global") Global only
-          option(v-for="g in gamemodes", :key="g", :value="g") {{ g }}
+          <b-select v-model="gamemodeFilter" class="gamemode">
+            <option value="any">Any gamemode</option>
+            <option value="global">Global only</option>
+            <option v-for="g in gamemodes" :key="g" :value="g">{{ g }}</option>
+          </b-select>
 
-        b-input.search(
-          v-model="search",
-          type="search",
-          icon="magnify",
-          placeholder="Search name, SteamID, reason",
-          icon-right="close-circle",
-          icon-right-clickable,
-          @icon-right-click="search = ''"
-        )
+          <b-input
+            v-model="search"
+            class="search"
+            type="search"
+            icon="magnify"
+            placeholder="Search name, SteamID, reason"
+            icon-right="close-circle"
+            icon-right-clickable
+            @icon-right-click="search = ''"
+          />
 
-        client-only
-          button.button.is-danger.is-small.new-ban(v-if="canModerate", @click="openBan()")
-            b-icon(icon="gavel", size="is-small")
-            span &nbsp;New ban
+          <client-only>
+            <button v-if="canModerate" class="button is-danger is-small new-ban" @click="openBan()">
+              <b-icon icon="gavel" size="is-small" />
+              <span>&nbsp;New ban</span>
+            </button>
+          </client-only>
+        </div>
 
-      p.is-size-7.muted.updated(v-if="!error && loaded")
-        span Updated {{ relative(updatedAt) }}
-        button.button.is-small.is-text.refresh(
-          @click="load(true)",
-          :class="{ 'is-loading': loading }",
-          :disabled="loading"
-        ) refresh
+        <p v-if="!error && loaded" class="is-size-7 muted updated">
+          <span>Updated {{ relative(updatedAt) }}</span>
+          <button
+            class="button is-small is-text refresh"
+            :class="{ 'is-loading': loading }"
+            :disabled="loading"
+            @click="load(true)"
+          >
+            refresh
+          </button>
+        </p>
 
-      b-message(v-if="!loading && !error && !bans.length", type="is-info", has-icon)
-        | No bans have been recorded yet.
+        <b-message v-if="!loading && !error && !bans.length" type="is-info" has-icon>
+          No bans have been recorded yet.
+        </b-message>
 
-      .table-wrap
-        b-loading(:is-full-page="false", :active="loading")
-        b-table.ban-table(
-          v-if="bans.length",
-          :data="filteredBans",
-          :loading="loading",
-          :row-class="rowClass",
-          :default-sort="[sortField, sortDirection]",
-          @sort="(field, dir) => setQuery({ sort: field + ':' + dir })"
-        )
-          b-table-column(v-slot="props", field="name", label="Player", sortable)
-            .player
-              img.avatar(
-                v-if="avatarOf(props.row) && !broken.includes(avatarOf(props.row))",
-                :src="avatarOf(props.row)",
-                loading="lazy",
-                alt="",
-                @error="broken.push(avatarOf(props.row))"
-              )
-              .avatar.placeholder(v-else)
-                b-icon(icon="account", size="is-small")
-              .names
-                span.nick {{ props.row.name || "???" }}
-                span.persona(v-if="personaOf(props.row)") {{ personaOf(props.row) }}
+        <div class="table-wrap">
+          <b-loading :is-full-page="false" :active="loading" />
+          <b-table
+            v-if="bans.length"
+            class="ban-table"
+            :data="filteredBans"
+            :loading="loading"
+            :row-class="rowClass"
+            :default-sort="[sortField, sortDirection]"
+            @sort="(field, dir) => setQuery({ sort: field + ':' + dir })"
+          >
+            <b-table-column v-slot="props" field="name" label="Player" sortable>
+              <div class="player">
+                <img
+                  v-if="avatarOf(props.row) && !broken.includes(avatarOf(props.row))"
+                  class="avatar"
+                  :src="avatarOf(props.row)"
+                  loading="lazy"
+                  alt=""
+                  @error="broken.push(avatarOf(props.row))"
+                />
+                <div v-else class="avatar placeholder">
+                  <b-icon icon="account" size="is-small" />
+                </div>
+                <div class="names">
+                  <span class="nick">{{ props.row.name || "???" }}</span>
+                  <span v-if="personaOf(props.row)" class="persona">{{
+                    personaOf(props.row)
+                  }}</span>
+                </div>
+              </div>
+            </b-table-column>
 
-          b-table-column(v-slot="props", field="steamId", label="SteamID", sortable)
-            a.steamid(
-              v-if="props.row.steamId64",
-              :href="'https://steamcommunity.com/profiles/' + props.row.steamId64",
-              target="_blank",
-              rel="noopener"
-            ) {{ props.row.steamId }}
-            span.steamid(v-else) {{ props.row.steamId }}
-
-          b-table-column(v-slot="props", label="Status")
-            b-tag(:type="statusOf(props.row).type") {{ statusOf(props.row).label }}
-
-          b-table-column(v-slot="props", field="reason", label="Reason", sortable)
-            span.reason(:title="props.row.reason") {{ props.row.reason || "no reason given" }}
-
-          b-table-column(v-slot="props", field="gamemode", label="Gamemode", sortable)
-            b-tag(v-if="props.row.gamemode", type="is-dark") {{ props.row.gamemode }}
-            b-tag(v-else, type="is-dark") GLOBAL
-
-          b-table-column(v-slot="props", label="By")
-            .actor
-              b-icon.platform(:icon="actorInfo(props.row.bannedBy).icon", size="is-small")
-              a(
-                v-if="actorInfo(props.row.bannedBy).url",
-                :href="actorInfo(props.row.bannedBy).url",
-                target="_blank",
+            <b-table-column v-slot="props" field="steamId" label="SteamID" sortable>
+              <a
+                v-if="props.row.steamId64"
+                class="steamid"
+                :href="'https://steamcommunity.com/profiles/' + props.row.steamId64"
+                target="_blank"
                 rel="noopener"
-              ) {{ actorInfo(props.row.bannedBy).label }}
-              span(v-else) {{ actorInfo(props.row.bannedBy).label }}
+                >{{ props.row.steamId }}</a
+              >
+              <span v-else class="steamid">{{ props.row.steamId }}</span>
+            </b-table-column>
 
-          b-table-column(v-slot="props", field="bannedAt", label="Banned", sortable)
-            span(:title="absolute(props.row.bannedAt)") {{ day(props.row.bannedAt) }}
+            <b-table-column v-slot="props" label="Status">
+              <b-tag :type="statusOf(props.row).type">{{ statusOf(props.row).label }}</b-tag>
+            </b-table-column>
 
-          b-table-column(
-            v-slot="props",
-            field="unbanAt",
-            label="Expires",
-            sortable,
-            :custom-sort="sortExpires"
-          )
-            span.permanent(v-if="props.row.permanent") permanent
-            span(v-else, :title="absolute(props.row.unbanAt)") {{ until(props.row.unbanAt) }}
+            <b-table-column v-slot="props" field="reason" label="Reason" sortable>
+              <span class="reason" :title="props.row.reason">{{
+                props.row.reason || "no reason given"
+              }}</span>
+            </b-table-column>
 
-          b-table-column(v-slot="props", label="", cell-class="actions-cell")
-            client-only
-              button.button.is-small(
-                v-if="canModerate && props.row.active && !props.row.permanent",
-                @click="openEdit(props.row)"
-              )
-                b-icon(icon="pencil", size="is-small")
-                span &nbsp;Edit
+            <b-table-column v-slot="props" field="gamemode" label="Gamemode" sortable>
+              <b-tag v-if="props.row.gamemode" type="is-dark">{{ props.row.gamemode }}</b-tag>
+              <b-tag v-else type="is-dark">GLOBAL</b-tag>
+            </b-table-column>
 
-          template(#empty)
-            .empty
-              span(v-if="search") Nothing matches "{{ search }}"
-              span(v-else) No bans match these filters.
+            <b-table-column v-slot="props" label="By">
+              <div class="actor">
+                <b-icon
+                  class="platform"
+                  :icon="actorInfo(props.row.bannedBy).icon"
+                  size="is-small"
+                />
+                <a
+                  v-if="actorInfo(props.row.bannedBy).url"
+                  :href="actorInfo(props.row.bannedBy).url"
+                  target="_blank"
+                  rel="noopener"
+                  >{{ actorInfo(props.row.bannedBy).label }}</a
+                >
+                <span v-else>{{ actorInfo(props.row.bannedBy).label }}</span>
+              </div>
+            </b-table-column>
 
-  client-only
-    BanCreateModal(ref="createModal", @saved="applyBan")
-    BanEditModal(ref="editModal", @saved="applyBan")
+            <b-table-column v-slot="props" field="bannedAt" label="Banned" sortable>
+              <span :title="absolute(props.row.bannedAt)">{{ day(props.row.bannedAt) }}</span>
+            </b-table-column>
+
+            <b-table-column
+              v-slot="props"
+              field="unbanAt"
+              label="Expires"
+              sortable
+              :custom-sort="sortExpires"
+            >
+              <span v-if="props.row.permanent" class="permanent">permanent</span>
+              <span v-else :title="absolute(props.row.unbanAt)">{{
+                until(props.row.unbanAt)
+              }}</span>
+            </b-table-column>
+
+            <b-table-column v-slot="props" label="" cell-class="actions-cell">
+              <client-only>
+                <button
+                  v-if="canModerate && props.row.active && !props.row.permanent"
+                  class="button is-small"
+                  @click="openEdit(props.row)"
+                >
+                  <b-icon icon="pencil" size="is-small" />
+                  <span>&nbsp;Edit</span>
+                </button>
+              </client-only>
+            </b-table-column>
+
+            <template #empty>
+              <div class="empty">
+                <span v-if="search">Nothing matches "{{ search }}"</span>
+                <span v-else>No bans match these filters.</span>
+              </div>
+            </template>
+          </b-table>
+        </div>
+      </div>
+    </section>
+
+    <client-only>
+      <BanCreateModal ref="createModal" @saved="applyBan" />
+      <BanEditModal ref="editModal" @saved="applyBan" />
+    </client-only>
+  </div>
 </template>
 
 <style lang="scss">

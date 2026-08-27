@@ -19,7 +19,6 @@
     "bulma": "^0.9.3",
     "lodash.sortby": "^4.7.0",
     "nuxt": "^2.15.8",
-    "pug": "^3.0.1",
     "vue-tweet-embed": "^2.4.0"
   },
   "devDependencies": {
@@ -34,7 +33,6 @@
     "eslint-plugin-vue": "^7.9.0",
     "nuxt-buefy": "^0.4.21",
     "prettier": "^2.0.5",
-    "pug-plain-loader": "^1.0.0",
     "sass": "^1.50.0",
     "sass-loader": "^10.1.0",
     "vue-observe-visibility": "^1.0.0"

@@ -97,6 +97,13 @@ module.exports = {
   build: {
     // xterm ships syntax webpack 4 can't parse, run it through babel
     transpile: ["@xterm/xterm", "@xterm/addon-fit"],
+    loaders: {
+      vue: {
+        // drop inter-tag whitespace like pug did (and like Vue 3 does by default),
+        // so icon/label spacing stays controlled by the explicit &nbsp; entities
+        compilerOptions: { whitespace: "condense" },
+      },
+    },
   },
 
   // build: {

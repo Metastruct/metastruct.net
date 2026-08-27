@@ -1,129 +1,192 @@
-<template lang="pug">
-#addons
-  section.section
-    .container
-      h1.title Add-ons
-      p.subtitle.is-6.muted
-        | Everything running on our servers right now, straight from the servers themselves.
-      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
-      b-message(v-else-if="!loading && !servers.length", type="is-info", has-icon)
-        | No server has published its add-on list yet.
+<template>
+  <div id="addons">
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Add-ons</h1>
+        <p class="subtitle is-6 muted">
+          Everything running on our servers right now, straight from the servers themselves.
+        </p>
+        <b-message v-if="error" type="is-warning" has-icon>{{ error }}</b-message>
+        <b-message v-else-if="!loading && !servers.length" type="is-info" has-icon>
+          No server has published its add-on list yet.
+        </b-message>
 
-      .tabs.is-toggle.toggle-tabs.server-tabs(v-if="servers.length > 1")
-        ul
-          li(
-            v-for="s in servers",
-            :key="serverKey(s)",
-            :class="{ 'is-active': serverKey(s) === selectedKey }"
-          )
-            a(:href="'?server=' + serverKey(s)", @click.prevent="select(s)")
-              img.game-logo(:src="gameLogo(s.game)", :alt="gameLabel(s.game)", :title="gameLabel(s.game)")
-              span {{ s.serverName }}
+        <div v-if="servers.length > 1" class="tabs is-toggle toggle-tabs server-tabs">
+          <ul>
+            <li
+              v-for="s in servers"
+              :key="serverKey(s)"
+              :class="{ 'is-active': serverKey(s) === selectedKey }"
+            >
+              <a :href="'?server=' + serverKey(s)" @click.prevent="select(s)">
+                <img
+                  class="game-logo"
+                  :src="gameLogo(s.game)"
+                  :alt="gameLabel(s.game)"
+                  :title="gameLabel(s.game)"
+                />
+                <span>{{ s.serverName }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
 
-      .server(v-if="server", :key="serverKey(server)")
-        .server-header
-          h2.title.is-4
-            img.game-logo(
-              :src="gameLogo(server.game)",
-              :alt="gameLabel(server.game)",
-              :title="gameLabel(server.game)"
-            )
-            span {{ server.serverName }}
-          span.is-size-7.muted {{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}
-          b-input.search(
-            v-model="search",
-            type="search",
-            icon="magnify",
-            placeholder="Search add-ons",
-            icon-right="close-circle",
-            icon-right-clickable,
-            @icon-right-click="search = ''"
-          )
-        .card.server-facts(v-if="mountedGames.length")
-          .card-content
-            h3.is-size-6.has-text-weight-semibold Mounted games
-            .facts
-              a.fact(
-                v-for="game in mountedGames",
-                :key="game.folder",
-                :href="game.url || null",
-                :target="game.url ? '_blank' : null",
-                rel="noopener"
-              )
-                img.capsule(
-                  v-if="game.icon && !brokenThumbnails.includes(game.icon)",
-                  :src="game.icon",
-                  loading="lazy",
-                  alt="",
-                  @error="brokenThumbnails.push(game.icon)"
-                )
-                .capsule.placeholder(v-else)
-                  b-icon(icon="steam", size="is-small")
-                span.fact-label {{ game.label }}
-        .card.server-facts(v-if="minecraftRuntime.length")
-          .card-content
-            h3.is-size-6.has-text-weight-semibold Runs on
-            .facts
-              a.fact(
-                v-for="part in minecraftRuntime",
-                :key="part.id",
-                :href="part.url || null",
-                :target="part.url ? '_blank' : null",
-                rel="noopener"
-              )
-                img.badge(
-                  v-if="!brokenThumbnails.includes(part.icon)",
-                  :src="part.icon",
-                  loading="lazy",
-                  alt="",
-                  @error="brokenThumbnails.push(part.icon)"
-                )
-                .badge.placeholder(v-else)
-                  b-icon(icon="package-variant", size="is-small")
-                span.fact-label {{ part.label }}
-        p.muted(v-if="search && !filteredAddons.length") Nothing matches "{{ search }}".
-        .columns.is-multiline
-          .column.is-one-quarter-desktop.is-half-tablet(
-            v-for="(addon, index) in filteredAddons",
-            :key="(addon.key || addon.name) + '#' + index"
-          )
-            .card.addon(:class="{ 'is-private': addon.private }")
-              .card-content
-                .media
-                  .media-left
-                    figure.image.is-48x48
-                      img(
-                        v-if="thumbnail(addon)",
-                        :src="thumbnail(addon)",
-                        loading="lazy",
-                        alt="",
-                        @error="dropThumbnail(addon)"
-                      )
-                      .placeholder(v-else)
-                        b-icon(:icon="sourceIcon(addon)")
-                      .lock-badge(v-if="addon.private && thumbnail(addon)", title="Private")
-                        b-icon(icon="lock", size="is-small")
-                  .media-content
-                    a.addon-name.has-text-primary(
-                      v-if="addonUrl(addon)",
-                      :href="addonUrl(addon)",
-                      target="_blank",
-                      rel="noopener"
-                    ) {{ addon.name }}
-                    span.addon-name(v-else) {{ addon.name }}
-                    .tags
-                      b-tag(size="is-small", :class="sourceClass(addon)") {{ sourceLabel(addon) }}
-                      b-tag(v-if="branchOf(addon)", size="is-small") {{ branchOf(addon) }}
-                      b-tag(v-if="addon.version", size="is-small") {{ addon.version }}
-                p.addon-description(v-if="addon.description") {{ short(addon.description) }}
-                p.addon-description.muted(v-else-if="addon.private && !addonUrl(addon)") Private, no public source.
-                p.addon-description.muted(v-else) No description provided.
-                a.is-size-7.repo-link(
-                  v-if="repoUrl(addon)",
-                  :href="repoUrl(addon)",
-                  target="_blank",
+        <div v-if="server" :key="serverKey(server)" class="server">
+          <div class="server-header">
+            <h2 class="title is-4">
+              <img
+                class="game-logo"
+                :src="gameLogo(server.game)"
+                :alt="gameLabel(server.game)"
+                :title="gameLabel(server.game)"
+              />
+              <span>{{ server.serverName }}</span>
+            </h2>
+            <span class="is-size-7 muted"
+              >{{ server.addons.length }} add-ons, updated {{ relative(server.updatedAt) }}</span
+            >
+            <b-input
+              v-model="search"
+              class="search"
+              type="search"
+              icon="magnify"
+              placeholder="Search add-ons"
+              icon-right="close-circle"
+              icon-right-clickable
+              @icon-right-click="search = ''"
+            />
+          </div>
+          <div v-if="mountedGames.length" class="card server-facts">
+            <div class="card-content">
+              <h3 class="is-size-6 has-text-weight-semibold">Mounted games</h3>
+              <div class="facts">
+                <a
+                  v-for="game in mountedGames"
+                  :key="game.folder"
+                  class="fact"
+                  :href="game.url || null"
+                  :target="game.url ? '_blank' : null"
                   rel="noopener"
-                ) source repository
+                >
+                  <img
+                    v-if="game.icon && !brokenThumbnails.includes(game.icon)"
+                    class="capsule"
+                    :src="game.icon"
+                    loading="lazy"
+                    alt=""
+                    @error="brokenThumbnails.push(game.icon)"
+                  />
+                  <div v-else class="capsule placeholder">
+                    <b-icon icon="steam" size="is-small" />
+                  </div>
+                  <span class="fact-label">{{ game.label }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div v-if="minecraftRuntime.length" class="card server-facts">
+            <div class="card-content">
+              <h3 class="is-size-6 has-text-weight-semibold">Runs on</h3>
+              <div class="facts">
+                <a
+                  v-for="part in minecraftRuntime"
+                  :key="part.id"
+                  class="fact"
+                  :href="part.url || null"
+                  :target="part.url ? '_blank' : null"
+                  rel="noopener"
+                >
+                  <img
+                    v-if="!brokenThumbnails.includes(part.icon)"
+                    class="badge"
+                    :src="part.icon"
+                    loading="lazy"
+                    alt=""
+                    @error="brokenThumbnails.push(part.icon)"
+                  />
+                  <div v-else class="badge placeholder">
+                    <b-icon icon="package-variant" size="is-small" />
+                  </div>
+                  <span class="fact-label">{{ part.label }}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <p v-if="search && !filteredAddons.length" class="muted">
+            Nothing matches "{{ search }}".
+          </p>
+          <div class="columns is-multiline">
+            <div
+              v-for="(addon, index) in filteredAddons"
+              :key="(addon.key || addon.name) + '#' + index"
+              class="column is-one-quarter-desktop is-half-tablet"
+            >
+              <div class="card addon" :class="{ 'is-private': addon.private }">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-left">
+                      <figure class="image is-48x48">
+                        <img
+                          v-if="thumbnail(addon)"
+                          :src="thumbnail(addon)"
+                          loading="lazy"
+                          alt=""
+                          @error="dropThumbnail(addon)"
+                        />
+                        <div v-else class="placeholder">
+                          <b-icon :icon="sourceIcon(addon)" />
+                        </div>
+                        <div
+                          v-if="addon.private && thumbnail(addon)"
+                          class="lock-badge"
+                          title="Private"
+                        >
+                          <b-icon icon="lock" size="is-small" />
+                        </div>
+                      </figure>
+                    </div>
+                    <div class="media-content">
+                      <a
+                        v-if="addonUrl(addon)"
+                        class="addon-name has-text-primary"
+                        :href="addonUrl(addon)"
+                        target="_blank"
+                        rel="noopener"
+                        >{{ addon.name }}</a
+                      >
+                      <span v-else class="addon-name">{{ addon.name }}</span>
+                      <div class="tags">
+                        <b-tag size="is-small" :class="sourceClass(addon)">{{
+                          sourceLabel(addon)
+                        }}</b-tag>
+                        <b-tag v-if="branchOf(addon)" size="is-small">{{ branchOf(addon) }}</b-tag>
+                        <b-tag v-if="addon.version" size="is-small">{{ addon.version }}</b-tag>
+                      </div>
+                    </div>
+                  </div>
+                  <p v-if="addon.description" class="addon-description">
+                    {{ short(addon.description) }}
+                  </p>
+                  <p v-else-if="addon.private && !addonUrl(addon)" class="addon-description muted">
+                    Private, no public source.
+                  </p>
+                  <p v-else class="addon-description muted">No description provided.</p>
+                  <a
+                    v-if="repoUrl(addon)"
+                    class="is-size-7 repo-link"
+                    :href="repoUrl(addon)"
+                    target="_blank"
+                    rel="noopener"
+                    >source repository</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss">

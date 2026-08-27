@@ -1,78 +1,98 @@
-<template lang="pug">
-.ban-create-modal
-  b-modal(:active.sync="show", has-modal-card, @close="discard")
-    .modal-card
-      header.modal-card-head
-        p.modal-card-title New ban
+<template>
+  <div class="ban-create-modal">
+    <b-modal :active.sync="show" has-modal-card @close="discard">
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">New ban</p>
+        </header>
 
-      form#ban-create-modal.modal-card-body(@submit.prevent="confirm")
-        b-message(v-if="meta && !meta.serverConnected", type="is-danger", has-icon)
-          | No game server is connected right now, so bans cannot be issued.
+        <form id="ban-create-modal" class="modal-card-body" @submit.prevent="confirm">
+          <b-message v-if="meta && !meta.serverConnected" type="is-danger" has-icon>
+            No game server is connected right now, so bans cannot be issued.
+          </b-message>
 
-        b-field(
-          label="SteamID",
-          :type="lookupError ? 'is-danger' : ''",
-          :message="lookupError || 'Any format: STEAM_0:1:1, [U:1:2], or a 64 bit id.'"
-        )
-          b-input(
-            v-model="steamId",
-            placeholder="76561197997701057",
-            required,
-            :loading="looking",
-            :disabled="!writable"
-          )
+          <b-field
+            label="SteamID"
+            :type="lookupError ? 'is-danger' : ''"
+            :message="lookupError || 'Any format: STEAM_0:1:1, [U:1:2], or a 64 bit id.'"
+          >
+            <b-input
+              v-model="steamId"
+              placeholder="76561197997701057"
+              required
+              :loading="looking"
+              :disabled="!writable"
+            />
+          </b-field>
 
-        .target(v-if="target")
-          img.avatar(v-if="target.avatar", :src="target.avatar", alt="")
-          .avatar.placeholder(v-else)
-            b-icon(icon="account")
-          .who
-            span.name {{ target.name || "unknown profile" }}
-            span.mono {{ target.steamId }}
+          <div v-if="target" class="target">
+            <img v-if="target.avatar" class="avatar" :src="target.avatar" alt="" />
+            <div v-else class="avatar placeholder">
+              <b-icon icon="account" />
+            </div>
+            <div class="who">
+              <span class="name">{{ target.name || "unknown profile" }}</span>
+              <span class="mono">{{ target.steamId }}</span>
+            </div>
+          </div>
 
-        b-message(v-if="target && target.existingBan", type="is-warning", has-icon)
-          p(v-if="target.existingBan.active")
-            | Already banned: {{ target.existingBan.reason }}
-          p(v-else) Previously banned: {{ target.existingBan.reason }}
-          b-checkbox(v-if="target.existingBan.active", v-model="override")
-            | Replace the existing ban
+          <b-message v-if="target && target.existingBan" type="is-warning" has-icon>
+            <p v-if="target.existingBan.active">Already banned: {{ target.existingBan.reason }}</p>
+            <p v-else>Previously banned: {{ target.existingBan.reason }}</p>
+            <b-checkbox v-if="target.existingBan.active" v-model="override">
+              Replace the existing ban
+            </b-checkbox>
+          </b-message>
 
-        b-field(label="Reason")
-          b-input(
-            v-model="reason",
-            placeholder="Prop spam",
-            maxlength="500",
-            required,
-            :disabled="!writable"
-          )
+          <b-field label="Reason">
+            <b-input
+              v-model="reason"
+              placeholder="Prop spam"
+              maxlength="500"
+              required
+              :disabled="!writable"
+            />
+          </b-field>
 
-        b-field(label="Length", :message="lengthHint")
-          b-select(v-model="length", expanded, :disabled="!writable")
-            option(v-for="p in PRESETS", :key="p.value", :value="p.value") {{ p.label }}
+          <b-field label="Length" :message="lengthHint">
+            <b-select v-model="length" expanded :disabled="!writable">
+              <option v-for="p in PRESETS" :key="p.value" :value="p.value">{{ p.label }}</option>
+            </b-select>
+          </b-field>
 
-        b-field(
-          v-if="length === 'custom'",
-          label="Custom length",
-          :type="customValid ? '' : 'is-danger'",
-          :message="customValid ? '' : 'Use 1d, 2w, 1y6mo and so on.'"
-        )
-          b-input(v-model="custom", placeholder="3w2d", :disabled="!writable")
+          <b-field
+            v-if="length === 'custom'"
+            label="Custom length"
+            :type="customValid ? '' : 'is-danger'"
+            :message="customValid ? '' : 'Use 1d, 2w, 1y6mo and so on.'"
+          >
+            <b-input v-model="custom" placeholder="3w2d" :disabled="!writable" />
+          </b-field>
 
-        b-field(label="Gamemode")
-          b-select(v-model="gamemode", expanded, :disabled="!writable")
-            option(value="") Global (every gamemode)
-            option(v-for="g in (meta ? meta.gamemodes : [])", :key="g", :value="g") {{ g }}
+          <b-field label="Gamemode">
+            <b-select v-model="gamemode" expanded :disabled="!writable">
+              <option value="">Global (every gamemode)</option>
+              <option v-for="g in meta ? meta.gamemodes : []" :key="g" :value="g">{{ g }}</option>
+            </b-select>
+          </b-field>
+        </form>
 
-      .modal-card-foot.buttons.is-right
-        button.button(type="button", @click="discard", :disabled="saving") Close
-        button.button.is-danger(
-          type="submit",
-          form="ban-create-modal",
-          :class="{ 'is-loading': saving }",
-          :disabled="!canSubmit"
-        )
-          b-icon(icon="gavel")
-          span &nbsp;Ban
+        <div class="modal-card-foot buttons is-right">
+          <button class="button" type="button" :disabled="saving" @click="discard">Close</button>
+          <button
+            class="button is-danger"
+            type="submit"
+            form="ban-create-modal"
+            :class="{ 'is-loading': saving }"
+            :disabled="!canSubmit"
+          >
+            <b-icon icon="gavel" />
+            <span>&nbsp;Ban</span>
+          </button>
+        </div>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <style lang="scss">

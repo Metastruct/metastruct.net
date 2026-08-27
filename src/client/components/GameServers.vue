@@ -1,42 +1,51 @@
-<template lang="pug">
-//- Rendered as the tile parent itself so Bulma's column sizing applies to the
-//- accordion as a whole.
-.tile.is-parent.is-vertical.is-4.game-servers(v-if="games.length")
-  .game-category(
-    v-for="(g, index) in games",
-    :key="g.game",
-    :class="{ 'is-open': g.game === openGame }",
-    :style="stickyOffsets(index)"
-  )
-    button.game-category-header(
-      type="button",
-      :aria-expanded="g.game === openGame ? 'true' : 'false'",
-      @click="toggle(g.game)"
-    )
-      img.game-logo(:src="`/img/games/${g.game}.png`", alt="")
-      span.game-label {{ g.label }}
-      span.game-summary(:class="{ 'is-empty': !playerTotal(g) }")
-        b-icon(icon="account-multiple", size="is-small")
-        span {{ playerTotal(g) || 0 }}
-      b-icon.game-chevron(icon="chevron-down", size="is-small")
-    transition(
-      name="game-collapse",
-      @enter="onEnter",
-      @after-enter="onSettled",
-      @enter-cancelled="onSettled",
-      @leave="onLeave",
-      @after-leave="onSettled",
-      @leave-cancelled="onSettled"
-    )
-      .game-category-body(v-show="g.game === openGame")
-        .game-category-cards
-          ServerCard(
-            v-for="entry in g.entries",
-            :key="entry.key",
-            :entry="entry",
-            :game="g.game",
-            tabindex="0"
-          )
+<template>
+  <!-- Rendered as the tile parent itself so Bulma's column sizing applies to the
+    accordion as a whole. -->
+  <div v-if="games.length" class="tile is-parent is-vertical is-4 game-servers">
+    <div
+      v-for="(g, index) in games"
+      :key="g.game"
+      class="game-category"
+      :class="{ 'is-open': g.game === openGame }"
+      :style="stickyOffsets(index)"
+    >
+      <button
+        class="game-category-header"
+        type="button"
+        :aria-expanded="g.game === openGame ? 'true' : 'false'"
+        @click="toggle(g.game)"
+      >
+        <img class="game-logo" :src="`/img/games/${g.game}.png`" alt="" />
+        <span class="game-label">{{ g.label }}</span>
+        <span class="game-summary" :class="{ 'is-empty': !playerTotal(g) }">
+          <b-icon icon="account-multiple" size="is-small" />
+          <span>{{ playerTotal(g) || 0 }}</span>
+        </span>
+        <b-icon class="game-chevron" icon="chevron-down" size="is-small" />
+      </button>
+      <transition
+        name="game-collapse"
+        @enter="onEnter"
+        @after-enter="onSettled"
+        @enter-cancelled="onSettled"
+        @leave="onLeave"
+        @after-leave="onSettled"
+        @leave-cancelled="onSettled"
+      >
+        <div v-show="g.game === openGame" class="game-category-body">
+          <div class="game-category-cards">
+            <ServerCard
+              v-for="entry in g.entries"
+              :key="entry.key"
+              :entry="entry"
+              :game="g.game"
+              tabindex="0"
+            />
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

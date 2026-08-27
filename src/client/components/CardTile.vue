@@ -1,10 +1,13 @@
-<template lang="pug">
-.card-tile.is-child.card.tile(:is="is", :to="to", :href="href")
-  .card-content
-    .icon-background(v-if="data.icon")
-      b-icon(:icon="data.icon")
-    p.title.has-text-primary-light {{ data.title }}
-    p.subtitle {{ data.subtitle }}
+<template>
+  <div :is="is" class="card-tile is-child card tile" :to="to" :href="href">
+    <div class="card-content">
+      <div v-if="data.icon" class="icon-background">
+        <b-icon :icon="data.icon" />
+      </div>
+      <p class="title has-text-primary-light">{{ data.title }}</p>
+      <p class="subtitle">{{ data.subtitle }}</p>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

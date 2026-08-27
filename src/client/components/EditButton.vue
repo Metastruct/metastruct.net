@@ -1,18 +1,24 @@
-<template lang="pug">
-.edit-button
-  a(v-if="!editing", @click="$emit('start')")
-    b-icon(icon="pencil")
-    span &nbsp;Edit
-  template(v-else)
-    a(@click="$emit('save')", role="button")
-      b-icon(icon="content-save")
-      span &nbsp;Save
-    a(@click="$emit('cancel')")
-      b-icon(icon="cancel")
-      span &nbsp;Cancel
-    a.has-text-danger(v-if="showDelete", @click="$emit('delete')")
-      b-icon(icon="delete")
-      span &nbsp;Delete
+<template>
+  <div class="edit-button">
+    <a v-if="!editing" @click="$emit('start')">
+      <b-icon icon="pencil" />
+      <span>&nbsp;Edit</span>
+    </a>
+    <template v-else>
+      <a role="button" @click="$emit('save')">
+        <b-icon icon="content-save" />
+        <span>&nbsp;Save</span>
+      </a>
+      <a @click="$emit('cancel')">
+        <b-icon icon="cancel" />
+        <span>&nbsp;Cancel</span>
+      </a>
+      <a v-if="showDelete" class="has-text-danger" @click="$emit('delete')">
+        <b-icon icon="delete" />
+        <span>&nbsp;Delete</span>
+      </a>
+    </template>
+  </div>
 </template>
 
 <script>

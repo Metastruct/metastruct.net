@@ -1,61 +1,86 @@
-<template lang="pug">
-.ban-edit-modal
-  b-modal(:active.sync="show", has-modal-card, @close="discard")
-    .modal-card(v-if="ban")
-      header.modal-card-head
-        p.modal-card-title Edit ban
+<template>
+  <div class="ban-edit-modal">
+    <b-modal :active.sync="show" has-modal-card @close="discard">
+      <div v-if="ban" class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Edit ban</p>
+        </header>
 
-      form#ban-edit-modal.modal-card-body(@submit.prevent="save")
-        .target
-          img.avatar(v-if="profile && profile.avatar", :src="profile.avatar", alt="")
-          .avatar.placeholder(v-else)
-            b-icon(icon="account")
-          .who
-            span.name {{ ban.name || "???" }}
-            span.mono {{ ban.steamId }}
+        <form id="ban-edit-modal" class="modal-card-body" @submit.prevent="save">
+          <div class="target">
+            <img v-if="profile && profile.avatar" class="avatar" :src="profile.avatar" alt="" />
+            <div v-else class="avatar placeholder">
+              <b-icon icon="account" />
+            </div>
+            <div class="who">
+              <span class="name">{{ ban.name || "???" }}</span>
+              <span class="mono">{{ ban.steamId }}</span>
+            </div>
+          </div>
 
-        .summary
-          .row
-            span.label Banned
-            span {{ absolute(ban.bannedAt) }}
-          .row
-            span.label Currently
-            span(v-if="ban.permanent") permanent
-            span(v-else) expires {{ absolute(ban.unbanAt) }}
+          <div class="summary">
+            <div class="row">
+              <span class="label">Banned</span>
+              <span>{{ absolute(ban.bannedAt) }}</span>
+            </div>
+            <div class="row">
+              <span class="label">Currently</span>
+              <span v-if="ban.permanent">permanent</span>
+              <span v-else>expires {{ absolute(ban.unbanAt) }}</span>
+            </div>
+          </div>
 
-        b-field(label="Reason")
-          b-input(v-model="reason", maxlength="500", required)
+          <b-field label="Reason">
+            <b-input v-model="reason" maxlength="500" required />
+          </b-field>
 
-        b-field(label="Length", :message="lengthHint")
-          b-select(v-model="length", expanded)
-            option(value="keep") Keep the current expiry
-            option(v-for="p in PRESETS", :key="p.value", :value="p.value") {{ p.label }}
+          <b-field label="Length" :message="lengthHint">
+            <b-select v-model="length" expanded>
+              <option value="keep">Keep the current expiry</option>
+              <option v-for="p in PRESETS" :key="p.value" :value="p.value">{{ p.label }}</option>
+            </b-select>
+          </b-field>
 
-        b-field(
-          v-if="length === 'custom'",
-          label="Custom length",
-          :type="customValid ? '' : 'is-danger'",
-          :message="customValid ? '' : 'Use 1d, 2w, 1y6mo and so on.'"
-        )
-          b-input(v-model="custom", placeholder="3w2d")
+          <b-field
+            v-if="length === 'custom'"
+            label="Custom length"
+            :type="customValid ? '' : 'is-danger'"
+            :message="customValid ? '' : 'Use 1d, 2w, 1y6mo and so on.'"
+          >
+            <b-input v-model="custom" placeholder="3w2d" />
+          </b-field>
 
-        p.note
-          b-icon(icon="information-outline", size="is-small")
-          span &nbsp;Saving re-issues the ban through banni.
+          <p class="note">
+            <b-icon icon="information-outline" size="is-small" />
+            <span>&nbsp;Saving re-issues the ban through banni.</span>
+          </p>
+        </form>
 
-      .modal-card-foot.buttons.is-right
-        button.button(type="button", @click="discard", :disabled="busy") Close
-        button.button.is-danger.is-outlined(type="button", @click="askUnban", :disabled="busy")
-          b-icon(icon="lock-open")
-          span &nbsp;Unban
-        button.button.is-primary(
-          type="submit",
-          form="ban-edit-modal",
-          :class="{ 'is-loading': busy }",
-          :disabled="!canSave"
-        )
-          b-icon(icon="check")
-          span &nbsp;Save changes
+        <div class="modal-card-foot buttons is-right">
+          <button class="button" type="button" :disabled="busy" @click="discard">Close</button>
+          <button
+            class="button is-danger is-outlined"
+            type="button"
+            :disabled="busy"
+            @click="askUnban"
+          >
+            <b-icon icon="lock-open" />
+            <span>&nbsp;Unban</span>
+          </button>
+          <button
+            class="button is-primary"
+            type="submit"
+            form="ban-edit-modal"
+            :class="{ 'is-loading': busy }"
+            :disabled="!canSave"
+          >
+            <b-icon icon="check" />
+            <span>&nbsp;Save changes</span>
+          </button>
+        </div>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <style lang="scss">

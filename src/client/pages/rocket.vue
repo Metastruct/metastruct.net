@@ -1,105 +1,150 @@
-<template lang="pug">
-#rocket
-  section.section
-    .container
-      client-only
-        b-message(v-if="!$store.state.userLoaded") Loading…
-        b-message(v-else-if="!$store.state.user.isAdmin", type="is-warning", has-icon)
-          | The server console is for the Metastruct administrators and developers.&nbsp;
-          a(:href="`${$config.metaconcordUrl}/auth/github?redirect=${encodeURIComponent($route.fullPath)}`") Log in with GitHub
-        .rocket(v-else)
-          aside.sidebar(:class="{ 'is-open': sidebarOpen }")
-            .sidebar-head
-              span Servers
-              button.sidebar-close(
-                type="button",
-                aria-label="Close server list",
-                @click="sidebarOpen = false"
-              ) ×
-            b-message(v-if="error", type="is-warning", size="is-small") {{ error }}
-            ul.server-list
-              li(
-                v-for="server in servers",
-                :key="server.key",
-                :class="{ 'is-active': current && current.key === server.key }",
-                @click="select(server)"
-              )
-                span.dot(:class="{ 'is-online': server.connected }")
-                span.name {{ server.name }}
-                img.game(:src="`/img/games/${server.game}.png`", :alt="server.game")
-              li.empty(v-if="!servers.length") No hosted servers.
-          .main(v-if="current")
-            .status-bar
-              button.servers-toggle(
-                type="button",
-                aria-label="Server list",
-                @click="sidebarOpen = true"
-              )
-                b-icon(icon="menu", size="is-small")
-              span.server {{ current.name }}
-              template(v-if="status && status.connected")
-                span.stat
-                  b-icon(icon="account-multiple", size="is-small")
-                  span &nbsp;{{ status.players }}{{ status.max ? '/' + status.max : '' }}
-                span.stat
-                  b-icon(icon="speedometer", size="is-small")
-                  span &nbsp;{{ tickLabel }}
-                span.stat.map(v-if="status.map")
-                  b-icon(icon="map", size="is-small")
-                  span &nbsp;{{ status.map }}
-              span.stat.offline(v-else) offline
-              .levels(v-if="current.game === 'minecraft'")
-                button.lvl(
-                  v-for="lvl in levelNames",
-                  :key="lvl",
-                  type="button",
-                  :class="{ 'is-off': !levels[lvl] }",
-                  :data-level="lvl",
-                  @click="toggleLevel(lvl)"
-                ) {{ lvl }}
-            button.graphs-toggle(
-              v-if="charts",
-              type="button",
-              :class="{ 'is-open': graphsOpen }",
-              @click="graphsOpen = !graphsOpen"
-            ) Stats
-            .graphs(v-if="charts", :class="{ 'is-open': graphsOpen }")
-              stat-chart(
-                title="CPU",
-                :series="charts.cpu",
-                :max="charts.cpuMax",
-                :format="formatPercent"
-              )
-              stat-chart(
-                title="Memory",
-                :series="charts.memory",
-                :max="charts.memoryMax",
-                :format="formatBytes"
-              )
-              stat-chart(title="Network", :series="charts.network", :format="formatRate")
-            .terminal-wrap
-              .terminal(ref="terminal", @click="focusInput")
-              .term-loader(v-if="state === 'connecting'")
-                .spinner
-                span attaching to {{ current.name }}…
-            .actions(v-if="current.gserv")
-              button.button.is-small(
-                v-for="action in gservActions",
-                :key="action",
-                :disabled="state !== 'open' || gservBusy",
-                @click="runGserv(action)"
-              ) {{ action }}
-            form.input-bar(:data-state="state", autocomplete="off", @submit.prevent="submit")
-              span.segment RCON
-              input(
-                ref="input",
-                v-model="input",
-                type="text",
-                spellcheck="false",
-                placeholder="console command",
-                @keydown="onKey"
-              )
-          .main.placeholder(v-else, @click="sidebarOpen = true") Select a server.
+<template>
+  <div id="rocket">
+    <section class="section">
+      <div class="container">
+        <client-only>
+          <b-message v-if="!$store.state.userLoaded">Loading…</b-message>
+          <b-message v-else-if="!$store.state.user.isAdmin" type="is-warning" has-icon>
+            The server console is for the Metastruct administrators and developers.&nbsp;<a
+              :href="`${$config.metaconcordUrl}/auth/github?redirect=${encodeURIComponent(
+                $route.fullPath
+              )}`"
+              >Log in with GitHub</a
+            >
+          </b-message>
+          <div v-else class="rocket">
+            <aside class="sidebar" :class="{ 'is-open': sidebarOpen }">
+              <div class="sidebar-head">
+                <span>Servers</span>
+                <button
+                  class="sidebar-close"
+                  type="button"
+                  aria-label="Close server list"
+                  @click="sidebarOpen = false"
+                >
+                  ×
+                </button>
+              </div>
+              <b-message v-if="error" type="is-warning" size="is-small">{{ error }}</b-message>
+              <ul class="server-list">
+                <li
+                  v-for="server in servers"
+                  :key="server.key"
+                  :class="{ 'is-active': current && current.key === server.key }"
+                  @click="select(server)"
+                >
+                  <span class="dot" :class="{ 'is-online': server.connected }"></span>
+                  <span class="name">{{ server.name }}</span>
+                  <img class="game" :src="`/img/games/${server.game}.png`" :alt="server.game" />
+                </li>
+                <li v-if="!servers.length" class="empty">No hosted servers.</li>
+              </ul>
+            </aside>
+            <div v-if="current" class="main">
+              <div class="status-bar">
+                <button
+                  class="servers-toggle"
+                  type="button"
+                  aria-label="Server list"
+                  @click="sidebarOpen = true"
+                >
+                  <b-icon icon="menu" size="is-small" />
+                </button>
+                <span class="server">{{ current.name }}</span>
+                <template v-if="status && status.connected">
+                  <span class="stat">
+                    <b-icon icon="account-multiple" size="is-small" />
+                    <span>&nbsp;{{ status.players }}{{ status.max ? "/" + status.max : "" }}</span>
+                  </span>
+                  <span class="stat">
+                    <b-icon icon="speedometer" size="is-small" />
+                    <span>&nbsp;{{ tickLabel }}</span>
+                  </span>
+                  <span v-if="status.map" class="stat map">
+                    <b-icon icon="map" size="is-small" />
+                    <span>&nbsp;{{ status.map }}</span>
+                  </span>
+                </template>
+                <span v-else class="stat offline">offline</span>
+                <div v-if="current.game === 'minecraft'" class="levels">
+                  <button
+                    v-for="lvl in levelNames"
+                    :key="lvl"
+                    class="lvl"
+                    type="button"
+                    :class="{ 'is-off': !levels[lvl] }"
+                    :data-level="lvl"
+                    @click="toggleLevel(lvl)"
+                  >
+                    {{ lvl }}
+                  </button>
+                </div>
+              </div>
+              <button
+                v-if="charts"
+                class="graphs-toggle"
+                type="button"
+                :class="{ 'is-open': graphsOpen }"
+                @click="graphsOpen = !graphsOpen"
+              >
+                Stats
+              </button>
+              <div v-if="charts" class="graphs" :class="{ 'is-open': graphsOpen }">
+                <stat-chart
+                  title="CPU"
+                  :series="charts.cpu"
+                  :max="charts.cpuMax"
+                  :format="formatPercent"
+                />
+                <stat-chart
+                  title="Memory"
+                  :series="charts.memory"
+                  :max="charts.memoryMax"
+                  :format="formatBytes"
+                />
+                <stat-chart title="Network" :series="charts.network" :format="formatRate" />
+              </div>
+              <div class="terminal-wrap">
+                <div ref="terminal" class="terminal" @click="focusInput"></div>
+                <div v-if="state === 'connecting'" class="term-loader">
+                  <div class="spinner"></div>
+                  <span>attaching to {{ current.name }}…</span>
+                </div>
+              </div>
+              <div v-if="current.gserv" class="actions">
+                <button
+                  v-for="action in gservActions"
+                  :key="action"
+                  class="button is-small"
+                  :disabled="state !== 'open' || gservBusy"
+                  @click="runGserv(action)"
+                >
+                  {{ action }}
+                </button>
+              </div>
+              <form
+                class="input-bar"
+                :data-state="state"
+                autocomplete="off"
+                @submit.prevent="submit"
+              >
+                <span class="segment">RCON</span>
+                <input
+                  ref="input"
+                  v-model="input"
+                  type="text"
+                  spellcheck="false"
+                  placeholder="console command"
+                  @keydown="onKey"
+                />
+              </form>
+            </div>
+            <div v-else class="main placeholder" @click="sidebarOpen = true">Select a server.</div>
+          </div>
+        </client-only>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss">

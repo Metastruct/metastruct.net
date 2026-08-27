@@ -1,22 +1,23 @@
-<template lang="pug">
-#index
-  .hero
-    .hero-body
-      .container
-        UpcomingEvents(:events="events")
-        .tile.is-ancestor
-          GameServers(v-if="games.length", :games="games")
-          //- Explicit widths so the columns line up with the events row above.
-          .tile.is-parent.is-vertical(:class="games.length ? 'is-4' : 'is-6'")
-            CardTile(v-for="(data, key) in middle", :data="data", :key="`middle-${key}`")
-          .tile.is-parent.is-vertical(:class="games.length ? 'is-4' : 'is-6'")
-            CardTile(v-for="(data, key) in right", :data="data", :key="`right-${key}`")
-            //- .tile.is-child.card
-            //-   Timeline#metastruct(
-            //-     sourceType="profile",
-            //-     :options="{ tweetLimit: 2, theme: 'dark', linkColor: '#0ce3ac', chrome: 'nofooter noborders noheader transparent' }",
-            //-     widget-class="vue-twitter-embed"
-            //-   )
+<template>
+  <div id="index">
+    <div class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <UpcomingEvents :events="events" />
+          <div class="tile is-ancestor">
+            <GameServers v-if="games.length" :games="games" />
+            <!-- Explicit widths so the columns line up with the events row above. -->
+            <div class="tile is-parent is-vertical" :class="games.length ? 'is-4' : 'is-6'">
+              <CardTile v-for="(data, key) in middle" :key="`middle-${key}`" :data="data" />
+            </div>
+            <div class="tile is-parent is-vertical" :class="games.length ? 'is-4' : 'is-6'">
+              <CardTile v-for="(data, key) in right" :key="`right-${key}`" :data="data" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

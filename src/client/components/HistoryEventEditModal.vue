@@ -1,42 +1,61 @@
-<template lang="pug">
-.history-edit-modal
-  b-modal(:active.sync="show", has-modal-card, @close="discard")
-    .modal-card
-      header.modal-card-head
-        b-input.event-title(
-          placeholder="Title",
-          v-model="editingEvent.name",
-          size="is-medium",
-          form="history-edit-modal"
-        )
-      form#history-edit-modal.modal-card-body(@submit.prevent="confirm")
-        b-field(label="Description")
-          b-input(
-            placeholder="Some descriptive text",
-            type="textarea",
-            minlength="0",
-            maxlength="2000",
-            v-model="editingEvent.description"
-          )
-        b-field(label="Date")
-          b-datepicker(
-            placeholder="Click to select...",
-            icon="calendar-today",
-            v-model="editingEvent.date"
-          )
-        b-field(label="Image URL")
-          b-input(placeholder="(optional) https://i.imgur.com", v-model="editingEvent.imageUrl")
-        b-field(label='URL (\"Read more\")')
-          b-input(placeholder="(optional) https://google.com", v-model="editingEvent.url")
-      .modal-card-foot.buttons.is-right
-        button.button(@click="discard", :disabled="saving")
-          span Close
-        button.button.is-danger(v-if="editing", @click="askDelete", :disabled="saving")
-          b-icon(icon="delete")
-          span &nbsp;Delete
-        button.button.is-primary(type="submit", form="history-edit-modal", :class="{ 'is-loading': saving }")
-          b-icon(icon="check")
-          span &nbsp;Confirm
+<template>
+  <div class="history-edit-modal">
+    <b-modal :active.sync="show" has-modal-card @close="discard">
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <b-input
+            v-model="editingEvent.name"
+            class="event-title"
+            placeholder="Title"
+            size="is-medium"
+            form="history-edit-modal"
+          />
+        </header>
+        <form id="history-edit-modal" class="modal-card-body" @submit.prevent="confirm">
+          <b-field label="Description">
+            <b-input
+              v-model="editingEvent.description"
+              placeholder="Some descriptive text"
+              type="textarea"
+              minlength="0"
+              maxlength="2000"
+            />
+          </b-field>
+          <b-field label="Date">
+            <b-datepicker
+              v-model="editingEvent.date"
+              placeholder="Click to select..."
+              icon="calendar-today"
+            />
+          </b-field>
+          <b-field label="Image URL">
+            <b-input v-model="editingEvent.imageUrl" placeholder="(optional) https://i.imgur.com" />
+          </b-field>
+          <b-field label='URL ("Read more")'>
+            <b-input v-model="editingEvent.url" placeholder="(optional) https://google.com" />
+          </b-field>
+        </form>
+        <div class="modal-card-foot buttons is-right">
+          <button class="button" :disabled="saving" @click="discard">
+            <span>Close</span>
+          </button>
+          <button v-if="editing" class="button is-danger" :disabled="saving" @click="askDelete">
+            <b-icon icon="delete" />
+            <span>&nbsp;Delete</span>
+          </button>
+          <button
+            class="button is-primary"
+            type="submit"
+            form="history-edit-modal"
+            :class="{ 'is-loading': saving }"
+          >
+            <b-icon icon="check" />
+            <span>&nbsp;Confirm</span>
+          </button>
+        </div>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <script>

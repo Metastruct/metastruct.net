@@ -1,34 +1,50 @@
-<template lang="pug">
-.columns.is-centered
-  .column
-    .timeline
-      template(v-for="(events, year) in historyYears")
-        nuxt-link.timeline-year.has-text-light.has-text-centered(:to="`#${year}`", :id="year") {{ year }}
-        HistoryTimeLineEvent(
-          v-for="(event, index) in events",
-          v-bind="event",
-          :id="undefined",
-          :is-left="index % 2 == 0",
-          :timeline="events",
-          :key="event.id",
-          @edit="$emit('edit', event)"
-        )
-      //- .is-clearfix
-  .column.is-2
-    .year-picker
-      client-only
-        template(v-if="$store.state.user.isAdmin")
-          a.has-text-primary.year(@click="$emit('add')")
-            b-icon(icon="plus")
-            span &nbsp;Add new event
-          hr.divider
-      nuxt-link.year(
-        v-for="(_, year) in historyYears",
-        :to="`#${year}`",
-        :key="year",
-        :class="{ 'is-active': $route.hash == `#${year}` }"
-      ) {{ year }}
-      nuxt-link.year.has-text-primary(to="#") Back to top
+<template>
+  <div class="columns is-centered">
+    <div class="column">
+      <div class="timeline">
+        <template v-for="(events, year) in historyYears">
+          <nuxt-link
+            :id="year"
+            :key="`year-${year}`"
+            class="timeline-year has-text-light has-text-centered"
+            :to="`#${year}`"
+            >{{ year }}</nuxt-link
+          >
+          <HistoryTimeLineEvent
+            v-for="(event, index) in events"
+            v-bind="event"
+            :id="undefined"
+            :key="event.id"
+            :is-left="index % 2 == 0"
+            :timeline="events"
+            @edit="$emit('edit', event)"
+          />
+        </template>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="year-picker">
+        <client-only>
+          <template v-if="$store.state.user.isAdmin">
+            <a class="has-text-primary year" @click="$emit('add')">
+              <b-icon icon="plus" />
+              <span>&nbsp;Add new event</span>
+            </a>
+            <hr class="divider" />
+          </template>
+        </client-only>
+        <nuxt-link
+          v-for="(_, year) in historyYears"
+          :key="year"
+          class="year"
+          :to="`#${year}`"
+          :class="{ 'is-active': $route.hash == `#${year}` }"
+          >{{ year }}</nuxt-link
+        >
+        <nuxt-link class="year has-text-primary" to="#">Back to top</nuxt-link>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

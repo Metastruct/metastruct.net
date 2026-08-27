@@ -1,21 +1,29 @@
-<template lang="pug">
-.stat-chart
-  .head
-    span.title {{ title }}
-    span.values
-      span.value(v-for="s in series", :key="s.label", :style="{ color: s.color }")
-        | {{ s.label ? s.label + ' ' : '' }}{{ format(latest(s)) }}
-  .plot
-    .axis
-      span {{ format(ceiling) }}
-      span {{ format(ceiling / 2) }}
-      span {{ format(0) }}
-    svg(viewBox="0 0 300 80", preserveAspectRatio="none")
-      line.grid(x1="0", x2="300", y1="2", y2="2")
-      line.grid(x1="0", x2="300", y1="40", y2="40")
-      template(v-for="(s, i) in series")
-        path.area(:key="'a' + i", :d="areaPath(s)", :style="{ fill: s.color }")
-        path.line(:key="'l' + i", :d="linePath(s)", :style="{ stroke: s.color }")
+<template>
+  <div class="stat-chart">
+    <div class="head">
+      <span class="title">{{ title }}</span>
+      <span class="values">
+        <span v-for="s in series" :key="s.label" class="value" :style="{ color: s.color }"
+          >{{ s.label ? s.label + " " : "" }}{{ format(latest(s)) }}</span
+        >
+      </span>
+    </div>
+    <div class="plot">
+      <div class="axis">
+        <span>{{ format(ceiling) }}</span>
+        <span>{{ format(ceiling / 2) }}</span>
+        <span>{{ format(0) }}</span>
+      </div>
+      <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+        <line class="grid" x1="0" x2="300" y1="2" y2="2" />
+        <line class="grid" x1="0" x2="300" y1="40" y2="40" />
+        <template v-for="(s, i) in series">
+          <path :key="'a' + i" class="area" :d="areaPath(s)" :style="{ fill: s.color }" />
+          <path :key="'l' + i" class="line" :d="linePath(s)" :style="{ stroke: s.color }" />
+        </template>
+      </svg>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

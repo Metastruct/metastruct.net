@@ -1,23 +1,27 @@
-<template lang="pug">
-#history
-  section.section
-    .container
-      h1.title History of Meta Construct
-      b-message(v-if="error", type="is-warning", has-icon) {{ error }}
-      client-only
-        HistoryEventEditModal(
-          ref="modal",
-          v-if="$store.state.user.isAdmin",
-          :history.sync="history",
-          @saved="applyHistory"
-        )
-      HistoryTimeLine(
-        ref="timeline",
-        :history.sync="history",
-        @refresh="refreshHistory",
-        @add="$refs.modal.start()",
-        @edit="$refs.modal.start($event)"
-      )
+<template>
+  <div id="history">
+    <section class="section">
+      <div class="container">
+        <h1 class="title">History of Meta Construct</h1>
+        <b-message v-if="error" type="is-warning" has-icon>{{ error }}</b-message>
+        <client-only>
+          <HistoryEventEditModal
+            v-if="$store.state.user.isAdmin"
+            ref="modal"
+            :history.sync="history"
+            @saved="applyHistory"
+          />
+        </client-only>
+        <HistoryTimeLine
+          ref="timeline"
+          :history.sync="history"
+          @refresh="refreshHistory"
+          @add="$refs.modal.start()"
+          @edit="$refs.modal.start($event)"
+        />
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss">

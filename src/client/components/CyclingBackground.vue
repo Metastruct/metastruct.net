@@ -1,8 +1,10 @@
-<template lang="pug">
-.cycling-background
-  .background
-    img(v-for="(url, i) in images", :src="url", :class="{ 'is-active': active == i }")
-  slot
+<template>
+  <div class="cycling-background">
+    <div class="background">
+      <img v-for="(url, i) in images" :key="url" :src="url" :class="{ 'is-active': active == i }" />
+    </div>
+    <slot />
+  </div>
 </template>
 
 <style lang="scss">

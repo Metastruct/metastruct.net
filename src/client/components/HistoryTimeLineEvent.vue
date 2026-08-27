@@ -1,18 +1,28 @@
-<template lang="pug">
-.timeline-event(:id="dateString", :class="{ 'is-left': isLeft, 'is-right': !isLeft }")
-  client-only
-    EditButton(v-if="$store.state.user.isAdmin", @start="$emit('edit')")
-  .card
-    .card-image.image.is-16by9(v-if="!!imageUrl")
-      figure.image
-        img(:src="imageUrl")
-    .card-content
-      h1.title
-        nuxt-link.has-text-primary-light(:to="`#${dateString}`") {{ name }}
-      p(v-if="description", style="white-space: pre-wrap") {{ description }}
-      p.mt-4.is-size-7.has-text-white-ter(:title="date.toLocaleDateString('en-US')") {{ date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) }}
-    .card-footer(v-if="!!url")
-      a.card-footer-item.has-text-primary(:href="url") Read more
+<template>
+  <div :id="dateString" class="timeline-event" :class="{ 'is-left': isLeft, 'is-right': !isLeft }">
+    <client-only>
+      <EditButton v-if="$store.state.user.isAdmin" @start="$emit('edit')" />
+    </client-only>
+    <div class="card">
+      <div v-if="!!imageUrl" class="card-image image is-16by9">
+        <figure class="image">
+          <img :src="imageUrl" />
+        </figure>
+      </div>
+      <div class="card-content">
+        <h1 class="title">
+          <nuxt-link class="has-text-primary-light" :to="`#${dateString}`">{{ name }}</nuxt-link>
+        </h1>
+        <p v-if="description" style="white-space: pre-wrap">{{ description }}</p>
+        <p class="mt-4 is-size-7 has-text-white-ter" :title="date.toLocaleDateString('en-US')">
+          {{ date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }) }}
+        </p>
+      </div>
+      <div v-if="!!url" class="card-footer">
+        <a class="card-footer-item has-text-primary" :href="url">Read more</a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

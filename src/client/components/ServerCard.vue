@@ -1,57 +1,78 @@
-<template lang="pug">
-.card.server-card(@mousedown="startJoin", @mouseup="endJoin")
-  .background-container
-    .background(:style="backgroundStyle")
-  .card-content
-    p.title.has-text-primary-light {{ entry.name }}
-    .subtitle
-      .summary
-        span {{ playerCount }}
-        template(v-if="entry.map")
-          span {{ entry.playerCount ? "" : "," }}&nbsp;on&nbsp;
-          span.small-code {{ entry.map }}
-        span.small-code.mode(v-if="entry.mode") {{ entry.mode }}
-      .subtitle(v-if="uptime") {{ uptime }} uptime
-      .subtitle.extra(v-if="extraLine") {{ extraLine }}
-      .subtitle.extra(v-if="address")
-        span.small-code {{ address }}
-    ul.playerlist(
-      v-if="entry.players.length > 0",
-      ref="playerlist",
-      :class="{ 'is-two-columns': twoColumns }",
-      @mousedown.stop,
-      @mouseup.stop
-    )
-      li.player(
-        v-for="player in entry.players",
-        :key="player.id || player.nick",
-        :class="{ 'is-admin': player.isAdmin, 'is-afk': player.isAfk }"
-      )
-        component(
-          :is="player.profileUrl ? 'a' : 'span'",
-          :href="player.profileUrl",
-          :title="player.profileUrl ? 'View profile' : undefined",
-          target="_blank",
-          rel="noopener"
-        )
-          img.avatar(v-if="player.avatar", :src="player.avatar", alt="")
-          span.nick {{ player.nick }}
-          span.description(v-if="player.description") &nbsp;{{ player.description }}
-        a.join-goto(
-          v-if="goToUrl(player)",
-          :title="'Join and go to ' + player.nick",
-          :href="goToUrl(player)"
-        )
-          b-icon(icon="arrow-right", type="is-success")
-    .server-card-bottom(@mousedown.stop, @mouseup.stop)
-      a.has-text-primary-light(v-if="joinUrl", :href="joinUrl", :target="joinTarget") Join us!
-      a.has-text-primary-light.copy-address(
-        v-else-if="address",
-        :title="'Copy ' + address",
-        @click.prevent="copyAddress"
-      )
-        span(v-if="copied") Copied {{ address }}
-        span(v-else) Join us!
+<template>
+  <div class="card server-card" @mousedown="startJoin" @mouseup="endJoin">
+    <div class="background-container">
+      <div class="background" :style="backgroundStyle" />
+    </div>
+    <div class="card-content">
+      <p class="title has-text-primary-light">{{ entry.name }}</p>
+      <div class="subtitle">
+        <div class="summary">
+          <span>{{ playerCount }}</span>
+          <template v-if="entry.map">
+            <span>{{ entry.playerCount ? "" : "," }}&nbsp;on&nbsp;</span>
+            <span class="small-code">{{ entry.map }}</span>
+          </template>
+          <span v-if="entry.mode" class="small-code mode">{{ entry.mode }}</span>
+        </div>
+        <div v-if="uptime" class="subtitle">{{ uptime }} uptime</div>
+        <div v-if="extraLine" class="subtitle extra">{{ extraLine }}</div>
+        <div v-if="address" class="subtitle extra">
+          <span class="small-code">{{ address }}</span>
+        </div>
+      </div>
+      <ul
+        v-if="entry.players.length > 0"
+        ref="playerlist"
+        class="playerlist"
+        :class="{ 'is-two-columns': twoColumns }"
+        @mousedown.stop
+        @mouseup.stop
+      >
+        <li
+          v-for="player in entry.players"
+          :key="player.id || player.nick"
+          class="player"
+          :class="{ 'is-admin': player.isAdmin, 'is-afk': player.isAfk }"
+        >
+          <component
+            :is="player.profileUrl ? 'a' : 'span'"
+            :href="player.profileUrl"
+            :title="player.profileUrl ? 'View profile' : undefined"
+            target="_blank"
+            rel="noopener"
+          >
+            <img v-if="player.avatar" class="avatar" :src="player.avatar" alt="" />
+            <span class="nick">{{ player.nick }}</span>
+            <span v-if="player.description" class="description"
+              >&nbsp;{{ player.description }}</span
+            >
+          </component>
+          <a
+            v-if="goToUrl(player)"
+            class="join-goto"
+            :title="'Join and go to ' + player.nick"
+            :href="goToUrl(player)"
+          >
+            <b-icon icon="arrow-right" type="is-success" />
+          </a>
+        </li>
+      </ul>
+      <div class="server-card-bottom" @mousedown.stop @mouseup.stop>
+        <a v-if="joinUrl" class="has-text-primary-light" :href="joinUrl" :target="joinTarget"
+          >Join us!</a
+        >
+        <a
+          v-else-if="address"
+          class="has-text-primary-light copy-address"
+          :title="'Copy ' + address"
+          @click.prevent="copyAddress"
+        >
+          <span v-if="copied">Copied {{ address }}</span>
+          <span v-else>Join us!</span>
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">

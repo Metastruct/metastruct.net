@@ -1,24 +1,36 @@
-<template lang="pug">
-.upcoming-events(v-if="events.length")
-  .upcoming-header
-    b-icon(icon="calendar-clock")
-    span &nbsp;Upcoming events
-  //- Same tile grid as the rows below, three is-4 columns, so the edges line up.
-  .tile.is-ancestor
-    .tile.is-parent.is-4(v-for="event in events", :key="event.id")
-      a.tile.is-child.card.event-card(:href="event.url", target="_blank", rel="noopener")
-        .event-image(v-if="event.image", :style="{ backgroundImage: `url(${event.image})` }")
-        .card-content
-          p.title.is-5.has-text-primary-light {{ event.name }}
-          p.event-when
-            b-icon(icon="clock-outline", size="is-small")
-            span &nbsp;{{ when(event) }}
-            span.tag.is-dark.ml-2(v-if="event.recurring") recurring
-          p.event-where(v-if="event.location")
-            b-icon(icon="map-marker", size="is-small")
-            span &nbsp;{{ event.location }}
-          p.event-description(v-if="event.description") {{ event.description }}
-  hr.divider
+<template>
+  <div v-if="events.length" class="upcoming-events">
+    <div class="upcoming-header">
+      <b-icon icon="calendar-clock" />
+      <span>&nbsp;Upcoming events</span>
+    </div>
+    <!-- Same tile grid as the rows below, three is-4 columns, so the edges line up. -->
+    <div class="tile is-ancestor">
+      <div v-for="event in events" :key="event.id" class="tile is-parent is-4">
+        <a class="tile is-child card event-card" :href="event.url" target="_blank" rel="noopener">
+          <div
+            v-if="event.image"
+            class="event-image"
+            :style="{ backgroundImage: `url(${event.image})` }"
+          />
+          <div class="card-content">
+            <p class="title is-5 has-text-primary-light">{{ event.name }}</p>
+            <p class="event-when">
+              <b-icon icon="clock-outline" size="is-small" />
+              <span>&nbsp;{{ when(event) }}</span>
+              <span v-if="event.recurring" class="tag is-dark ml-2">recurring</span>
+            </p>
+            <p v-if="event.location" class="event-where">
+              <b-icon icon="map-marker" size="is-small" />
+              <span>&nbsp;{{ event.location }}</span>
+            </p>
+            <p v-if="event.description" class="event-description">{{ event.description }}</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <hr class="divider" />
+  </div>
 </template>
 
 <script>
