@@ -116,15 +116,19 @@ a.card {
       top: 0;
       left: 0;
       right: 0;
-      overflow: hidden; // scroll;
+      overflow: hidden;
 
       img {
+        // Bulma's ratio rule already stretches the image over the whole frame,
+        // so cover is all that is needed to crop instead of distort. Sizing it
+        // by hand (height:auto with a translate to recentre) also meant an
+        // image that failed to load got the intrinsic size of a broken icon
+        // and hung outside the frame.
         left: 0;
         right: 0;
         width: 100%;
-        height: auto;
-        top: 50%;
-        transform: translateY(-50%);
+        height: 100%;
+        object-fit: cover;
       }
     }
 

@@ -6,7 +6,10 @@
     <div class="card">
       <div v-if="!!imageUrl" class="card-image image is-16by9">
         <figure class="image">
-          <img :src="imageUrl" >
+          <img v-if="!imageBroken" :src="imageUrl" @error="imageBroken = true" >
+          <div v-else class="image-dead" :title="`Image failed to load: ${imageUrl}`">
+            <MdiIcon icon="image-broken-variant" size="is-large" />
+          </div>
         </figure>
       </div>
       <div class="card-content">
@@ -36,6 +39,11 @@ export default {
   setup() {
     return useUser();
   },
+  data() {
+    // several history images are hotlinked from sites that block them, so a
+    // dead link gets a deliberate placeholder rather than an empty frame
+    return { imageBroken: false };
+  },
   computed: {
     dateString() {
       const pad = n => String(n).padStart(2, "0");
@@ -44,10 +52,30 @@ export default {
       )}`;
     },
   },
+  watch: {
+    imageUrl() {
+      this.imageBroken = false;
+    },
+  },
 };
 </script>
 
 <style lang="scss">
+// Stands in for a hotlinked image whose host stopped serving it, so a dead
+// link is obvious when the timeline is being edited.
+.image-dead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $black;
+  color: $grey-lighter;
+}
+
 .timeline-event {
   position: relative;
   width: calc(50% - 1.5em);
