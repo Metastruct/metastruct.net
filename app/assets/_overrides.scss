@@ -228,12 +228,12 @@ a.card {
     background-color: $navbar-background-color;
   }
 
-  // The labels are written as `&nbsp;Label` next to their icon, which leaves
-  // them almost touching. This opens the gap without touching the markup.
+  // NavLink renders the icon and the label as adjacent flex children, this is
+  // the gap between them.
   a.navbar-item,
   .navbar-link {
     .icon:first-child {
-      margin-right: 0.375em;
+      margin-right: 0.5em;
     }
   }
 

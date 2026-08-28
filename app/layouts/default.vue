@@ -6,7 +6,8 @@
           <nuxt-link to="/">
             <img class="logo navbar-item" src="/img/logo.svg" >
           </nuxt-link>
-          <div
+          <button
+            type="button"
             class="navbar-burger"
             :class="{ 'is-active': burger }"
             aria-label="menu"
@@ -16,62 +17,53 @@
             <span aria-hidden="true"/>
             <span aria-hidden="true"/>
             <span aria-hidden="true"/>
-          </div>
+          </button>
         </div>
-        <div class="navbar-menu" :class="{ 'is-active': burger }">
+        <!-- desktop only, below the navbar breakpoint the burger opens NavDrawer instead -->
+        <div class="navbar-menu">
           <div class="navbar-start">
-            <a class="navbar-item" href="https://steamcommunity.com/groups/metastruct/discussions">
-              <MdiIcon icon="forum" />
-              <span>&nbsp;Forums</span>
-            </a>
-            <a class="navbar-item" href="https://github.com/metastruct">
-              <MdiIcon icon="github-circle" />
-              <span>&nbsp;GitHub</span>
-            </a>
-            <a class="navbar-item" href="https://merch.metastruct.net">
-              <MdiIcon icon="shopping" />
-              <span>&nbsp;Merchandise</span>
-            </a>
-            <div class="navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link">
-                <MdiIcon icon="dots-horizontal" />
-                <span>&nbsp;Others</span>
-              </a>
-              <div class="navbar-dropdown">
-                <a class="navbar-item" href="https://chatsounds.metastruct.net">Chatsounds</a>
-                <a class="navbar-item" href="https://dumps.metastruct.net">Gmod Dumps</a>
-                <a class="navbar-item" href="https://wiki.metastruct.net">Gmod Wiki</a>
+            <template v-for="(section, index) in start" :key="section.label || index">
+              <div v-if="section.label" class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  <MdiIcon :icon="section.icon" />
+                  <span>{{ section.label }}</span>
+                </a>
+                <div class="navbar-dropdown">
+                  <NavLink
+                    v-for="link in section.items"
+                    :key="link.label"
+                    class="navbar-item"
+                    :link="link"
+                  />
+                </div>
               </div>
-            </div>
+              <template v-else>
+                <NavLink
+                  v-for="link in section.items"
+                  :key="link.label"
+                  class="navbar-item"
+                  :link="link"
+                />
+              </template>
+            </template>
           </div>
           <div class="navbar-end">
-            <div v-if="user.isAdmin" class="navbar-item has-dropdown is-hoverable">
+            <div
+              v-for="section in end"
+              :key="section.label"
+              class="navbar-item has-dropdown is-hoverable"
+            >
               <a class="navbar-link">
-                <MdiIcon icon="key" />
-                <span>&nbsp;Admin</span>
+                <MdiIcon :icon="section.icon" />
+                <span>{{ section.label }}</span>
               </a>
               <div class="navbar-dropdown">
-                <a class="navbar-item" href="https://gitlab.com/metastruct">
-                  <MdiIcon icon="gitlab" />
-                  <span>&nbsp;GitLab</span>
-                </a>
-                <nuxt-link class="navbar-item" to="/rocket">
-                  <MdiIcon icon="rocket" />
-                  <span>&nbsp;Rocket</span>
-                </nuxt-link>
-                <nuxt-link class="navbar-item" to="/bans">
-                  <MdiIcon icon="minus-circle" />
-                  <span>&nbsp;Bans</span>
-                </nuxt-link>
-                <a
-                  v-if="(user.teams || []).includes('administrators')"
+                <NavLink
+                  v-for="link in section.items"
+                  :key="link.label"
                   class="navbar-item"
-                  :href="$mcUrl"
-                  target="_blank"
-                >
-                  <MdiIcon icon="robot" />
-                  <span>&nbsp;Metaconcord</span>
-                </a>
+                  :link="link"
+                />
               </div>
             </div>
             <div v-if="user.login" class="navbar-item">
@@ -80,30 +72,34 @@
                 :src="user.avatarUrl"
                 :alt="user.login"
               >
-              <span>&nbsp;{{ user.login }}</span>
+              <span>{{ user.login }}</span>
             </div>
             <a
               v-if="!user.login"
+              key="login"
               class="navbar-item"
               :href="`${$mcUrl}/auth/github?redirect=${encodeURIComponent(
                 $route.fullPath
               )}`"
             >
-              <MdiIcon icon="github" />
-              <span>&nbsp;Log in</span>
+              <MdiIcon icon="login" />
+              <span>Log in</span>
             </a>
             <a
               v-if="user.login"
+              key="logout"
               class="navbar-item"
               @click="logout()"
             >
               <MdiIcon icon="logout" />
-              <span>&nbsp;Log out</span>
+              <span>Log out</span>
             </a>
           </div>
         </div>
       </div>
     </nav>
+
+    <NavDrawer v-model:open="burger" />
 
     <div v-if="$route.name !== 'rocket'" class="hero is-dark">
       <CyclingBackground :images="backgrounds">
@@ -206,7 +202,7 @@ export default {
     CyclingBackground,
   },
   setup() {
-    return useUser();
+    return { ...useUser(), ...useNav() };
   },
   data() {
     return {
@@ -241,6 +237,7 @@ export default {
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
+    margin-right: 0.5em;
   }
 }
 
