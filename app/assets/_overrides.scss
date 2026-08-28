@@ -169,7 +169,12 @@ a.card {
 .modal {
   overflow: auto;
 
-  .animation-content {
+  // .modal-background below is given a z-index, which outranks every sibling
+  // that follows it in the markup, so they each have to be lifted to match.
+  // Buefy used to supply a .animation-content wrapper that carried this.
+  .modal-card,
+  .modal-content,
+  .modal-close {
     z-index: 40;
   }
 
