@@ -4,9 +4,19 @@
       <EditButton v-if="user.isAdmin" @start="$emit('edit')" />
     </client-only>
     <div class="card">
-      <div v-if="!!imageUrl" class="card-image image is-16by9">
+      <div
+        v-if="!!imageUrl"
+        class="card-image image"
+        :class="fitRatio ? 'is-fitted' : 'is-16by9'"
+        :style="fitRatio ? { aspectRatio: fitRatio } : null"
+      >
         <figure class="image">
-          <img v-if="!imageBroken" :src="imageUrl" @error="imageBroken = true" >
+          <img
+            v-if="!imageBroken"
+            :src="imageUrl"
+            @load="onImageLoad"
+            @error="imageBroken = true"
+          >
           <div v-else class="image-dead" :title="`Image failed to load: ${imageUrl}`">
             <MdiIcon icon="image-broken-variant" size="is-large" />
           </div>
@@ -42,7 +52,7 @@ export default {
   data() {
     // several history images are hotlinked from sites that block them, so a
     // dead link gets a deliberate placeholder rather than an empty frame
-    return { imageBroken: false };
+    return { imageBroken: false, fitRatio: null };
   },
   computed: {
     dateString() {
@@ -55,6 +65,23 @@ export default {
   watch: {
     imageUrl() {
       this.imageBroken = false;
+      this.fitRatio = null;
+    },
+  },
+  methods: {
+    // The 16:9 frame crops with object-fit: cover, which is right for the usual
+    // screenshot but destroys a banner: a 369x67 image keeps under a third of
+    // itself and is blown up 7x. When most of the image would be cropped away,
+    // the frame takes the image's own shape instead so all of it shows.
+    onImageLoad(event) {
+      const { naturalWidth: width, naturalHeight: height } = event.target;
+      if (!width || !height) return;
+      const ratio = width / height;
+      const frame = 16 / 9;
+      const visible = Math.min(ratio, frame) / Math.max(ratio, frame);
+      // clamped so a freakish shape cannot give the card a sliver of a header
+      // or one taller than it is wide
+      this.fitRatio = visible < 0.5 ? String(Math.min(Math.max(ratio, 1), 5)) : null;
     },
   },
 };

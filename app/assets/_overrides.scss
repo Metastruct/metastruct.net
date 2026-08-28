@@ -132,6 +132,18 @@ a.card {
       }
     }
 
+    // Set by HistoryTimeLineEvent when cropping to 16:9 would hide most of the
+    // image. The frame carries the image's own aspect ratio, so contain fits it
+    // whole; the clamp on that ratio can still leave a thin bar to fill.
+    &.is-fitted {
+      display: block;
+
+      figure.image img {
+        object-fit: contain;
+        background: $black;
+      }
+    }
+
     img,
     figure.image {
       border-radius: 4px 4px 0px 0px;
