@@ -1,4 +1,7 @@
-import pkg from "./package.json";
+const SITE_NAME = "Meta Construct";
+const SITE_TAGLINE = "Tinkering games one byte at a time.";
+const SITE_DESCRIPTION =
+  "We are a gaming community dedicated to research and development of sandbox experiences.";
 
 const isProd = process.env.NODE_ENV === "production";
 const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
@@ -43,11 +46,23 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: pkg.name,
+      // pages override this with "<page> - Meta Construct" through useHead
+      title: SITE_NAME,
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { key: "description", name: "description", content: pkg.description },
+        { key: "description", name: "description", content: SITE_DESCRIPTION },
+        // without these iOS paints the notch and the Safari toolbars light, the
+        // colour is $body-background-color from assets/_variables.scss
+        { name: "color-scheme", content: "dark" },
+        { name: "theme-color", content: "#212121" },
+        // link previews
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: SITE_NAME },
+        { key: "og:title", property: "og:title", content: `${SITE_NAME} - ${SITE_TAGLINE}` },
+        { key: "og:description", property: "og:description", content: SITE_DESCRIPTION },
+        { property: "og:image", content: "https://www.metastruct.net/img/logo.png" },
+        { name: "twitter:card", content: "summary" },
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
