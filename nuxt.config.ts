@@ -2,6 +2,15 @@ import pkg from "./package.json";
 
 const isProd = process.env.NODE_ENV === "production";
 const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
+// Metaconcord scopes its session cookie to .metastruct.net and marks it Secure, so a
+// browser on localhost can never send it and there is no way to log in from dev.
+// Pasting the cookie here lets the proxy attach it on the way out. Dev only.
+const MC_SESSION = !isProd && process.env.MC_SESSION;
+
+if (MC_SESSION) {
+  // this session is a real one against the live metaconcord, writes are not sandboxed
+  console.warn("[dev] MC_SESSION set: you are logged in against PRODUCTION metaconcord");
+}
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-08-27",
@@ -21,7 +30,15 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: isProd
       ? {}
-      : { "/mc": { target: METACONCORD_URL, changeOrigin: true, ws: true } },
+      : {
+          "/mc": {
+            target: METACONCORD_URL,
+            changeOrigin: true,
+            ws: true,
+            // overwrites the browser's Cookie header, which on localhost is empty anyway
+            ...(MC_SESSION ? { headers: { cookie: `ghSession=${MC_SESSION}` } } : {}),
+          },
+        },
   },
 
   app: {

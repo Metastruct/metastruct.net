@@ -65,9 +65,14 @@
           No bans have been recorded yet.
         </MessageBox>
 
-        <div class="table-wrap">
+        <div ref="wrap" class="table-wrap">
           <LoadingOverlay :full-page="false" :active="loading" />
-          <table v-if="bans.length" class="table is-fullwidth ban-table">
+          <table
+            v-if="bans.length"
+            ref="table"
+            class="table is-fullwidth ban-table"
+            :class="tier ? `is-${tier}` : null"
+          >
             <thead>
               <tr>
                 <th
@@ -91,7 +96,7 @@
                   :class="[rowClass(ban), { 'is-expanded': expandedId === ban.id }]"
                   @click="toggleRow(ban, $event)"
                 >
-                  <td>
+                  <td class="player-cell">
                     <div class="player">
                       <img
                         v-if="avatarOf(ban) && !broken.includes(avatarOf(ban))"
@@ -109,6 +114,7 @@
                         <span v-if="personaOf(ban)" class="persona">{{ personaOf(ban) }}</span>
                       </div>
                     </div>
+                    <MdiIcon class="expand-chevron" icon="chevron-down" size="is-small" />
                   </td>
                   <td>
                     <a
@@ -174,6 +180,20 @@
                 <tr v-if="expandedId === ban.id" class="ban-detail">
                   <td :colspan="COLUMNS.length">
                     <dl>
+                      <div class="detail-steamid">
+                        <dt>SteamID</dt>
+                        <dd>
+                          <a
+                            v-if="ban.steamId64"
+                            class="steamid"
+                            :href="'https://steamcommunity.com/profiles/' + ban.steamId64"
+                            target="_blank"
+                            rel="noopener"
+                            >{{ ban.steamId }}</a
+                          >
+                          <span v-else class="steamid">{{ ban.steamId }}</span>
+                        </dd>
+                      </div>
                       <div>
                         <dt>Status</dt>
                         <dd>
@@ -303,8 +323,11 @@ export default {
       loaded: false,
       search: this.$route.query.q || "",
       broken: [],
-      // the row opened on mobile, where most columns are hidden
+      // the row opened in the compact layout, where most columns are hidden
       expandedId: null,
+      // "", "compact" or "minimal", set by measureFit(). Below the phone breakpoints the
+      // stylesheet picks a tier on its own, so this stays "" there and nothing depends on it.
+      tier: "",
     };
   },
   computed: {
@@ -394,13 +417,27 @@ export default {
     "$route.query.q"(value) {
       if ((value || "") !== this.search) this.search = value || "";
     },
+    // a different set of rows can need a different width
+    sortedBans() {
+      this.$nextTick(this.measureFit);
+    },
   },
   mounted() {
     // the list is the same for everyone, so it does not wait on /auth/me
     this.load();
+    this._observer = new ResizeObserver(entries => {
+      const width = entries[0].contentRect.width;
+      // the class measureFit() toggles changes the table height, which would
+      // otherwise bounce straight back into this callback
+      if (width === this._lastWidth) return;
+      this._lastWidth = width;
+      this.measureFit();
+    });
+    this._observer.observe(this.$refs.wrap);
   },
   beforeUnmount() {
     clearTimeout(this._searchTimer);
+    this._observer?.disconnect();
   },
   methods: {
     async load(manual = false) {
@@ -455,8 +492,32 @@ export default {
       const key = this.statusOf(row).key;
       return key === "active" ? "is-banned" : `is-${key}`;
     },
-    // On mobile only two columns are shown and the rest live in a detail row.
-    // Desktop keeps every column, so the toggle is inert there.
+    // What decides the compact layout is whether the full row fits, not the viewport:
+    // a narrow window or a long reason can overflow a desktop just as well as a phone.
+    // The measurement runs with is-compact off, otherwise the compact table would
+    // always report that it fits and the layout would flip back and forth.
+    measureFit() {
+      const wrap = this.$refs.wrap;
+      const table = this.$refs.table;
+      if (!wrap || !table) return;
+      const restore = table.className;
+      // the spare pixel keeps sub-pixel widths from flickering the layout
+      const overflows = () => wrap.scrollWidth > wrap.clientWidth + 1;
+
+      // each tier is measured from a known state rather than from the one in force,
+      // so the answer never depends on the current layout and cannot oscillate
+      table.classList.remove("is-compact", "is-minimal");
+      let tier = "";
+      if (overflows()) {
+        table.classList.add("is-compact");
+        // two columns still do not fit on a narrow phone, so SteamID goes as well
+        tier = overflows() ? "minimal" : "compact";
+      }
+      table.className = restore;
+      this.tier = tier;
+    },
+    // In the compact layout only two columns are shown and the rest live in a detail
+    // row. Every column is visible otherwise, so the toggle is inert there.
     toggleRow(ban, event) {
       // leave the steam profile link and the edit button to do their own job
       if (event.target.closest("a, button")) return;
@@ -548,6 +609,114 @@ export default {
 </script>
 
 <style lang="scss">
+// The compact ban layout, shared by the two things that ask for it: the measured
+// is-compact class, and the phone breakpoint that does not wait to be told.
+@mixin compact-bans {
+  // Only Player and SteamID survive; everything else moves into the row
+  // that opens underneath, so nine columns never have to fit at once.
+  th:nth-child(n + 3),
+  td:nth-child(n + 3) {
+    display: none;
+  }
+
+  tbody tr:not(.ban-detail) {
+    cursor: pointer;
+  }
+
+  // the chevron sits at the end of the row rather than inside a column
+  tbody td:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  tbody td:nth-child(2) .expand-chevron {
+    display: inline-flex;
+    flex: none;
+    opacity: 0.5;
+    transition: transform 0.2s ease-out;
+  }
+
+  tr.is-expanded td:nth-child(2) .expand-chevron {
+    transform: rotate(180deg);
+  }
+
+  .ban-detail {
+    display: table-row;
+
+    // still a column of its own at this tier
+    .detail-steamid {
+      display: none;
+    }
+
+    > td {
+      padding-top: 0;
+    }
+
+    dl > div {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.15rem 0;
+    }
+
+    dt {
+      flex: none;
+      width: 6rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.55;
+      padding-top: 0.15rem;
+    }
+
+    dd {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .button {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// One tier down: SteamID does not fit either, so Player is the only column left and
+// the id joins the rest in the detail row. Always used together with compact-bans.
+@mixin minimal-bans {
+  th:nth-child(2) {
+    display: none;
+  }
+
+  // matches compact-bans' own specificity, which turns this cell into a flex row
+  tbody td:nth-child(2) {
+    display: none;
+  }
+
+  // the chevron moves up a column, the one in the SteamID cell went with it
+  .player-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .player-cell .expand-chevron {
+    display: inline-flex;
+    flex: none;
+    opacity: 0.5;
+    transition: transform 0.2s ease-out;
+  }
+
+  tr.is-expanded .player-cell .expand-chevron {
+    transform: rotate(180deg);
+  }
+
+  .ban-detail .detail-steamid {
+    display: flex;
+  }
+}
+
 #bans {
   .bans-header {
     display: flex;
@@ -591,8 +760,8 @@ export default {
   .table-wrap {
     position: relative;
     min-height: 8rem;
-    // nine columns cannot fit a phone, so the table scrolls inside the page
-    // rather than dragging the whole layout sideways
+    // the fallback for the moment before measureFit() has run: the table scrolls
+    // inside the page rather than dragging the whole layout sideways
     overflow-x: auto;
 
     // Buefy's scrim is a white 50% wash, which is backwards on the dark theme
@@ -702,7 +871,7 @@ export default {
       color: $danger;
     }
 
-    // both only exist for the mobile layout below
+    // both only exist for the compact layout below
     .expand-chevron,
     .ban-detail {
       display: none;
@@ -724,70 +893,29 @@ export default {
       }
     }
 
+    // a phone can never fit the full row, so it does not wait on a measurement
+    // that only lands after hydration
     .ban-table {
-      // Only Player and SteamID survive; everything else moves into the row
-      // that opens underneath, so nine columns do not have to fit a phone.
-      th:nth-child(n + 3),
-      td:nth-child(n + 3) {
-        display: none;
-      }
-
-      tbody tr:not(.ban-detail) {
-        cursor: pointer;
-      }
-
-      // the chevron sits at the end of the row rather than inside a column
-      tbody td:nth-child(2) {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-      }
-
-      .expand-chevron {
-        display: inline-flex;
-        flex: none;
-        opacity: 0.5;
-        transition: transform 0.2s ease-out;
-      }
-
-      tr.is-expanded .expand-chevron {
-        transform: rotate(180deg);
-      }
-
-      .ban-detail {
-        display: table-row;
-
-        > td {
-          padding-top: 0;
-        }
-
-        dl > div {
-          display: flex;
-          gap: 0.75rem;
-          padding: 0.15rem 0;
-        }
-
-        dt {
-          flex: none;
-          width: 6rem;
-          font-size: 0.7rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          opacity: 0.55;
-          padding-top: 0.15rem;
-        }
-
-        dd {
-          min-width: 0;
-          overflow-wrap: anywhere;
-        }
-
-        .button {
-          margin-top: 0.5rem;
-        }
-      }
+      @include compact-bans;
     }
+  }
+
+  // even two columns overflow a narrow phone, same reasoning as above
+  @media (max-width: 420px) {
+    .ban-table {
+      @include minimal-bans;
+    }
+  }
+
+  // set by measureFit() whenever the row overflows its container, at any width
+  .ban-table.is-compact,
+  .ban-table.is-minimal {
+    @include compact-bans;
+  }
+
+  // must follow the block above, it overrides rules of equal specificity
+  .ban-table.is-minimal {
+    @include minimal-bans;
   }
 }
 </style>
