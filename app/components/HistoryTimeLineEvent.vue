@@ -127,6 +127,18 @@ export default {
     clear: right;
   }
 
+  // Two columns of cards do not fit a phone: the text ends up breaking mid word.
+  // Below tablet the timeline becomes a single stacked column.
+  @media (max-width: 768px) {
+    &,
+    &.is-left,
+    &.is-right {
+      float: none;
+      width: 100%;
+      margin-bottom: 1.5em;
+    }
+  }
+
   .card {
     .card-content {
       &.editing {

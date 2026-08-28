@@ -67,7 +67,7 @@
 
         <div class="table-wrap">
           <LoadingOverlay :full-page="false" :active="loading" />
-          <table v-if="bans.length" class="table ban-table">
+          <table v-if="bans.length" class="table is-fullwidth ban-table">
             <thead>
               <tr>
                 <th
@@ -86,82 +86,159 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="ban in sortedBans" :key="ban.id" :class="rowClass(ban)">
-                <td>
-                  <div class="player">
-                    <img
-                      v-if="avatarOf(ban) && !broken.includes(avatarOf(ban))"
-                      class="avatar"
-                      :src="avatarOf(ban)"
-                      loading="lazy"
-                      alt=""
-                      @error="broken.push(avatarOf(ban))"
-                    >
-                    <div v-else class="avatar placeholder">
-                      <MdiIcon icon="account" size="is-small" />
+              <template v-for="ban in sortedBans" :key="ban.id">
+                <tr
+                  :class="[rowClass(ban), { 'is-expanded': expandedId === ban.id }]"
+                  @click="toggleRow(ban, $event)"
+                >
+                  <td>
+                    <div class="player">
+                      <img
+                        v-if="avatarOf(ban) && !broken.includes(avatarOf(ban))"
+                        class="avatar"
+                        :src="avatarOf(ban)"
+                        loading="lazy"
+                        alt=""
+                        @error="broken.push(avatarOf(ban))"
+                      >
+                      <div v-else class="avatar placeholder">
+                        <MdiIcon icon="account" size="is-small" />
+                      </div>
+                      <div class="names">
+                        <span class="nick">{{ ban.name || "???" }}</span>
+                        <span v-if="personaOf(ban)" class="persona">{{ personaOf(ban) }}</span>
+                      </div>
                     </div>
-                    <div class="names">
-                      <span class="nick">{{ ban.name || "???" }}</span>
-                      <span v-if="personaOf(ban)" class="persona">{{ personaOf(ban) }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <a
-                    v-if="ban.steamId64"
-                    class="steamid"
-                    :href="'https://steamcommunity.com/profiles/' + ban.steamId64"
-                    target="_blank"
-                    rel="noopener"
-                    >{{ ban.steamId }}</a
-                  >
-                  <span v-else class="steamid">{{ ban.steamId }}</span>
-                </td>
-                <td>
-                  <span class="tag" :class="statusOf(ban).type">{{ statusOf(ban).label }}</span>
-                </td>
-                <td>
-                  <span class="reason" :title="ban.reason">{{
-                    ban.reason || "no reason given"
-                  }}</span>
-                </td>
-                <td>
-                  <span v-if="ban.gamemode" class="tag is-dark">{{ ban.gamemode }}</span>
-                  <span v-else class="tag is-dark">GLOBAL</span>
-                </td>
-                <td>
-                  <div class="actor">
-                    <MdiIcon class="platform" :icon="actorInfo(ban.bannedBy).icon" size="is-small" />
+                  </td>
+                  <td>
                     <a
-                      v-if="actorInfo(ban.bannedBy).url"
-                      :href="actorInfo(ban.bannedBy).url"
+                      v-if="ban.steamId64"
+                      class="steamid"
+                      :href="'https://steamcommunity.com/profiles/' + ban.steamId64"
                       target="_blank"
                       rel="noopener"
-                      >{{ actorInfo(ban.bannedBy).label }}</a
+                      >{{ ban.steamId }}</a
                     >
-                    <span v-else>{{ actorInfo(ban.bannedBy).label }}</span>
-                  </div>
-                </td>
-                <td>
-                  <span :title="absolute(ban.bannedAt)">{{ day(ban.bannedAt) }}</span>
-                </td>
-                <td>
-                  <span v-if="ban.permanent" class="permanent">permanent</span>
-                  <span v-else :title="absolute(ban.unbanAt)">{{ until(ban.unbanAt) }}</span>
-                </td>
-                <td class="actions-cell">
-                  <client-only>
-                    <button
-                      v-if="canModerate && ban.active && !ban.permanent"
-                      class="button is-small"
-                      @click="openEdit(ban)"
-                    >
-                      <MdiIcon icon="pencil" size="is-small" />
-                      <span>&nbsp;Edit</span>
-                    </button>
-                  </client-only>
-                </td>
-              </tr>
+                    <span v-else class="steamid">{{ ban.steamId }}</span>
+                    <MdiIcon class="expand-chevron" icon="chevron-down" size="is-small" />
+                  </td>
+                  <td>
+                    <span class="tag" :class="statusOf(ban).type">{{ statusOf(ban).label }}</span>
+                  </td>
+                  <td>
+                    <span class="reason" :title="ban.reason">{{
+                      ban.reason || "no reason given"
+                    }}</span>
+                  </td>
+                  <td>
+                    <span v-if="ban.gamemode" class="tag is-dark">{{ ban.gamemode }}</span>
+                    <span v-else class="tag is-dark">GLOBAL</span>
+                  </td>
+                  <td>
+                    <div class="actor">
+                      <MdiIcon
+                        class="platform"
+                        :icon="actorInfo(ban.bannedBy).icon"
+                        size="is-small"
+                      />
+                      <a
+                        v-if="actorInfo(ban.bannedBy).url"
+                        :href="actorInfo(ban.bannedBy).url"
+                        target="_blank"
+                        rel="noopener"
+                        >{{ actorInfo(ban.bannedBy).label }}</a
+                      >
+                      <span v-else>{{ actorInfo(ban.bannedBy).label }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span :title="absolute(ban.bannedAt)">{{ day(ban.bannedAt) }}</span>
+                  </td>
+                  <td>
+                    <span v-if="ban.permanent" class="permanent">permanent</span>
+                    <span v-else :title="absolute(ban.unbanAt)">{{ until(ban.unbanAt) }}</span>
+                  </td>
+                  <td class="actions-cell">
+                    <client-only>
+                      <button
+                        v-if="canModerate && ban.active && !ban.permanent"
+                        class="button is-small"
+                        @click="openEdit(ban)"
+                      >
+                        <MdiIcon icon="pencil" size="is-small" />
+                        <span>&nbsp;Edit</span>
+                      </button>
+                    </client-only>
+                  </td>
+                </tr>
+                <tr v-if="expandedId === ban.id" class="ban-detail">
+                  <td :colspan="COLUMNS.length">
+                    <dl>
+                      <div>
+                        <dt>Status</dt>
+                        <dd>
+                          <span class="tag" :class="statusOf(ban).type">{{
+                            statusOf(ban).label
+                          }}</span>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Reason</dt>
+                        <dd>{{ ban.reason || "no reason given" }}</dd>
+                      </div>
+                      <div>
+                        <dt>Gamemode</dt>
+                        <dd>
+                          <span class="tag is-dark">{{ ban.gamemode || "GLOBAL" }}</span>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>By</dt>
+                        <dd>
+                          <div class="actor">
+                            <MdiIcon
+                              class="platform"
+                              :icon="actorInfo(ban.bannedBy).icon"
+                              size="is-small"
+                            />
+                            <a
+                              v-if="actorInfo(ban.bannedBy).url"
+                              :href="actorInfo(ban.bannedBy).url"
+                              target="_blank"
+                              rel="noopener"
+                              >{{ actorInfo(ban.bannedBy).label }}</a
+                            >
+                            <span v-else>{{ actorInfo(ban.bannedBy).label }}</span>
+                          </div>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Banned</dt>
+                        <dd :title="absolute(ban.bannedAt)">{{ day(ban.bannedAt) }}</dd>
+                      </div>
+                      <div>
+                        <dt>Expires</dt>
+                        <dd>
+                          <span v-if="ban.permanent" class="permanent">permanent</span>
+                          <span v-else :title="absolute(ban.unbanAt)">{{
+                            until(ban.unbanAt)
+                          }}</span>
+                        </dd>
+                      </div>
+                    </dl>
+                    <client-only>
+                      <button
+                        v-if="canModerate && ban.active && !ban.permanent"
+                        class="button is-small"
+                        @click="openEdit(ban)"
+                      >
+                        <MdiIcon icon="pencil" size="is-small" />
+                        <span>&nbsp;Edit</span>
+                      </button>
+                    </client-only>
+                  </td>
+                </tr>
+              </template>
               <tr v-if="!sortedBans.length">
                 <td :colspan="COLUMNS.length">
                   <div class="empty">
@@ -226,6 +303,8 @@ export default {
       loaded: false,
       search: this.$route.query.q || "",
       broken: [],
+      // the row opened on mobile, where most columns are hidden
+      expandedId: null,
     };
   },
   computed: {
@@ -376,6 +455,13 @@ export default {
       const key = this.statusOf(row).key;
       return key === "active" ? "is-banned" : `is-${key}`;
     },
+    // On mobile only two columns are shown and the rest live in a detail row.
+    // Desktop keeps every column, so the toggle is inert there.
+    toggleRow(ban, event) {
+      // leave the steam profile link and the edit button to do their own job
+      if (event.target.closest("a, button")) return;
+      this.expandedId = this.expandedId === ban.id ? null : ban.id;
+    },
     // clicking the active column flips direction, a new column starts descending
     toggleSort(field) {
       const dir = field === this.sortField && this.sortDirection === "desc" ? "asc" : "desc";
@@ -444,8 +530,8 @@ export default {
         days >= 365
           ? `${Math.round(days / 365)} y`
           : days >= 1
-          ? `${days} d`
-          : `${Math.max(1, Math.round(Math.abs(diff) / 3600000))} h`;
+            ? `${days} d`
+            : `${Math.max(1, Math.round(Math.abs(diff) / 3600000))} h`;
       return diff > 0 ? `in ${label}` : `${label} ago`;
     },
     relative(ts) {
@@ -505,6 +591,9 @@ export default {
   .table-wrap {
     position: relative;
     min-height: 8rem;
+    // nine columns cannot fit a phone, so the table scrolls inside the page
+    // rather than dragging the whole layout sideways
+    overflow-x: auto;
 
     // Buefy's scrim is a white 50% wash, which is backwards on the dark theme
     .loading-overlay .loading-background {
@@ -549,7 +638,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 12rem;
+        max-width: 10rem;
       }
 
       .persona {
@@ -558,7 +647,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 12rem;
+        max-width: 10rem;
       }
     }
 
@@ -572,7 +661,7 @@ export default {
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      max-width: 22rem;
+      max-width: 16rem;
     }
 
     .actor {
@@ -611,6 +700,93 @@ export default {
 
     .permanent {
       color: $danger;
+    }
+
+    // both only exist for the mobile layout below
+    .expand-chevron,
+    .ban-detail {
+      display: none;
+    }
+  }
+
+  // On a phone the filters read better stacked than squeezed onto one row.
+  @media (max-width: 768px) {
+    .bans-header {
+      .gamemode,
+      .search,
+      .new-ban {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .new-ban {
+        justify-content: center;
+      }
+    }
+
+    .ban-table {
+      // Only Player and SteamID survive; everything else moves into the row
+      // that opens underneath, so nine columns do not have to fit a phone.
+      th:nth-child(n + 3),
+      td:nth-child(n + 3) {
+        display: none;
+      }
+
+      tbody tr:not(.ban-detail) {
+        cursor: pointer;
+      }
+
+      // the chevron sits at the end of the row rather than inside a column
+      tbody td:nth-child(2) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .expand-chevron {
+        display: inline-flex;
+        flex: none;
+        opacity: 0.5;
+        transition: transform 0.2s ease-out;
+      }
+
+      tr.is-expanded .expand-chevron {
+        transform: rotate(180deg);
+      }
+
+      .ban-detail {
+        display: table-row;
+
+        > td {
+          padding-top: 0;
+        }
+
+        dl > div {
+          display: flex;
+          gap: 0.75rem;
+          padding: 0.15rem 0;
+        }
+
+        dt {
+          flex: none;
+          width: 6rem;
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          opacity: 0.55;
+          padding-top: 0.15rem;
+        }
+
+        dd {
+          min-width: 0;
+          overflow-wrap: anywhere;
+        }
+
+        .button {
+          margin-top: 0.5rem;
+        }
+      }
     }
   }
 }
