@@ -79,6 +79,12 @@ export default defineNuxtConfig({
 
   css: ["~/assets/style.scss"],
 
+  experimental: {
+    // no page uses useAsyncData/useFetch (everything is fetched client-side), so the
+    // extracted _payload.json is dead weight and its unused preload warns in the console
+    payloadExtraction: false,
+  },
+
   vite: {
     css: {
       preprocessorOptions: {
