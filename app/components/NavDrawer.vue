@@ -24,6 +24,7 @@
                 :key="link.label"
                 class="nav-drawer-link is-nested"
                 :link="link"
+                @click="close"
               />
             </div>
           </div>
@@ -33,6 +34,7 @@
               :key="link.label"
               class="nav-drawer-link"
               :link="link"
+              @click="close"
             />
           </template>
         </template>
@@ -47,7 +49,7 @@
           <MdiIcon icon="login" />
           <span>Log in</span>
         </a>
-        <a v-else key="logout" class="nav-drawer-link" @click="logout()">
+        <a v-else key="logout" class="nav-drawer-link" @click="logout(), close()">
           <MdiIcon icon="logout" />
           <span>Log out</span>
         </a>
