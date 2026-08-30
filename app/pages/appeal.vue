@@ -2,7 +2,7 @@
   <div id="appeal">
     <section class="section">
       <div class="container">
-        <h1 class="title">Unban appeal</h1>
+        <h1 class="title">Ban appeal</h1>
         <p class="subtitle is-6">Make your case and talk to the developers.</p>
 
         <client-only>
@@ -180,7 +180,7 @@
 <script>
 export default {
   setup() {
-    useHead({ title: "Unban appeal - Meta Construct" });
+    useHead({ title: "Ban appeal - Meta Construct" });
     return { ...useSteamUser(), toast: useToast() };
   },
   data() {
