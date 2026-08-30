@@ -47,7 +47,7 @@
         </div>
         <a v-if="!user.login" key="login" class="nav-drawer-link" :href="loginUrl">
           <MdiIcon icon="login" />
-          <span>Log in</span>
+          <span>Log in (Admin)</span>
         </a>
         <a v-else key="logout" class="nav-drawer-link" @click="logout(), close()">
           <MdiIcon icon="logout" />

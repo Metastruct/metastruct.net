@@ -83,7 +83,7 @@
               )}`"
             >
               <MdiIcon icon="login" />
-              <span>Log in</span>
+              <span>Log in (Admin)</span>
             </a>
             <a
               v-if="user.login"

@@ -2,6 +2,14 @@
   <div id="bans">
     <section class="section">
       <div class="container">
+        <div class="appeal-callout">
+          <div>
+            <strong>Banned?</strong>
+            <span class="callout-text">You can appeal your ban and talk to the team.</span>
+          </div>
+          <NuxtLink to="/appeal" class="button is-link is-small">Unban appeal</NuxtLink>
+        </div>
+
         <h1 class="title">Bans</h1>
         <p class="subtitle is-6 muted">
           Our records of naughty people for our Garry's Mod servers.
@@ -718,6 +726,23 @@ export default {
 }
 
 #bans {
+  .appeal-callout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: $grey-dark;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+
+    .callout-text {
+      opacity: 0.6;
+      margin-left: 0.5rem;
+    }
+  }
+
   .bans-header {
     display: flex;
     flex-wrap: wrap;

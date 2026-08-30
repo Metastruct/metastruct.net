@@ -9,8 +9,16 @@ const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.meta
 // browser on localhost can never send it and there is no way to log in from dev.
 // Pasting the cookie here lets the proxy attach it on the way out. Dev only.
 const MC_SESSION = !isProd && process.env.MC_SESSION;
+// same trick for the Steam appeal login: paste a steamSession cookie value
+const MC_STEAM_SESSION = !isProd && process.env.MC_STEAM_SESSION;
+const DEV_COOKIE = [
+  MC_SESSION && `ghSession=${MC_SESSION}`,
+  MC_STEAM_SESSION && `steamSession=${MC_STEAM_SESSION}`,
+]
+  .filter(Boolean)
+  .join("; ");
 
-if (MC_SESSION) {
+if (DEV_COOKIE) {
   // this session is a real one against the live metaconcord, writes are not sandboxed
   console.warn("[dev] MC_SESSION set: you are logged in against PRODUCTION metaconcord");
 }
@@ -39,7 +47,7 @@ export default defineNuxtConfig({
             changeOrigin: true,
             ws: true,
             // overwrites the browser's Cookie header, which on localhost is empty anyway
-            ...(MC_SESSION ? { headers: { cookie: `ghSession=${MC_SESSION}` } } : {}),
+            ...(DEV_COOKIE ? { headers: { cookie: DEV_COOKIE } } : {}),
           },
         },
   },
