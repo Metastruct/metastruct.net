@@ -3,7 +3,7 @@
     <section class="section">
       <div class="container">
         <h1 class="title">Unban appeal</h1>
-        <p class="subtitle is-6">Make your case and talk to the team.</p>
+        <p class="subtitle is-6">Make your case and talk to the developers.</p>
 
         <client-only>
           <MessageBox v-if="!steamUserLoaded">Loading…</MessageBox>
@@ -116,10 +116,16 @@
               </form>
 
               <div v-else class="conversation">
+                <MessageBox v-if="status === 'refused'" type="is-warning" has-icon>
+                  Your appeal was refused.
+                </MessageBox>
                 <h2 class="title is-5">Your appeal</h2>
-                <p class="is-size-7 muted">
-                  Submitted {{ relativeTime(appealCreatedAt) }}. Replies from the team show up
-                  here, check back once in a while.
+                <p v-if="status === 'appealed'" class="is-size-7 muted">
+                  Submitted {{ relativeTime(appealCreatedAt) }}. Replies from the developers show
+                  up here, check back once in a while.
+                </p>
+                <p v-else class="is-size-7 muted">
+                  Submitted {{ relativeTime(appealCreatedAt) }}.
                 </p>
                 <div ref="messageList" class="messages">
                   <div
@@ -140,7 +146,11 @@
                   </div>
                   <p v-if="!messages.length" class="muted empty">No replies yet.</p>
                 </div>
-                <form v-if="!closedNotice" class="reply" @submit.prevent="sendReply">
+                <form
+                  v-if="status === 'appealed' && !closedNotice"
+                  class="reply"
+                  @submit.prevent="sendReply"
+                >
                   <FormInput
                     v-model="reply"
                     class="grow"
@@ -223,7 +233,7 @@ export default {
         this.profiles = data.profiles || {};
         this.appealCreatedAt = data.appeal?.createdAt || 0;
         this.statusLoaded = true;
-        if (this.status === "appealed") await this.loadMessages();
+        if (this.status === "appealed" || this.status === "refused") await this.loadMessages();
       } catch (err) {
         console.error(err);
         // an expired session answers 401, everything else is the service being down
@@ -235,10 +245,12 @@ export default {
       try {
         const data = await this.$mc("/appeals/me/messages");
         if (data.closed) {
-          // the thread is gone on the Discord side; loadStatus cannot loop back here
-          // because with no open appeal the status comes back as "banned"
-          this.closedNotice = true;
-          await this.loadStatus();
+          // the thread is gone on the Discord side; the closedNotice guard keeps a
+          // refused appeal with a deleted thread from reloading in a loop
+          if (!this.closedNotice) {
+            this.closedNotice = true;
+            await this.loadStatus();
+          }
           return;
         }
         this.messages = data.messages || [];

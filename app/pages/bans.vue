@@ -5,7 +5,7 @@
         <div class="appeal-callout">
           <div>
             <strong>Banned?</strong>
-            <span class="callout-text">You can appeal your ban and talk to the team.</span>
+            <span class="callout-text">You can appeal your ban and talk to the developers.</span>
           </div>
           <NuxtLink to="/appeal" class="button is-link is-small">Unban appeal</NuxtLink>
         </div>
