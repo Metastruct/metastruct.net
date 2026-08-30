@@ -250,6 +250,8 @@ export default {
           if (!this.closedNotice) {
             this.closedNotice = true;
             await this.loadStatus();
+            // a refusal or unban explains itself, the generic notice is for the rest
+            if (this.status !== "banned") this.closedNotice = false;
           }
           return;
         }
