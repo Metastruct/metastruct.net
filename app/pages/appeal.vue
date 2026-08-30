@@ -65,9 +65,7 @@
                     <dt>Expiry</dt>
                     <dd>
                       <span v-if="ban.permanent" class="permanent">permanent</span>
-                      <span v-else :title="absolute(ban.unbanAt)"
-                        >{{ day(ban.unbanAt) }} ({{ until(ban.unbanAt) }})</span
-                      >
+                      <span v-else :title="absolute(ban.unbanAt)">{{ until(ban.unbanAt) }}</span>
                     </dd>
                   </div>
                   <div>
@@ -332,26 +330,6 @@ export default {
         default:
           return { icon: "help-circle-outline", label: actor.raw };
       }
-    },
-    day(ts) {
-      if (!ts) return "-";
-      return new Date(ts * 1000).toISOString().slice(0, 10);
-    },
-    absolute(ts) {
-      if (!ts) return "-";
-      return new Date(ts * 1000).toLocaleString();
-    },
-    until(ts) {
-      if (!ts) return "-";
-      const diff = ts * 1000 - Date.now();
-      const days = Math.round(Math.abs(diff) / 86400000);
-      const label =
-        days >= 365
-          ? `${Math.round(days / 365)} y`
-          : days >= 1
-            ? `${days} d`
-            : `${Math.max(1, Math.round(Math.abs(diff) / 3600000))} h`;
-      return diff > 0 ? `in ${label}` : `${label} ago`;
     },
     relativeTime(ts) {
       if (!ts) return "just now";

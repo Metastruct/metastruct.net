@@ -141,7 +141,7 @@ export default {
       if (this.length === "keep") {
         return this.ban.permanent
           ? "Stays permanent."
-          : `Stays at ${this.absolute(this.ban.unbanAt)}`;
+          : `Stays at ${absolute(this.ban.unbanAt)}`;
       }
       if (this.length === "permanent") return "Never expires.";
       if (!this.seconds) return "";
@@ -167,9 +167,6 @@ export default {
     },
     discard() {
       this.show = false;
-    },
-    absolute(ts) {
-      return ts ? new Date(ts * 1000).toLocaleString() : "-";
     },
     fail(err, what) {
       console.error(err);

@@ -583,26 +583,6 @@ export default {
       if (index === -1) this.bans = [ban, ...this.bans];
       else this.bans.splice(index, 1, ban);
     },
-    day(ts) {
-      if (!ts) return "-";
-      return new Date(ts * 1000).toISOString().slice(0, 10);
-    },
-    absolute(ts) {
-      if (!ts) return "-";
-      return new Date(ts * 1000).toLocaleString();
-    },
-    until(ts) {
-      if (!ts) return "-";
-      const diff = ts * 1000 - Date.now();
-      const days = Math.round(Math.abs(diff) / 86400000);
-      const label =
-        days >= 365
-          ? `${Math.round(days / 365)} y`
-          : days >= 1
-            ? `${days} d`
-            : `${Math.max(1, Math.round(Math.abs(diff) / 3600000))} h`;
-      return diff > 0 ? `in ${label}` : `${label} ago`;
-    },
     relative(ts) {
       if (!ts) return "never";
       const minutes = Math.round((Date.now() - ts) / 60000);
