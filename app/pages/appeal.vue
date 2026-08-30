@@ -187,6 +187,7 @@ export default {
       status: null,
       ban: null,
       profiles: {},
+      appealId: 0,
       appealCreatedAt: 0,
       appealText: "",
       submitting: false,
@@ -229,9 +230,11 @@ export default {
         this.status = data.status;
         this.ban = data.ban || null;
         this.profiles = data.profiles || {};
+        this.appealId = data.appeal?.id || 0;
         this.appealCreatedAt = data.appeal?.createdAt || 0;
         this.statusLoaded = true;
         if (this.status === "appealed" || this.status === "refused") await this.loadMessages();
+        else this.messages = [];
       } catch (err) {
         console.error(err);
         // an expired session answers 401, everything else is the service being down
@@ -240,8 +243,9 @@ export default {
       }
     },
     async loadMessages() {
+      if (!this.appealId) return;
       try {
-        const data = await this.$mc("/appeals/me/messages");
+        const data = await this.$mc(`/appeals/${this.appealId}/messages`);
         if (data.closed) {
           // the thread is gone on the Discord side; the closedNotice guard keeps a
           // refused appeal with a deleted thread from reloading in a loop
@@ -273,6 +277,7 @@ export default {
       try {
         const data = await this.$mc("/appeals", { method: "POST", body: { message } });
         this.status = "appealed";
+        this.appealId = data.appeal?.id || 0;
         this.appealCreatedAt = data.appeal?.createdAt || Math.round(Date.now() / 1000);
         this.appealText = "";
         await this.loadMessages();
@@ -291,7 +296,10 @@ export default {
       if (!message) return;
       this.sending = true;
       try {
-        const data = await this.$mc("/appeals/me/messages", { method: "POST", body: { message } });
+        const data = await this.$mc(`/appeals/${this.appealId}/messages`, {
+          method: "POST",
+          body: { message },
+        });
         if (data.message) this.messages = [...this.messages, data.message];
         this.reply = "";
       } catch (err) {
@@ -309,6 +317,7 @@ export default {
       this.statusLoaded = false;
       this.status = null;
       this.ban = null;
+      this.appealId = 0;
       this.messages = [];
       this.closedNotice = false;
     },
