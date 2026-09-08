@@ -66,7 +66,7 @@
                   </span>
                 </template>
                 <span v-else class="stat offline">offline</span>
-                <div v-if="current.game === 'minecraft'" class="levels">
+                <div class="levels">
                   <button
                     v-for="lvl in levelNames"
                     :key="lvl"
@@ -382,7 +382,13 @@ export default {
     },
 
     renderLine(line) {
-      // rcon traceability lines stand out in red whatever their level
+      // gmod carries the engine spew colour per line, so the console looks the
+      // way it does in game; level is only ever a filter here
+      if (line.color) {
+        const [r, g, b] = [0, 2, 4].map(i => parseInt(line.color.slice(i, i + 2), 16));
+        return `\x1B[38;2;${r};${g};${b}m${line.text}\x1B[0m`;
+      }
+      // minecraft has no per-line colour, so it falls back to the level
       const color = line.text.includes("[RCON]")
         ? "\x1B[31m"
         : LEVEL_COLORS[this.levelGroup(line.level)];
