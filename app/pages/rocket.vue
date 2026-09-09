@@ -381,14 +381,30 @@ export default {
       return LEVEL_NAMES.includes(level) ? level : "INFO";
     },
 
+    // "rrggbb" -> a truecolor SGR escape
+    ansi(hex) {
+      const [r, g, b] = [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16));
+      return `\x1B[38;2;${r};${g};${b}m`;
+    },
+
     renderLine(line) {
-      // gmod carries the engine spew colour per line, so the console looks the
-      // way it does in game; level is only ever a filter here
-      if (line.color) {
-        const [r, g, b] = [0, 2, 4].map(i => parseInt(line.color.slice(i, i + 2), 16));
-        return `\x1B[38;2;${r};${g};${b}m${line.text}\x1B[0m`;
+      // gmod carries the engine spew colour, so the console looks the way it
+      // does in game; level is only ever a filter here
+      //
+      // MsgC prints one chunk per colour, so a tagged line arrives already
+      // split: colouring the whole line would throw away everything but the
+      // last chunk's colour, which is most of what makes the console readable
+      if (line.parts) {
+        return (
+          line.parts
+            .map(part => (part.color ? `${this.ansi(part.color)}${part.text}\x1B[0m` : part.text))
+            .join("") + "\x1B[0m"
+        );
       }
-      // minecraft has no per-line colour, so it falls back to the level
+      if (line.color) {
+        return `${this.ansi(line.color)}${line.text}\x1B[0m`;
+      }
+      // minecraft has no colour of its own, so it falls back to the level
       const color = line.text.includes("[RCON]")
         ? "\x1B[31m"
         : LEVEL_COLORS[this.levelGroup(line.level)];
