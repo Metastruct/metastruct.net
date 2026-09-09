@@ -440,7 +440,7 @@ export default {
     async diagnoseRefusal(key) {
       try {
         await this.$mc(`/console/status/${encodeURIComponent(key)}`);
-        return "console refused (session limit reached, or rejected by the server)";
+        return "console refused by the server";
       } catch (err) {
         const code = err.response && err.response.status;
         if (code === 401 || code === 403) {
