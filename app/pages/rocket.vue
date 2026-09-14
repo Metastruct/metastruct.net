@@ -279,13 +279,16 @@ export default {
       const [{ Terminal }, { FitAddon }] = await Promise.all([
         import("@xterm/xterm"),
         import("@xterm/addon-fit"),
+        // xterm measures the cell size once at startup, so the webfont has to be
+        // there already or every glyph sits on a fallback-sized grid
+        document.fonts ? document.fonts.load('13px "JetBrains Mono"').catch(() => {}) : null,
       ]);
       this.term = new Terminal({
         disableStdin: true,
         convertEol: true,
         scrollback: 5000,
         fontSize: 13,
-        fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace',
+        fontFamily: '"JetBrains Mono", monospace',
         theme: {
           background: "#0d0d0d",
           foreground: "#fefefe",
@@ -739,7 +742,7 @@ export default {
       .lvl {
         flex: none;
         white-space: nowrap;
-        font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+        font-family: $family-monospace;
         font-size: 0.65rem;
         letter-spacing: 0.05em;
         background: none;
@@ -872,7 +875,7 @@ export default {
     border-top: 1px solid $grey-dark;
 
     .button {
-      font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      font-family: $family-monospace;
     }
   }
 
@@ -882,7 +885,7 @@ export default {
     align-items: center;
     padding: 0.5rem 0;
     border-top: 1px solid $grey-light;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-family: $family-monospace;
     font-size: 0.95rem;
 
     .segment {

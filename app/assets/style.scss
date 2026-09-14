@@ -3,6 +3,9 @@
 // Import Open Sans
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i");
 
+// Import JetBrains Mono
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+
 // Import our own SCSS variables, Bulma, the Oruga shim, then our overrides
 @import "variables";
 @import "bulma/bulma";

@@ -1,5 +1,7 @@
 $body-size: 14px;
 $family-sans-serif: "Open Sans";
+// shipped as a webfont so consoles and code look the same on every platform
+$family-monospace: "JetBrains Mono", monospace;
 
 $grey-accent: #020202;
 $grey-darker: #0d0d0d;

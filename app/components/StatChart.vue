@@ -113,7 +113,7 @@ export default {
     .values {
       display: flex;
       gap: 0.6rem;
-      font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      font-family: $family-monospace;
       white-space: nowrap;
     }
   }
@@ -134,7 +134,7 @@ export default {
     color: $grey-lighter;
     font-size: 0.6rem;
     line-height: 1;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-family: $family-monospace;
   }
 
   svg {
