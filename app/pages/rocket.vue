@@ -390,7 +390,29 @@ export default {
       return `\x1B[38;2;${r};${g};${b}m`;
     },
 
+    isShown(line) {
+      return !!line.marker || this.levels[this.levelGroup(line.level)];
+    },
+
+    // a banner around metaconcord's connection markers, so a crash or restart
+    // is not buried in the scrollback
+    renderMarker(line) {
+      const lost = line.marker === "disconnected";
+      const title = lost ? "SERVER CONNECTION LOST (crash? restart?)" : "SERVER CONNECTED";
+      let text = title;
+      if (line.time) {
+        const date = new Date(line.time);
+        const time = date.toLocaleTimeString([], { hour12: false });
+        const today = date.toDateString() === new Date().toDateString();
+        text = `${title} at ${today ? time : `${date.toLocaleDateString()} ${time}`}`;
+      }
+      const rule = "=".repeat(Math.min(text.length, this.term.cols));
+      const color = `\x1B[1m${this.ansi("ff5555")}`;
+      return `\r\n${color}${rule}\r\n${text}\r\n${rule}\x1B[0m\r\n`;
+    },
+
     renderLine(line) {
+      if (line.marker) return this.renderMarker(line);
       // gmod carries the engine spew colour, so the console looks the way it
       // does in game; level is only ever a filter here
       //
@@ -419,7 +441,7 @@ export default {
       if (this.logLines.length > LOG_BUFFER_MAX) {
         this.logLines.splice(0, this.logLines.length - LOG_BUFFER_MAX);
       }
-      const visible = lines.filter(line => this.levels[this.levelGroup(line.level)]);
+      const visible = lines.filter(line => this.isShown(line));
       if (visible.length) {
         this.term.write(visible.map(line => this.renderLine(line)).join("\r\n") + "\r\n");
       }
@@ -434,7 +456,7 @@ export default {
       }
       // repaint the buffered log with the new filter
       this.term.reset();
-      const visible = this.logLines.filter(line => this.levels[this.levelGroup(line.level)]);
+      const visible = this.logLines.filter(line => this.isShown(line));
       if (visible.length) {
         this.term.write(visible.map(line => this.renderLine(line)).join("\r\n") + "\r\n");
       }
