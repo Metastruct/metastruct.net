@@ -34,11 +34,11 @@ Environment variables, read at build time (see `.env.example`):
 Metaconcord scopes its session cookie to `.metastruct.net` and marks it `Secure`, and its
 OAuth callback always returns to the production site, so localhost cannot obtain a session
 of its own. To test logged-in features, borrow one: log in on https://metastruct.net, copy
-the `ghSession` cookie value out of devtools, and put it in `.env` as `MC_SESSION`. The dev
+the `mcSession` cookie value out of devtools, and put it in `.env` as `MC_SESSION`. The dev
 proxy attaches it to every `/mc` request.
 
 This is a real session against production metaconcord. Writes from dev (creating or editing
-bans, editing history) change live data. The session expires after 8 hours; logging out from
-the dev UI does nothing, since the proxy keeps re-sending the cookie.
+bans, editing history, linking platforms) change live data. The session expires after 30 days;
+logging out from the dev UI does nothing, since the proxy keeps re-sending the cookie.
 
 Pushes to `master` build and deploy `.output/public/` to GitHub Pages through `.github/workflows/deploy.yml`. `public/CNAME` sets the custom domain.

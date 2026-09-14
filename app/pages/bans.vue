@@ -340,7 +340,7 @@ export default {
   },
   computed: {
     canModerate() {
-      return (this.user.teams || []).length > 0;
+      return this.isStaff;
     },
     status() {
       const wanted = this.$route.query.status;

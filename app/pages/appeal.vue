@@ -6,17 +6,31 @@
         <p class="subtitle is-6">Make your case and talk to the developers.</p>
 
         <client-only>
-          <MessageBox v-if="!steamUserLoaded">Loading…</MessageBox>
+          <MessageBox v-if="!userLoaded">Loading…</MessageBox>
 
-          <template v-else-if="!steamUser.steamId64">
+          <template v-else-if="!user.id">
             <MessageBox type="is-info" has-icon>
-              Sign in with Steam so we can look up our records for your account. The login only
-              tells us who you are, nothing else.
+              Log in so we can look up our records for your account. The login only tells us who
+              you are, nothing else.
             </MessageBox>
-            <a class="button is-link" :href="loginUrl">
+            <a class="button is-link" :href="loginUrl('steam', $route.fullPath)">
               <MdiIcon icon="steam" size="is-small" />
               <span>&nbsp;Sign in through Steam</span>
             </a>
+            <nuxt-link class="button" :to="`/login?redirect=${encodeURIComponent($route.fullPath)}`">
+              Other platforms
+            </nuxt-link>
+          </template>
+
+          <template v-else-if="!steamUser">
+            <MessageBox type="is-info" has-icon>
+              Bans are tied to Steam accounts. Link yours so we can look up our records.
+            </MessageBox>
+            <a class="button is-link" :href="loginUrl('steam', $route.fullPath)">
+              <MdiIcon icon="steam" size="is-small" />
+              <span>&nbsp;Link Steam</span>
+            </a>
+            <nuxt-link class="button" to="/profile">Link from Garry's Mod instead</nuxt-link>
           </template>
 
           <template v-else>
@@ -179,7 +193,7 @@
 export default {
   setup() {
     useHead({ title: "Ban appeal - Meta Construct" });
-    return { ...useSteamUser(), toast: useToast() };
+    return { ...useUser(), toast: useToast() };
   },
   data() {
     return {
@@ -199,8 +213,10 @@ export default {
     };
   },
   computed: {
-    loginUrl() {
-      return `${this.$mcUrl}/auth/steam?redirect=${encodeURIComponent(this.$route.fullPath)}`;
+    // the proven Steam link, an imported one does not count
+    steamUser() {
+      const link = this.verifiedLink("steam");
+      return link ? { steamId64: link.id, name: link.name, avatar: link.avatar } : null;
     },
   },
   watch: {
@@ -214,8 +230,8 @@ export default {
   async mounted() {
     document.addEventListener("visibilitychange", this.onVisibility);
     this._poll = setInterval(this.poll, 15000);
-    await this.fetchSteamUser();
-    if (this.steamUser.steamId64) await this.loadStatus();
+    if (!this.userLoaded) await this.fetchUser();
+    if (this.steamUser) await this.loadStatus();
   },
   beforeUnmount() {
     clearInterval(this._poll);
@@ -237,8 +253,8 @@ export default {
         else this.messages = [];
       } catch (err) {
         console.error(err);
-        // an expired session answers 401, everything else is the service being down
-        if (err.status === 401) await this.fetchSteamUser();
+        // an expired session answers 401, a lost Steam link 403, the rest is the service being down
+        if (err.status === 401 || err.status === 403) await this.fetchUser();
         else this.error = err.data?.error || "The appeal service is unavailable right now.";
       }
     },
@@ -313,7 +329,7 @@ export default {
       this.sending = false;
     },
     async signOut() {
-      await this.steamLogout();
+      await this.logout();
       this.statusLoaded = false;
       this.status = null;
       this.ban = null;

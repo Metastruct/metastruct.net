@@ -24,7 +24,7 @@
     <div class="column is-2">
       <div class="year-picker">
         <client-only>
-          <template v-if="user.isAdmin">
+          <template v-if="isStaff">
             <a class="has-text-primary year" @click="$emit('add')">
               <MdiIcon icon="plus" />
               <span>&nbsp;Add new event</span>

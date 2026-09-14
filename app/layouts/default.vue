@@ -66,27 +66,17 @@
                 />
               </div>
             </div>
-            <div v-if="user.login" class="navbar-item">
-              <img
-                class="avatar"
-                :src="user.avatarUrl"
-                :alt="user.login"
-              >
-              <span>{{ user.login }}</span>
-            </div>
-            <a
-              v-if="!user.login"
-              key="login"
-              class="navbar-item"
-              :href="`${$mcUrl}/auth/github?redirect=${encodeURIComponent(
-                $route.fullPath
-              )}`"
-            >
+            <nuxt-link v-if="user.id" class="navbar-item" to="/profile">
+              <img v-if="user.avatar" class="avatar" :src="user.avatar" alt="" >
+              <MdiIcon v-else icon="account" />
+              <span>{{ user.displayName }}</span>
+            </nuxt-link>
+            <nuxt-link v-if="!user.id" key="login" class="navbar-item" to="/login">
               <MdiIcon icon="login" />
-              <span>Log in (Admin)</span>
-            </a>
+              <span>Log in</span>
+            </nuxt-link>
             <a
-              v-if="user.login"
+              v-if="user.id"
               key="logout"
               class="navbar-item"
               @click="logout()"

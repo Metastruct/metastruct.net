@@ -4,12 +4,11 @@
       <div class="container">
         <client-only>
           <MessageBox v-if="!userLoaded">Loading…</MessageBox>
-          <MessageBox v-else-if="!user.isAdmin" type="is-warning" has-icon>
-            The server console is for the Metastruct administrators and developers.&nbsp;<a
-              :href="`${$mcUrl}/auth/github?redirect=${encodeURIComponent(
-                $route.fullPath
-              )}`"
-              >Log in with GitHub</a
+          <MessageBox v-else-if="!isStaff" type="is-warning" has-icon>
+            The server console is for the Metastruct administrators and developers.&nbsp;<nuxt-link
+              v-if="!user.id"
+              :to="`/login?redirect=${encodeURIComponent($route.fullPath)}`"
+              >Log in</nuxt-link
             >
           </MessageBox>
           <div v-else class="rocket">
@@ -222,8 +221,8 @@ export default {
     },
   },
   watch: {
-    "user.isAdmin"(isAdmin) {
-      if (isAdmin) this.loadServers();
+    isStaff(staff) {
+      if (staff) this.loadServers();
     },
   },
   mounted() {
@@ -239,7 +238,7 @@ export default {
       // defaults stay
     }
     this.logLines = [];
-    if (this.user.isAdmin) this.loadServers();
+    if (this.isStaff) this.loadServers();
     window.addEventListener("resize", this.fit);
   },
   beforeUnmount() {

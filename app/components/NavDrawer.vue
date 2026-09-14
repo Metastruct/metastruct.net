@@ -41,14 +41,15 @@
       </nav>
 
       <div class="nav-drawer-account">
-        <div v-if="user.login" class="nav-drawer-user">
-          <img class="avatar" :src="user.avatarUrl" :alt="user.login" >
-          <span>{{ user.login }}</span>
-        </div>
-        <a v-if="!user.login" key="login" class="nav-drawer-link" :href="loginUrl">
+        <nuxt-link v-if="user.id" class="nav-drawer-user" to="/profile" @click="close">
+          <img v-if="user.avatar" class="avatar" :src="user.avatar" alt="" >
+          <MdiIcon v-else icon="account" />
+          <span>{{ user.displayName }}</span>
+        </nuxt-link>
+        <nuxt-link v-if="!user.id" key="login" class="nav-drawer-link" to="/login" @click="close">
           <MdiIcon icon="login" />
-          <span>Log in (Admin)</span>
-        </a>
+          <span>Log in</span>
+        </nuxt-link>
         <a v-else key="logout" class="nav-drawer-link" @click="logout(), close()">
           <MdiIcon icon="logout" />
           <span>Log out</span>
@@ -80,9 +81,6 @@ export default {
   computed: {
     sections() {
       return [...this.start, ...this.end];
-    },
-    loginUrl() {
-      return `${this.$mcUrl}/auth/github?redirect=${encodeURIComponent(this.$route.fullPath)}`;
     },
   },
   watch: {

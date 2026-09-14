@@ -6,7 +6,7 @@
         <MessageBox v-if="error" type="is-warning" has-icon>{{ error }}</MessageBox>
         <client-only>
           <HistoryEventEditModal
-            v-if="user.isAdmin"
+            v-if="isStaff"
             ref="modal"
             :history="history"
             @saved="applyHistory"

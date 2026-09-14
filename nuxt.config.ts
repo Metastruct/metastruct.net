@@ -7,16 +7,9 @@ const isProd = process.env.NODE_ENV === "production";
 const METACONCORD_URL = process.env.METACONCORD_URL || "https://metaconcord.metastruct.net";
 // Metaconcord scopes its session cookie to .metastruct.net and marks it Secure, so a
 // browser on localhost can never send it and there is no way to log in from dev.
-// Pasting the cookie here lets the proxy attach it on the way out. Dev only.
+// Pasting the mcSession cookie value here lets the proxy attach it on the way out. Dev only.
 const MC_SESSION = !isProd && process.env.MC_SESSION;
-// same trick for the Steam appeal login: paste a steamSession cookie value
-const MC_STEAM_SESSION = !isProd && process.env.MC_STEAM_SESSION;
-const DEV_COOKIE = [
-  MC_SESSION && `ghSession=${MC_SESSION}`,
-  MC_STEAM_SESSION && `steamSession=${MC_STEAM_SESSION}`,
-]
-  .filter(Boolean)
-  .join("; ");
+const DEV_COOKIE = MC_SESSION ? `mcSession=${MC_SESSION}` : "";
 
 if (DEV_COOKIE) {
   // this session is a real one against the live metaconcord, writes are not sandboxed

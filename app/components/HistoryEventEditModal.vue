@@ -126,6 +126,13 @@ export default {
     },
     fail(err) {
       console.error(err);
+      // the account has no usable GitHub token, only a fresh GitHub login fixes that
+      if (err.data?.error === "github_reauth") {
+        window.location.href = `${this.$mcUrl}/auth/github?redirect=${encodeURIComponent(
+          this.$route.fullPath
+        )}`;
+        return;
+      }
       this.toast.open({
         type: "is-danger",
         message: err.data?.error || "Saving the event failed",

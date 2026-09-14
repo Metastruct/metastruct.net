@@ -1,7 +1,7 @@
 <template>
   <div :id="dateString" class="timeline-event" :class="{ 'is-left': isLeft, 'is-right': !isLeft }">
     <client-only>
-      <EditButton v-if="user.isAdmin" @start="$emit('edit')" />
+      <EditButton v-if="isStaff" @start="$emit('edit')" />
     </client-only>
     <div class="card">
       <div

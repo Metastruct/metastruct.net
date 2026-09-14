@@ -2,7 +2,7 @@
 // mobile drawer both render from this, so a new link is added in one place.
 // Items carry either `to` (internal route) or `href` (external), never both.
 export function useNav() {
-  const { user } = useUser();
+  const { isStaff, isAdmin } = useUser();
   const { $mcUrl } = useNuxtApp();
 
   // sections without a label render their items inline, labelled ones become a
@@ -31,7 +31,7 @@ export function useNav() {
   ]);
 
   const end = computed(() => {
-    if (!user.value.isAdmin) return [];
+    if (!isStaff.value) return [];
 
     const items = [
       { label: "GitLab", icon: "gitlab", href: "https://gitlab.com/metastruct" },
@@ -39,7 +39,7 @@ export function useNav() {
       { label: "Bans", icon: "minus-circle", to: "/bans" },
     ];
 
-    if ((user.value.teams || []).includes("administrators")) {
+    if (isAdmin.value) {
       items.push({ label: "Metaconcord", icon: "robot", href: $mcUrl, external: true });
     }
 
