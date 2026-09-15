@@ -29,8 +29,9 @@
             </div>
 
             <MessageBox v-if="conflict" type="is-warning" has-icon>
-              That {{ conflict }} account is already linked to another account. Log into that
-              account and unlink it there first.
+              That {{ conflict }} account belongs to another account that has other ways to log
+              in. Log into that account and unlink {{ conflict }} there, then link it here. An
+              account with {{ conflict }} as its only login would have been merged into this one.
             </MessageBox>
 
             <h2 class="title is-5">Linked platforms</h2>
