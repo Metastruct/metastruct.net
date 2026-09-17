@@ -130,10 +130,8 @@ export default {
         return address && /^[a-z]+:\/\//i.test(address) ? address : null;
       }
       if (this.game === "gmod") {
+        if (this.connect.address) return `steam://connect/${this.connect.address}/metawebsite`;
         if (this.connect.label) return `/join/${this.connect.label}`;
-        const host = this.connect.ip || this.connect.address;
-        if (host && this.connect.port)
-          return `steam://connect/${host}:${this.connect.port}/metaweb`;
         return null;
       }
       return this.connect.url || null;
@@ -187,9 +185,8 @@ export default {
     },
     goToUrl(player) {
       if (this.game !== "gmod" || player.entIndex === undefined) return null;
-      const host = this.connect.ip || this.connect.address;
-      if (!host || !this.connect.port) return null;
-      return `steam://connect/${host}:${this.connect.port}/GO:_${player.entIndex}`;
+      const address = this.connect.address;
+      return address ? `steam://connect/${address}/GO:_${player.entIndex}` : null;
     },
     startJoin(ev) {
       [this.mX, this.mY] = [ev.x, ev.y];
