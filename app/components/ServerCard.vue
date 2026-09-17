@@ -130,7 +130,7 @@ export default {
         return address && /^[a-z]+:\/\//i.test(address) ? address : null;
       }
       if (this.game === "gmod") {
-        if (this.connect.label) return `${this.$mcUrl}/join/${this.connect.label}`;
+        if (this.connect.label) return `/join/${this.connect.label}`;
         const host = this.connect.ip || this.connect.address;
         if (host && this.connect.port)
           return `steam://connect/${host}:${this.connect.port}/metaweb`;
