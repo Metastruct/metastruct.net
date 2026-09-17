@@ -19,6 +19,7 @@
 </template>
 
 <script>
+
 const DEFAULT_PASSWORD = "metawebsite";
 const PASSWORD_ALLOWED = /[^a-zA-Z*0-9:+\-\s]+/g;
 
@@ -60,9 +61,8 @@ export default {
         return;
       }
 
-      const host = entry.connect?.ip || entry.connect?.address;
-      const port = entry.connect?.port;
-      if (!host || !port) {
+      const address = entry.connect?.address;
+      if (!address) {
         this.error = `${entry.name} has no public address to connect to.`;
         return;
       }
@@ -71,9 +71,9 @@ export default {
         PASSWORD_ALLOWED,
         ""
       );
-      this.address = `${host}:${port}`;
+      this.address = address;
       this.server = entry.name || label;
-      this.url = `steam://connect/${this.address}/${password}`;
+      this.url = `steam://connect/${address}/${password}`;
       window.location.replace(this.url);
     },
   },
