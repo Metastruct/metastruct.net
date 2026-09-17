@@ -1,3 +1,5 @@
+import { SHORT_LINKS } from "./app/utils/redirects.js";
+
 const SITE_NAME = "Meta Construct";
 const SITE_TAGLINE = "Tinkering games one byte at a time.";
 const SITE_DESCRIPTION =
@@ -32,6 +34,13 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    prerender: {
+      // github pages has no way to answer with a 301, so each short link ships as a
+      // real page carrying a <meta refresh>; app/pages/[...slug].vue does the hop
+      // for everything else, off 404.html
+      routes: Object.keys(SHORT_LINKS),
+    },
+
     devProxy: isProd
       ? {}
       : {
