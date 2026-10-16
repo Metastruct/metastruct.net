@@ -126,9 +126,10 @@ export default {
     },
     fail(err) {
       console.error(err);
-      // the account has no usable GitHub token, only a fresh GitHub login fixes that
+      // the account has no usable GitHub token, only a fresh GitHub login fixes that.
+      // editor=1 asks the login for the write scope the history editor needs
       if (err.data?.error === "github_reauth") {
-        window.location.href = `${this.$mcUrl}/auth/github?redirect=${encodeURIComponent(
+        window.location.href = `${this.$mcUrl}/auth/github?editor=1&redirect=${encodeURIComponent(
           this.$route.fullPath
         )}`;
         return;
