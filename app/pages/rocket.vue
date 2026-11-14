@@ -39,7 +39,7 @@
                 <li v-if="!servers.length" class="empty">No hosted servers.</li>
               </ul>
             </aside>
-            <div v-if="current" class="main">
+            <div v-if="current" ref="main" class="main">
               <div class="status-bar">
                 <button
                   class="servers-toggle"
@@ -76,6 +76,16 @@
                     @click="toggleLevel(lvl)"
                   >
                     {{ lvl }}
+                  </button>
+                  <button
+                    v-if="canFullscreen"
+                    class="fullscreen-toggle"
+                    type="button"
+                    :aria-label="fullscreen ? 'Exit full screen' : 'Full screen'"
+                    :title="fullscreen ? 'Exit full screen' : 'Full screen'"
+                    @click="toggleFullscreen"
+                  >
+                    <MdiIcon :icon="fullscreen ? 'fullscreen-exit' : 'fullscreen'" size="is-small" />
                   </button>
                 </div>
               </div>
@@ -185,6 +195,8 @@ export default {
       input: "",
       sidebarOpen: false,
       graphsOpen: false,
+      canFullscreen: false,
+      fullscreen: false,
       gservBusy: false,
       gservActions: ["rehash", "merge_repos", "rehashskeleton", "update_repos"],
       history: [],
@@ -240,9 +252,13 @@ export default {
     this.logLines = [];
     if (this.isStaff) this.loadServers();
     window.addEventListener("resize", this.fit);
+    this.canFullscreen = !!document.fullscreenEnabled;
+    document.addEventListener("fullscreenchange", this.onFullscreenChange);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.fit);
+    document.removeEventListener("fullscreenchange", this.onFullscreenChange);
+    if (this.fullscreen) document.exitFullscreen().catch(() => {});
     if (this.resizeObserver) this.resizeObserver.disconnect();
     clearInterval(this.statusTimer);
     this.disconnect();
@@ -539,6 +555,16 @@ export default {
       return `${this.formatBytes(v)}/s`;
     },
 
+    toggleFullscreen() {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else this.$refs.main?.requestFullscreen().catch(() => {});
+    },
+
+    onFullscreenChange() {
+      this.fullscreen = !!this.$refs.main && document.fullscreenElement === this.$refs.main;
+      this.$nextTick(() => this.focusInput());
+    },
+
     focusInput() {
       // on touch screens tapping the terminal to scroll should not pop the keyboard
       if (matchMedia("(pointer: coarse)").matches) return;
@@ -793,7 +819,32 @@ export default {
           text-decoration: line-through;
         }
       }
+
+      .fullscreen-toggle {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 0.3rem;
+        padding: 0 0.2rem;
+        background: none;
+        border: 1px solid $grey-light;
+        border-radius: 3px;
+        color: $white-ter;
+        font-size: 0.9rem;
+        line-height: 1;
+        cursor: pointer;
+
+        &:hover {
+          border-color: $grey-lighter;
+        }
+      }
     }
+  }
+
+  .main:fullscreen {
+    border: none;
+    border-radius: 0;
   }
 
   // mobile only: accordion header for the graphs, collapsed by default
@@ -1010,6 +1061,10 @@ export default {
     .sidebar .sidebar-close,
     .status-bar .servers-toggle {
       display: inline-flex;
+    }
+
+    .status-bar .fullscreen-toggle {
+      display: none;
     }
 
     .main {
